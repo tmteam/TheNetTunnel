@@ -15,6 +15,7 @@ namespace WhAlpaTest
             int totalPacks = (int)Math.Ceiling((msg.Length+4) / (double)(maxPackSize + 4 - headSize));
             
             byte[][] ans = new byte[totalPacks][];
+
             /*
              * ==============
              *  Start quantum
@@ -27,7 +28,8 @@ namespace WhAlpaTest
              * [n] Data
              * total: 17+n
              */
-            int startQuantDataSize = Math.Min(maxPackSize - headSize, msg.Length);
+            
+			int startQuantDataSize = Math.Min(maxPackSize - headSize, msg.Length);
             
             var startQ = new whStartQuantumHead
             {
@@ -48,6 +50,7 @@ namespace WhAlpaTest
             ans[0] = bStartQ;
 
             int dataOffset = startQuantDataSize;
+
             /*
              * ==============
              *  Data Quantum
