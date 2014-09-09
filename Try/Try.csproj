@@ -3,10 +3,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{35299810-870F-4FF0-A327-BAC6A5740C31}</ProjectGuid>
+    <ProjectGuid>{E172EF9C-4663-435D-A236-3A8FC7535183}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>Spintools</RootNamespace>
-    <AssemblyName>Spintools</AssemblyName>
+    <RootNamespace>Try</RootNamespace>
+    <AssemblyName>Try</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -28,14 +28,18 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="nunit.framework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="whQuantumsGenerator.cs" />
-    <Compile Include="whReceiver.cs" />
-    <Compile Include="whSendQueueDipatcher.cs" />
-    <Compile Include="whSender.cs" />
-    <Compile Include="Tools.cs" />
+    <Compile Include="simpleAssembleSeparating.cs" />
+    <Compile Include="qAssembleQueueTest.cs" />
+    <Compile Include="Monday.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\Spintools\Spintools.csproj">
+      <Project>{35299810-870F-4FF0-A327-BAC6A5740C31}</Project>
+      <Name>Spintools</Name>
+    </ProjectReference>
+  </ItemGroup>
 </Project>

@@ -8,101 +8,67 @@ namespace WhAlpaTest
 {
     public class whQuantumsGenerator 
     {
-        public byte[][] Translate(int cord, byte[] msg, ushort maxPackSize, int msgId)
-        {
-            int headSize = Marshal.SizeOf(typeof(whStartQuantumHead));
 
-            int totalPacks = (int)Math.Ceiling((msg.Length+4) / (double)(maxPackSize + 4 - headSize));
+		int headSize = Marshal.SizeOf(typeof(whQuantHead));
+        
+		public byte[][] Translate(byte[] msg, ushort maxPackSize, int msgId)
+        {
+            int totalPacks = (int)Math.Ceiling(msg.Length / (double)(maxPackSize - headSize));
             
             byte[][] ans = new byte[totalPacks][];
 
             /*
              * ==============
-             *  Start quantum
+             *  quantum head
              * ==============
-             * [2b] leght
-             * [4b] rope
+             * [2b] leght with head
              * [4b] msgId
              * [1b] type (0 = start quantum)
-             * [4b] MsgDataLenght
-             * [n] Data
+             * [4b] typeArg
+             * [n] body
              * total: 17+n
              */
             
-			int startQuantDataSize = Math.Min(maxPackSize - headSize, msg.Length);
-            
-            var startQ = new whStartQuantumHead
-            {
-                 lenght = (ushort)(headSize+ startQuantDataSize),
-                 type = whPacketType.Start,
-                 dataLenght = (uint)msg.Length,
-                 msgId = msgId,
-                 cord = cord,
-            };
+			int dataOffset = 0;
 
-           
-            byte[] bStartQ = new byte[headSize + startQuantDataSize];
+			for (int i = 0; i < totalPacks; i++) {
 
-            startQ.SetToArray(bStartQ, 0, headSize);
-            
-            Array.Copy(msg,0, bStartQ, headSize, startQuantDataSize);
+				ushort qDataSize = (ushort)Math.Min(msg.Length - dataOffset, maxPackSize - headSize); ; 
+				int qArg;
+				whPacketType qType = whPacketType.Data;
 
-            ans[0] = bStartQ;
+				if (i == 0) {
+					qArg = msg.Length;
+					qType = whPacketType.Start;
+				} else
+					qArg = i;
 
-            int dataOffset = startQuantDataSize;
+				var head = new whQuantHead
+				{
+					lenght = (ushort)(headSize+qDataSize),
+					msgId = msgId,
+					type = qType,
+					typeArg  = qArg 
+				};
 
-            /*
-             * ==============
-             *  Data Quantum
-             * ==============
-             * [2b] lenght
-             * [4b] rope
-             * [4b] msgId
-             * [1b] type (1 = data quantum)
-             * [n] data
-             * total: 11+n
-             */
-
-            for(int i = 1; dataOffset < msg.Length; i++)
-            {
-                var dataSize = Math.Min(msg.Length - dataOffset, maxPackSize - 11);
-                byte[] datapack = new byte[11 + dataSize];
-                Array.Copy(ans[0], datapack, 10);
-                Array.Copy(BitConverter.GetBytes((UInt16)datapack.Length), datapack, 2);
-                datapack[10] = (byte)whPacketType.Data;
-                Array.Copy(msg, dataOffset, datapack, 11, dataSize);
-                ans[i] = datapack;
-                dataOffset += dataSize;
-            }
+				byte[] quant = new byte[head.lenght];
+				head.SetToArray (quant, 0, headSize);
+				Array.Copy (msg, dataOffset, quant, headSize, qDataSize);
+				ans [i] = quant;
+				dataOffset += qDataSize;
+			}
             return ans;
         }
     }
-    [StructLayout( LayoutKind.Explicit, Size = 15)]
-    public struct whStartQuantumHead
+    [StructLayout(LayoutKind.Sequential)]
+    public struct whQuantHead
     {
-        [FieldOffset(0)]
         public UInt16 lenght;
-        [FieldOffset(2)]
-        public Int32 cord;
-        [FieldOffset(6)]
         public Int32 msgId;
-        [FieldOffset(10)]
         public whPacketType type;
-        [FieldOffset(11)]
-        public UInt32 dataLenght;
+        public Int32 typeArg;
     }
-    [StructLayout(LayoutKind.Explicit, Size = 11)]
-    public struct whQuantumHead
-    {
-        [FieldOffset(0)]
-        public UInt16 lenght;
-        [FieldOffset(2)]
-        public Int32 cord;
-        [FieldOffset(6)]
-        public Int32 msgId;
-        [FieldOffset(10)]
-        public whPacketType type;
-    }
+
     public enum whPacketType: byte
     {
         Abort = 0,

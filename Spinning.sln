@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spinning", "Spinning\Spinni
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spintools", "Spintools\Spintools.csproj", "{35299810-870F-4FF0-A327-BAC6A5740C31}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Try", "Try\Try.csproj", "{E172EF9C-4663-435D-A236-3A8FC7535183}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -19,6 +21,10 @@ Global
 		{A2AA9870-F8D7-424A-8F28-A1978B0A1C05}.Debug|x86.Build.0 = Debug|x86
 		{A2AA9870-F8D7-424A-8F28-A1978B0A1C05}.Release|x86.ActiveCfg = Release|x86
 		{A2AA9870-F8D7-424A-8F28-A1978B0A1C05}.Release|x86.Build.0 = Release|x86
+		{E172EF9C-4663-435D-A236-3A8FC7535183}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E172EF9C-4663-435D-A236-3A8FC7535183}.Debug|x86.Build.0 = Debug|Any CPU
+		{E172EF9C-4663-435D-A236-3A8FC7535183}.Release|x86.ActiveCfg = Release|Any CPU
+		{E172EF9C-4663-435D-A236-3A8FC7535183}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = Spinning\Spinning.csproj

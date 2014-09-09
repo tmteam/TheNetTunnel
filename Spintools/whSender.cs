@@ -33,15 +33,14 @@ namespace WhAlpaTest
         /// <param name="cord"></param>
         /// <param name="msg"></param>
         /// <returns>channel id</returns>
-        public int Send(int cord, byte[] msg)
+		public int Send(byte[] msg)
         {
-            
-            var quantums = generator.Translate(cord, msg, maxQuantumSize, Id);
+            var quantums = generator.Translate(msg, maxQuantumSize, Id);
             lock (queue)
             {
                 queue.Enqueue(quantums, Id);
             }
-            var I = Id;
+			var I = Id;
             Interlocked.Increment(ref Id);
             return I;
         }

@@ -10,7 +10,7 @@ namespace WhAlpaTest
     {
         public whReceiver()
         {
-            qheadSize = Marshal.SizeOf(typeof(whQuantumHead));
+            qheadSize = Marshal.SizeOf(typeof(whQuantHead));
             queue = new Dictionary<int, whMsg>();
             MinOutdateIntervalMs = 1000;
         }
@@ -22,92 +22,124 @@ namespace WhAlpaTest
             DateTime dtn = DateTime.Now;
             foreach (var q in queue)
             {
-                if ((dtn - q.Value.LastTS).TotalMilliseconds > MinOutdateIntervalMs)
+                if ((dtn - q.Value.latstTS).TotalMilliseconds > MinOutdateIntervalMs)
                     odids.Add(q.Key);
             }
             odids.ForEach(id => queue.Remove(id));
         }
 
-        public bool Set(byte[] values)
+		byte[] undoneQuant = null;
+
+		public bool Set(byte[] bytesfromstream)
+		{
+			byte[] arr = null;
+			if (undoneQuant == null)
+				arr = bytesfromstream;
+			else {
+				arr = new byte[bytesfromstream.Length + undoneQuant.Length];
+				undoneQuant.CopyTo (arr, 0);
+				bytesfromstream.CopyTo (arr, undoneQuant.Length);
+				undoneQuant = null;
+			}
+
+			int offset = 0;
+			bool lastIsGood = false;
+
+			while(true)
+			{
+				var bodyOffset = offset + qheadSize;
+				if(bodyOffset<arr.Length)
+				{
+					var head = arr.ToStruct<whQuantHead> (0, qheadSize);
+
+					if (offset + head.lenght == arr.Length) {
+						//fullquant
+						return this.HandleQuant (head, arr, bodyOffset);
+					} else if (offset + head.lenght < arr.Length) {
+						//has additional Lenght
+						lastIsGood = this.HandleQuant (head, arr, bodyOffset);
+						offset += head.lenght;
+					} else {
+						//save undone Quant
+						undoneQuant = new byte[arr.Length - offset];
+						Array.Copy (arr, offset, undoneQuant, 0, undoneQuant.Length);
+						return lastIsGood;
+					}
+				
+				}
+			}
+		}
+
+
+		bool HandleQuant(whQuantHead head, byte[] stream, int bodyOffset)
         {
-            int dataLen = values.Length - qheadSize;
-            if (dataLen < 0)
-                return false;
-
-            var head = values.ToStruct<whQuantumHead>(0, qheadSize);
-
-            if (head.lenght != values.Length) 
-                return false;
-
-            int chanelId = head.msgId;
+			int id = head.msgId;
             whMsg msg = null;
 
-            if (queue.ContainsKey(chanelId))
-                msg = queue[chanelId];
+
+            if (queue.ContainsKey(id))
+                msg = queue[id];
 
             if (head.type == whPacketType.Abort)
             {//Aborting msg handling
                 if (msg != null)
-                    queue.Remove(chanelId);
+                    queue.Remove(id);
                 return true;
             }
             else if (head.type == whPacketType.Start)
             {//Start msg handling
-                if (dataLen >= 4)
-                {
-                    bool hasMsg = msg != null;
+            	bool hasMsg = msg != null;
 
-                    msg = new whMsg(head.msgId, head.cord);
-                    var AwaitMsgLen = BitConverter.ToUInt32(values, qheadSize);
+                msg = new whMsg(head.msgId);
+				var AwaitMsgLen = head.typeArg;
 
-                    //If the startQuant is too long we should abort it
-                    if ((dataLen - 4) > AwaitMsgLen)
-                        return false;
-                    // if there is already msg with the same id - we should remove it
-                    if (hasMsg)
-                        queue.Remove(chanelId);
+                // if there is already msg with the same id - we should remove it
+                if (hasMsg)
+                    queue.Remove(id);
 
-                    msg.Arr = new byte[AwaitMsgLen];
-                    msg.bytesDone = dataLen - 4;
+                msg.body = new byte[AwaitMsgLen];
 
-                    Array.Copy(values, qheadSize + 4, msg.Arr, 0, dataLen-4);
 
-                    /// if startQuant has full msg's data we will handle it right here
-                    if (dataLen - 4 == AwaitMsgLen)
-                        SendOnMsg(msg);
-                    else//in other case - we should set in in awaiting queue
-                        queue.Add(chanelId, msg);
-                }
-                else
-                    return false;
+				int bodyLenght = head.lenght - qheadSize;
+
+				msg.bytesDone = bodyLenght;
+
+				Array.Copy (stream,bodyOffset, msg.body,0, bodyLenght);
+
+				/// if startQuant has full msg's data we will handle it right here
+				if (bodyLenght == AwaitMsgLen)
+                    SendOnMsg(msg);
+                else//in other case - we should set in in awaiting queue
+                    queue.Add(id, msg);
             }
             else if (head.type == whPacketType.Data)
             {
                 if (msg == null)//ignore unknown messages
                     return false;
 
-                if (msg.bytesDone + dataLen > msg.Arr.Length)
+				int bodyLenght = head.lenght - qheadSize;
+
+				if (msg.bytesDone + bodyLenght > msg.body.Length)
                 {//if we've got too mutch data, we should abort it
-                    queue.Remove(chanelId);
+                    queue.Remove(id);
                     return false;
                 }
 
-                Array.Copy(values, qheadSize, msg.Arr, msg.bytesDone, dataLen);
-                msg.bytesDone += dataLen;
+				Array.Copy(stream, bodyOffset, msg.body, msg.bytesDone, bodyLenght);
+				msg.bytesDone += bodyLenght;
 
-                if (msg.bytesDone == msg.Arr.Length)
+                if (msg.bytesDone == msg.body.Length)
                 {//If we have all neccessary data - it's time to handle it
-                    queue.Remove(chanelId);
+                    queue.Remove(id);
                     SendOnMsg(msg);
                 }
                 else
-                    msg.LastTS = DateTime.Now;
+                    msg.latstTS = DateTime.Now;
             }
             else 
                 return false;
             return true;
         }
-        
         public event Action<whReceiver, whMsg> OnMsg;
 
         protected void SendOnMsg(whMsg msg)
@@ -122,15 +154,14 @@ namespace WhAlpaTest
 
     public class whMsg
     {
-        public whMsg(int id, int cord)
+        public whMsg(int id)
         {
             this.id = id;
-            this.cord = cord;
         }
-        public DateTime LastTS;
+        public DateTime latstTS;
         public int bytesDone;
-        public byte[] Arr;
+        public byte[] body;
         public readonly int id;
-        public readonly int cord;
+
     }
 }
