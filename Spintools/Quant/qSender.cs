@@ -4,38 +4,33 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 
-namespace WhAlpaTest
+namespace TheTunnel
 {
-    public class whSender
+    public class qSender
     {
-        public whSender()
+        public qSender()
         {
-            generator = new whQuantumsGenerator();
-            queue = new whSendQueue();
+            separator = new qSeparator();
+            queue = new qSendQueue();
         }
-        ushort maxQuantumSize = 1024;
-        public ushort MaxQuantumSize
+		ushort maxQuantSize = 1024;
+        public ushort MaxQuantSize
         {
-            get{ return maxQuantumSize;}
+            get{ return maxQuantSize;}
             set
             {
                 if (value <12 )
-                    throw new ArgumentException("Packet size cannot be smaller than 12 b");
+                    throw new ArgumentException("Quant size cannot be smaller than 12 b");
                 if (value > UInt16.MaxValue-1)
-                    throw new ArgumentException("Packet size cannot be larger than 65535 b");
-                maxQuantumSize = value;
+                    throw new ArgumentException("Quant size cannot be larger than 65535 b");
+                maxQuantSize = value;
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="cord"></param>
-        /// <param name="msg"></param>
-        /// <returns>channel id</returns>
+        
 		public int Send(byte[] msg)
         {
-            var quantums = generator.Translate(msg, maxQuantumSize, Id);
+            var quantums = separator.Separate(msg, maxQuantSize, Id);
             lock (queue)
             {
                 queue.Enqueue(quantums, Id);
@@ -68,7 +63,7 @@ namespace WhAlpaTest
         }
 
         int Id = 0;
-        whSendQueue queue;
-        whQuantumsGenerator generator;
+        qSendQueue queue;
+		qSeparator separator;
     }
 }

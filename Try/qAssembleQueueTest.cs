@@ -1,5 +1,5 @@
 ﻿using System;
-using WhAlpaTest;
+using TheTunnel;
 using System.Linq;
 using NUnit.Framework;
 
@@ -12,9 +12,9 @@ namespace Try
 		public void Test ()
 		{
 			msgdone = 0;
-			whSender sender = new whSender()
+			qSender sender = new qSender()
 			{
-				MaxQuantumSize = 123,
+				MaxQuantSize = 123,
 			};
 
 			int concurentMessagesCount = 10;
@@ -29,8 +29,8 @@ namespace Try
 				}
 				sender.Send(msg);
 			}
-			whReceiver receiver = new whReceiver();
-			receiver.OnMsg += new Action<whReceiver, whMsg>(receiver_OnMsg);
+			qReceiver receiver = new qReceiver();
+			receiver.OnMsg += new Action<qReceiver, qMsg>(receiver_OnMsg);
 			int chanid = 0;
 			byte[] nmsg;
 			while(sender.Next(out nmsg, out chanid))
@@ -44,7 +44,7 @@ namespace Try
 				throw new Exception("Sender lenght is not empty");
 		}
 		int msgdone = 0;
-		void receiver_OnMsg(whReceiver arg1, whMsg arg2)
+		void receiver_OnMsg(qReceiver arg1, qMsg arg2)
 		{
 			int num = arg2.body [0];
 

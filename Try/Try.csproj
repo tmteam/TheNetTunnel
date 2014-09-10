@@ -34,6 +34,7 @@
     <Compile Include="simpleAssembleSeparating.cs" />
     <Compile Include="qAssembleQueueTest.cs" />
     <Compile Include="Monday.cs" />
+    <Compile Include="qRandomStreamReceiving.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace WhAlpaTest
+namespace TheTunnel
 {
-    public class whSendQueue
+    public class qSendQueue
     {
         public void Enqueue(byte[][] quantums, int channelId)
         {

@@ -41,5 +41,9 @@
       <Project>{35299810-870F-4FF0-A327-BAC6A5740C31}</Project>
       <Name>Spintools</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Try\Try.csproj">
+      <Project>{E172EF9C-4663-435D-A236-3A8FC7535183}</Project>
+      <Name>Try</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

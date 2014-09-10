@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
-using WhAlpaTest;
+using TheTunnel;
 using NUnit.Framework;
 
 namespace Try
@@ -31,23 +31,28 @@ namespace Try
 		void GoodIOTest(byte[] arr, ushort maxQSize )
         {
             handled = false;
-            var mtp = new whQuantumsGenerator();
-            var res = mtp.Translate(arr, maxQSize, 123456789);
-            whReceiver rec = new whReceiver();
+            var mtp = new qSeparator();
+            var res = mtp.Separate(arr, maxQSize, 123456789);
+            qReceiver rec = new qReceiver();
             rec.OnMsg += rec_OnMsg;
+			rec.OnError += rec_OnError;
             foreach (var r in res)
             {
-                if (!rec.Set(r))
-                {
-                    Console.WriteLine("Unhandled :(");
-					throw new Exception ("Unhandled :(");
-                }
+				rec.Set(r);
             }
 			if (!handled) 
 				throw new Exception ("message loosed :(");
+			if(hasError)
+				throw new Exception ("handle error");
         }
         bool handled = false;
-        void  rec_OnMsg(whReceiver arg1, whMsg arg2)
+		bool hasError = false;
+		void rec_OnError(qReceiver snd, qHead head, qReceiveError err)
+		{
+			hasError = true;
+			Console.WriteLine ("GotError " + err);
+		}
+        void  rec_OnMsg(qReceiver arg1, qMsg arg2)
         {
             handled = true;
         }

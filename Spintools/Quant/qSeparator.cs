@@ -4,16 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
 
-namespace WhAlpaTest
+namespace TheTunnel
 {
-    public class whQuantumsGenerator 
+    public class qSeparator 
     {
-
-		int headSize = Marshal.SizeOf(typeof(whQuantHead));
+		int headSize = Marshal.SizeOf(typeof(qHead));
         
-		public byte[][] Translate(byte[] msg, ushort maxPackSize, int msgId)
+		public byte[][] Separate(byte[] msg, ushort maxQuantSize, int msgId)
         {
-            int totalPacks = (int)Math.Ceiling(msg.Length / (double)(maxPackSize - headSize));
+            int totalPacks = (int)Math.Ceiling(msg.Length / (double)(maxQuantSize - headSize));
             
             byte[][] ans = new byte[totalPacks][];
 
@@ -33,17 +32,17 @@ namespace WhAlpaTest
 
 			for (int i = 0; i < totalPacks; i++) {
 
-				ushort qDataSize = (ushort)Math.Min(msg.Length - dataOffset, maxPackSize - headSize); ; 
+				ushort qDataSize = (ushort)Math.Min(msg.Length - dataOffset, maxQuantSize - headSize); ; 
 				int qArg;
-				whPacketType qType = whPacketType.Data;
+				qType qType = qType.Data;
 
 				if (i == 0) {
 					qArg = msg.Length;
-					qType = whPacketType.Start;
+					qType = qType.Start;
 				} else
 					qArg = i;
 
-				var head = new whQuantHead
+				var head = new qHead
 				{
 					lenght = (ushort)(headSize+qDataSize),
 					msgId = msgId,
@@ -60,16 +59,20 @@ namespace WhAlpaTest
             return ans;
         }
     }
-    [StructLayout(LayoutKind.Sequential)]
-    public struct whQuantHead
+	[StructLayout(LayoutKind.Explicit, Size= 11)]
+    public struct qHead
     {
+		[FieldOffset(0)]
         public UInt16 lenght;
+		[FieldOffset(2)]
         public Int32 msgId;
-        public whPacketType type;
+		[FieldOffset(6)]
+        public qType type;
+		[FieldOffset(7)]
         public Int32 typeArg;
     }
 
-    public enum whPacketType: byte
+    public enum qType: byte
     {
         Abort = 0,
         Start = 1,
