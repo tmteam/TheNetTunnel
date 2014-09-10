@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{35299810-870F-4FF0-A327-BAC6A5740C31}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>Spintools</RootNamespace>
+    <RootNamespace>TheTunnel</RootNamespace>
     <AssemblyName>Spintools</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -31,14 +31,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Quant\qReceiver.cs" />
-    <Compile Include="Quant\qSender.cs" />
-    <Compile Include="Quant\qSendQueue.cs" />
-    <Compile Include="Quant\qSeparator.cs" />
     <Compile Include="Tools.cs" />
+    <Compile Include="[1] Quant\qReceiver.cs" />
+    <Compile Include="[1] Quant\qSender.cs" />
+    <Compile Include="[1] Quant\qSendQueue.cs" />
+    <Compile Include="[1] Quant\qSeparator.cs" />
+    <Compile Include="ICord.cs" />
+    <Compile Include="BaseCords.cs" />
+    <Compile Include="CordDispatcher.cs" />
+    <Compile Include="[1] Quant\qHead.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Folder Include="Quant\" />
+    <Folder Include="[1] Quant\" />
   </ItemGroup>
 </Project>
