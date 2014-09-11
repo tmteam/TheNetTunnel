@@ -2,7 +2,7 @@
 using NUnit.Framework;
 using TheTunnel;
 
-namespace Try
+namespace TestingQuant
 {
 	[TestFixture]
 	public class qRandomStreamReceiving

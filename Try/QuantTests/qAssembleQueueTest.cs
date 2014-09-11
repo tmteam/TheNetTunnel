@@ -3,7 +3,7 @@ using TheTunnel;
 using System.Linq;
 using NUnit.Framework;
 
-namespace Try
+namespace TestingQuant
 {
 	[TestFixture ()]
 	public class qAssembleQueueTest
@@ -43,6 +43,7 @@ namespace Try
 			if(sender.Lenght!=0)
 				throw new Exception("Sender lenght is not empty");
 		}
+
 		int msgdone = 0;
 		void receiver_OnMsg(qReceiver arg1, qMsg arg2)
 		{
@@ -55,11 +56,11 @@ namespace Try
 
 			Console.WriteLine ("msg num: "+ msgdone+ " id: " + arg2.id + " b0: " + num + " c1: " + c1 + " c2: " + c2 + " c3: " + c3);
 
-			//checking income data values
+			//Checking income data values
 			if (!(c1 == c2 && c2 == c3 && c3 == 99))
 				throw new Exception ("wrong income data values");
 			if(!(num == msgdone && num == arg2.id))
-				throw new Exception ("wrong income msg order");
+				throw new Exception ("wrong income data order");
 
 			msgdone++;
 		}

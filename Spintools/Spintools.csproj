@@ -36,13 +36,18 @@
     <Compile Include="[1] Quant\qSender.cs" />
     <Compile Include="[1] Quant\qSendQueue.cs" />
     <Compile Include="[1] Quant\qSeparator.cs" />
-    <Compile Include="ICord.cs" />
-    <Compile Include="BaseCords.cs" />
-    <Compile Include="CordDispatcher.cs" />
     <Compile Include="[1] Quant\qHead.cs" />
+    <Compile Include="[2] Cord\AnsweringCordBase.cs" />
+    <Compile Include="[2] Cord\AskingCordBase.cs" />
+    <Compile Include="[2] Cord\CordBase.cs" />
+    <Compile Include="[2] Cord\CordDispatcher.cs" />
+    <Compile Include="[2] Cord\ICord.cs" />
+    <Compile Include="[2] Cord\SayingCordBase.cs" />
+    <Compile Include="[2] Cord\DefaultCordes.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="[1] Quant\" />
+    <Folder Include="[2] Cord\" />
   </ItemGroup>
 </Project>

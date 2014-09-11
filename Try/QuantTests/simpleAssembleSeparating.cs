@@ -7,7 +7,7 @@ using System.Diagnostics;
 using TheTunnel;
 using NUnit.Framework;
 
-namespace Try
+namespace TestingQuant
 {
 	[TestFixture ()]
     public class simpleAssembleSeparating

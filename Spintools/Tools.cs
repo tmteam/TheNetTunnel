@@ -8,7 +8,7 @@ namespace TheTunnel
 {
     public static class Tools
     {
-        public static void SetToArray<T>(this T str, byte[] array, int dest,  int size = -1) where T : struct
+        public static void SetToArray<T>(this T str, byte[] array, int dest,  int size = -1) 
         {
             if(size==-1)
                 size = Marshal.SizeOf(str);
@@ -17,7 +17,8 @@ namespace TheTunnel
             Marshal.Copy(ptr, array, dest, size);
             Marshal.FreeHGlobal(ptr);
         }
-        public static T ToStruct<T>(this byte[] array, int src, int size = -1) where T : struct
+
+        public static T ToStruct<T>(this byte[] array, int src, int size = -1)
         {
             if (size == -1)
                 size = Marshal.SizeOf(typeof(T));
@@ -28,5 +29,4 @@ namespace TheTunnel
             return ans;
         }
     }
-
 }

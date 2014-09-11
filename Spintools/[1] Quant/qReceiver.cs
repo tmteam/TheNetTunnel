@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 namespace TheTunnel
 {
 	/// <summary>
-	/// Provides functionality to parse input byte stream of quants into messages
+	/// Provides functionality to parse input byte stream of quants into mssages
 	/// </summary>
     public class qReceiver
     {
@@ -162,7 +162,9 @@ namespace TheTunnel
         }
 
 		public delegate void delQOnError(qReceiver sender, qHead head, qReceiveError err);
+
 		public event delQOnError OnError;
+
 		protected void SendOnError(qHead head,qReceiveError err )
 		{
 			if(OnError!=null)

@@ -8,12 +8,13 @@ namespace TheTunnel
 {
 	public class CordDispatcher
 	{
-		public CordDispatcher ()
-		{
-			cords = new Dictionary<string, ISayingCord> ();
+		public CordDispatcher (){
+			cords = new Dictionary<string, ICord> ();
 		}
+
 		public string[] Names{ get; protected set; }
-		public ISayingCord GetCord(string name){
+
+		public ICord GetCord(string name){
 			return cords [name];
 		}
 
@@ -21,38 +22,35 @@ namespace TheTunnel
 		{
 			cords.Remove (name);
 		}
-		public void AddCord(ISayingCord cord)
+
+		public void AddCord(ICord cord)
 		{
 			if (!cords.ContainsKey (cord.Name))
 				cords.Add (cord.Name, cord);
 			else {
-				cords [cord.Name].NeedSend -= cord_NeedSend;
+				cords [cord.Name].Need2Send -= cord_NeedSend;
 				cords [cord.Name] = cord;
 			}
-				cord.NeedSend += cord_NeedSend;
+				cord.Need2Send += cord_NeedSend;
 
 			var askcord = cord as IAskingCord;
 			if (askcord != null)
 				AddCord (askcord.AnswerCord);
 		}
+	
 		public void Parse(byte[] qMsg)
 		{
 			string name = Encoding.ASCII.GetString (qMsg, 0, 4);
 			if (cords.ContainsKey (name))
-			{
-				cords [name].Parse (qMsg);
-			}
+				cords [name].Handle (qMsg);
 		}
 
 		public event Action<CordDispatcher, byte[]> NeedSend;
 
-		Dictionary<string,ISayingCord> cords;
+		Dictionary<string,ICord> cords;
 
-		void cord_NeedSend(ISayingCord sender,byte[] cordMsg)
+		void cord_NeedSend(ICord sender,byte[] qMsg)
 		{
-			byte[] qMsg = new byte[cordMsg.Length + 4];
-			sender.BName.CopyTo (qMsg, 0);
-			cordMsg.CopyTo (qMsg, 4);
 			if(NeedSend!=null)
 				NeedSend(this, qMsg);
 		}

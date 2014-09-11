@@ -31,10 +31,13 @@
     <Reference Include="nunit.framework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="simpleAssembleSeparating.cs" />
-    <Compile Include="qAssembleQueueTest.cs" />
     <Compile Include="Monday.cs" />
-    <Compile Include="qRandomStreamReceiving.cs" />
+    <Compile Include="QuantTests\qAssembleQueueTest.cs" />
+    <Compile Include="QuantTests\qRandomStreamReceiving.cs" />
+    <Compile Include="QuantTests\simpleAssembleSeparating.cs" />
+    <Compile Include="CordTests\TestCords.cs" />
+    <Compile Include="CordTests\SayStringTest.cs" />
+    <Compile Include="CordTests\SayFixedSizeObjectTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -42,5 +45,9 @@
       <Project>{35299810-870F-4FF0-A327-BAC6A5740C31}</Project>
       <Name>Spintools</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="QuantTests\" />
+    <Folder Include="CordTests\" />
   </ItemGroup>
 </Project>
