@@ -9,6 +9,7 @@ This protocol is designed for a using via  duplex transport level protocol with 
   Transport level protocol witch are using by theTunnel can be streaming-type. Actualy TheTunnel was tested only on TCP/IP at currently moment
 
   TheTunnel Provides:
+  
   	*  Large(or HUGE) data - packets delivery (more than 10 mb).
   	*  Working va TCP/Ip protocol
   	*  Simultaneous delivery of multiple data-packets
