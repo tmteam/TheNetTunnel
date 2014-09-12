@@ -7,6 +7,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spintools", "Spintools\Spin
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Try", "Try\Try.csproj", "{E172EF9C-4663-435D-A236-3A8FC7535183}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{39BEEFD1-EABB-4E09-813E-2FB3F8C46F5C}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+		LICENSE = LICENSE
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -25,6 +31,8 @@ Global
 		{E172EF9C-4663-435D-A236-3A8FC7535183}.Debug|x86.Build.0 = Debug|Any CPU
 		{E172EF9C-4663-435D-A236-3A8FC7535183}.Release|x86.ActiveCfg = Release|Any CPU
 		{E172EF9C-4663-435D-A236-3A8FC7535183}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = Spinning\Spinning.csproj

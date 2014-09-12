@@ -50,4 +50,7 @@
     <Folder Include="[1] Quant\" />
     <Folder Include="[2] Cord\" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="protobuf-net.dll" />
+  </ItemGroup>
 </Project>
