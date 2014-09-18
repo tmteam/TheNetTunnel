@@ -18,7 +18,43 @@ This protocol is designed for a using via  duplex transport level protocol with 
 *  Work with protobuf at serializing/desirializing data.
 *  Functionality for easy definding your own message type, with  
   Protobuf or your own Serialize and Deserialize method for each messageType.
-        
+
+## .net example ##
+
+Simple dialog implementation:
+
+~~~c#
+  public class ContractExample{
+		[LocalCord("STXT")]
+		public void SetText(string text){
+			//...Handling remote message here
+		}
+
+		[LocalCord("GTUI")]
+		public UserInfo GetUserInfo(int id){
+			//...Handling remote call here
+			return new UserInfo();
+		}
+
+		[RemoteCord("GLUI")]
+		//Call remote method
+		public Func<UserInfo, int> GetLasUserInfo{ get; set;}
+
+		//Wrapper of remote method call
+		public UserInfo GetLastUserInfoWrapper(int id){
+			return GetLasUserInfo (id);
+		}
+	}
+
+	[ProtoBuf.ProtoContract]
+	public class UserInfo
+	{
+		[ProtoBuf.ProtoMember(1)] public string Name{get;set;}
+		[ProtoBuf.ProtoMember(2)] public string Surname{ get; set;}
+		[ProtoBuf.ProtoMember(3)] public int Id{get;set;}
+	}
+~~~
+
 ## also ##
      
 * Currently this project is in alpha state, so i've got no help or any examples. 
