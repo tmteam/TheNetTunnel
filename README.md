@@ -24,31 +24,36 @@ This protocol is designed for a using via  duplex transport level protocol with 
 Simple dialog implementation:
 
 ~~~c#
-  public class ContractExample{
-		[LocalCord("STXT")]
+  	public class CordContractExample: ICordContract{
+		[InCord("STXT")]
 		public void SetText(string text){
 			//...Handling remote message here
 		}
 
-		[LocalCord("GTUI")]
+		[InCord("G_UI")]
 		public UserInfo GetUserInfo(int id){
 			//...Handling remote call here
-			return new UserInfo();
+			return new UserInfo(){ Name = "Bzingo", Id = id} ;
 		}
 
-		[RemoteCord("GLUI")]
+		[OutCord("R_UI")]
 		//Call remote method
-		public Func<UserInfo, int> GetLasUserInfo{ get; set;}
+		public Func<int, UserInfo> GetLasUserInfo{ get; set;}
 
 		//Wrapper of remote method call
 		public UserInfo GetLastUserInfoWrapper(int id){
 			return GetLasUserInfo (id);
 		}
+		//Calling at disconnection
+		public void OnDisconnect (DisconnectCause сause){
+			Console.WriteLine (":( Connection was closed");
+		}
+		//Raise it, when you wanna close a connection
+		public event Action<ICordContract> PleaseDisconnect;
 	}
 
 	[ProtoBuf.ProtoContract]
-	public class UserInfo
-	{
+	public class UserInfo{
 		[ProtoBuf.ProtoMember(1)] public string Name{get;set;}
 		[ProtoBuf.ProtoMember(2)] public string Surname{ get; set;}
 		[ProtoBuf.ProtoMember(3)] public int Id{get;set;}
