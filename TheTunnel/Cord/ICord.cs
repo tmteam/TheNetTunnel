@@ -4,7 +4,7 @@ namespace TheTunnel
 {
 	public interface IOutCord
 	{
-		short Cid{get;}
+		short OUTCid{get;}
 		ISerializer Serializer{get;}
 		event Action<IOutCord, byte[]> NeedSend;
 	}
@@ -15,7 +15,7 @@ namespace TheTunnel
 	}
 
 	public interface IInCord
-	{	short Cid{get;}
+	{	short INCid{get;}
 		IDeserializer Deserializer{get;}
 		bool Parse(byte[] msg, int offset);
 	    event Action<IInCord, object> OnReceive;
@@ -26,15 +26,14 @@ namespace TheTunnel
 		event Action<IInCord, T> OnReceiveT;
 	}
 
-	public interface IAnswerCord:IInCord
+	public interface IAnsweringCord:IInCord, IOutCord
 	{
-		IOutCord AnsweringCord{get;}
-		void Answer(object val);
+		void Answer(object val, ushort id);
+		event Action<IAnsweringCord, ushort, object> OnAsk;
 	}
 
-	public interface IAskCord: IOutCord
+	public interface IAskCord: IOutCord,IInCord
 	{
-		IInCord ReceiveCord{get;}
 		object Ask(object question);
 	}
 

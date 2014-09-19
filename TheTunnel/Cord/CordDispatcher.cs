@@ -13,29 +13,36 @@ namespace TheTunnel
 		public CordDispatcher2(object contract)
 		{
 			Senders = new Dictionary<short, IOutCord> ();
+			Receivers = new Dictionary<short, IInCord> ();
 			RegistrateContract(contract);
 		}
 
 		Dictionary<Int16,IOutCord> Senders;
+		Dictionary<Int16, IInCord> Receivers;
 
-
-		public void Receive(byte[] msg)
+		public void Handle(byte[] msg)
 		{
+			short INCid = BitConverter.ToInt16 (msg, 0);
+			if (Receivers.ContainsKey (INCid))
+				Receivers [INCid].Parse (msg, 2);
 		}
 
 		public void OnDisconnect()
 		{
+
 		}
+
 		public void AddInCord(IInCord cord)
 		{
-
-
+			if (Receivers.ContainsKey (cord.INCid))
+				throw new ArgumentException ();
+			Receivers.Add (cord.INCid, cord);
 		}
 		public void AddOutCord(IOutCord cord)
 		{
-			if (Senders.ContainsKey (cord.Cid))
+			if (Senders.ContainsKey (cord.OUTCid))
 				throw new ArgumentException ();
-			Senders.Add (cord.Cid, cord);
+			Senders.Add (cord.OUTCid, cord);
 			cord.NeedSend+= CordNeedSend;
 		}
 
@@ -50,7 +57,7 @@ namespace TheTunnel
 		{
 			if (NeedSend != null) {
 				NeedSend (this, msg);
-					}
+			}
 		}
 
 		void RegistrateContract(object contract)
@@ -67,8 +74,23 @@ namespace TheTunnel
 					})
 				.Where (p => p.attr != null)
 				.ToArray ();
+
 			foreach (var oc in outCords)
 				RegistrateOut (oc.property, oc.attr);
+
+
+			var inCords = type
+				.GetMethods ()
+				.Select (m => new 
+					{
+						method = m, 
+						attr = m.GetCustomAttributes (typeof(InAttribute), true).FirstOrDefault () as InAttribute 
+					})
+				.Where (m => m.attr != null)
+				.ToArray ();
+
+			foreach (var r in inCords) 
+				RegistrateIn(r.method, r.attr);
 		}
 
 		void RegistrateOut(PropertyInfo del, OutAttribute attr)
@@ -87,62 +109,57 @@ namespace TheTunnel
 			{
 				Delegate call = Delegate.CreateDelegate (del.PropertyType, askcord,  "AskT" );
 				del.SetValue (Contract, call, null);
+				AddInCord (askcord);
+				AddOutCord(askcord);
 			}
 			else
 			{
 				Delegate call = Delegate.CreateDelegate (del.PropertyType, cord,  "Send" );
 				del.SetValue (Contract, call, null);
+				AddOutCord(cord);
 			}
-			AddOutCord(cord);
+
 		}
 
 		void RegistrateIn(MethodInfo meth, InAttribute attr)
 		{
-			/*
-			var type = Contract.GetType ();
+			var inputParameter = meth.GetParameters ().Select (p => p.ParameterType).FirstOrDefault ();
 
-			var ReceiveCords = type
-				.GetMethods ()
-				.Select (m => new 
-					{
-						method = m, 
-						attr = m.GetCustomAttributes (typeof(InAttribute), true).FirstOrDefault () as InAttribute 
-					})
-				.Where (m => m.attr != null)
-				.ToArray ();
-		
-			foreach (var r in ReceiveCords) {
-*/
-				var inputParameter = meth.GetParameters ().Select (p => p.ParameterType).FirstOrDefault ();
+			var returnType = meth.ReturnType;
 
-				var returnType = meth.ReturnType;
+			var cord = CreateInCord (inputParameter, returnType, attr);
 
-				var cord = CreateInCord (inputParameter, returnType, attr);
-
-				var ansCord = cord as IAnswerCord;
-				if (ansCord != null) {
-					cord.OnReceive += (sender, msg) => {
-						var res = meth.Invoke (Contract, new object[]{ msg });
-						ansCord.Answer(res);
-					};
-				} else 
-					cord.OnReceive += (sender, msg)=> meth.Invoke (Contract, new object[]{ msg });
-
-				AddInCord (ansCord);
-				//}
+			var answeringCord = cord as IAnsweringCord;
+			if (answeringCord != null) {
+				answeringCord.OnAsk += (sender, id, msg) => {
+					var res = meth.Invoke (Contract, new object[]{ msg });
+					answeringCord.Answer (res, id);
+				};
+				AddInCord (answeringCord);
+				AddOutCord (answeringCord);
+			} else {
+				cord.OnReceive += (sender, msg) => meth.Invoke (Contract, new object[]{ msg });
+				AddInCord (cord);
+			}
 		}
 
 		static IInCord CreateInCord(Type argType, Type returnType, InAttribute attr)
 		{
 			IInCord ans = null;
 			if (returnType == typeof(void)) {
-				var dt = typeof(ProtoDeserializer<>).MakeGenericType(argType);
+				var dt = typeof(ProtoDeserializer<>).MakeGenericType (argType);
 				var des = Activator.CreateInstance (dt);
 				var gt = typeof(InCord<>).MakeGenericType (argType);
-				ans = Activator.CreateInstance (gt, attr.CordId, des);
+				ans = Activator.CreateInstance (gt, attr.CordId, des) as IInCord;
+			} else {
+				var dt = typeof(ProtoDeserializer<>).MakeGenericType (argType);
+				var des = Activator.CreateInstance (dt) as IDeserializer;
+				var ser = new ProtoSerializer ();
+				ans = new AnsweringCord (attr.CordId, des, ser);
 			}
 			return ans;
 		}
+
 		static IOutCord CreateOutCord(Type argType, Type returnType, OutAttribute attr)
 		{
 			IOutCord ans = null;
@@ -152,7 +169,6 @@ namespace TheTunnel
 				ans = Activator.CreateInstance (gt, attr.CordId, ser) as IOutCord;
 			} else {
 				var ser = new ProtoSerializer ();
-
 				var dt = typeof(ProtoDeserializer<>).MakeGenericType(returnType);
 				var des = Activator.CreateInstance (dt);
 				var gt  = typeof(AskCord<,>).MakeGenericType (returnType, argType);

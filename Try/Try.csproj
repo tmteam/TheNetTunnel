@@ -38,11 +38,6 @@
     <Compile Include="QuantTests\qAssembleQueueTest.cs" />
     <Compile Include="QuantTests\qRandomStreamReceiving.cs" />
     <Compile Include="QuantTests\simpleAssembleSeparating.cs" />
-    <Compile Include="CordTests\TestCords.cs" />
-    <Compile Include="CordTests\SayStringTest.cs" />
-    <Compile Include="CordTests\SayFixedSizeObjectTest.cs" />
-    <Compile Include="CordTests\ProtoAskTest.cs" />
-    <Compile Include="CordTests\ProtoCommunicatorTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -57,6 +52,5 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="QuantTests\" />
-    <Folder Include="CordTests\" />
   </ItemGroup>
 </Project>

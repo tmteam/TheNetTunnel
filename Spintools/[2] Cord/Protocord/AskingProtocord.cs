@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TheTunnel
+namespace TheTunnelOld
 {
 	public class AskingProtocord<Tquestion, Tanswer>: AskingCordBase<Tquestion,Tanswer>
 	{

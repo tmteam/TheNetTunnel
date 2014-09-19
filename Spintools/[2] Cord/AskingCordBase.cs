@@ -4,7 +4,8 @@ using System.Text;
 using System.Threading;
 using System.Collections.Generic;
 
-namespace TheTunnel
+
+namespace TheTunnelOld
 {
 	public abstract class AskingCordBase<Tquestion,Tanswer>: 
 		CordBase, IAskingCord<Tquestion, Tanswer>
