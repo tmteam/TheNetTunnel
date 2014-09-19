@@ -23,7 +23,7 @@ namespace TheTunnel
 
 		Dictionary<int, answerAwaiter<Tanswer>> awaitingQueue; 
 
-		public override bool Parse(byte[] qMsg){
+		public override bool Handle(byte[] qMsg){
 
 			if (qMsg.Length < 6)
 				return false;

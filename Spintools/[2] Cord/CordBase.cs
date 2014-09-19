@@ -15,13 +15,13 @@ namespace TheTunnel
 
 		protected void RaiseNeedSend(byte[] qMsg)
 		{
-			if(NeedSend!=null)
-				NeedSend(this, qMsg);
+			if(Need2Send!=null)
+				Need2Send(this, qMsg);
 		}
 
-		public event Action<ICord, byte[]> NeedSend;
+		public event Action<ICord, byte[]> Need2Send;
 
-		public abstract bool Parse (byte[] qMsg);
+		public abstract bool Handle (byte[] qMsg);
 
 		public byte[] BName {get; private set;}
 

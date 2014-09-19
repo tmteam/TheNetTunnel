@@ -30,9 +30,9 @@ namespace TestingCord
 			string A_receiveBuff = null;
 			string B_receiveBuff = null;
 
-			msgHandlingCord_A.OnReceive += (ISayingCord<string> sender, string msg) 
+			msgHandlingCord_A.OnReceiveT += (ISayingCord<string> sender, string msg) 
 				=> A_receiveBuff = msg;
-			msgHandlingCord_B.OnReceive += (ISayingCord<string> sender, string msg) 
+			msgHandlingCord_B.OnReceiveT += (ISayingCord<string> sender, string msg) 
 				=> B_receiveBuff = msg;
 
 			string strBuff;

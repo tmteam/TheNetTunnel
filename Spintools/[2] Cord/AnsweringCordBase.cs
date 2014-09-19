@@ -6,7 +6,7 @@ namespace TheTunnel
 	{
 		public AnsweringCordBase (string name) : base (name){}
 
-		public override bool Parse (byte[] qMsg)
+		public override bool Handle (byte[] qMsg)
 		{
 			var id = BitConverter.ToUInt16 (qMsg, 4);
 			Tanswer ans;

@@ -24,7 +24,7 @@ namespace TestingCord
 
 			testMessage msgReceived = null;
 
-			testMsgRecieverCord.OnReceive += (ISayingCord<testMessage> sender, testMessage msg) => msgReceived = msg;
+			testMsgRecieverCord.OnReceiveT += (ISayingCord<testMessage> sender, testMessage msg) => msgReceived = msg;
 
 			testMessage sendingMsg = new testMessage {
 				a = 10,

@@ -27,10 +27,14 @@ namespace TheTunnel
 		/// </summary>
 		event Action<ICord,byte[]> Need2Send;
 	}
+	public interface ISayingCord: ICord
+	{
+		event Action<ISayingCord, object> OnReceive;
+	}
 	/// <summary>
 	/// Cord, that can convert and send typed message
 	/// </summary>
-	public interface ISayingCord<Tmsg>: ICord
+	public interface ISayingCord<Tmsg>: ISayingCord
 	{
 		/// <summary>
 		/// Send the specified typed message.

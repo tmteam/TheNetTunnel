@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-
+using System.Linq;
 
 namespace TheTunnel
 {
@@ -12,10 +12,13 @@ namespace TheTunnel
 			cords = new Dictionary<string, ICord> ();
 		}
 
-		public string[] Names{ get; protected set; }
+		public string[] Names{ get { return cords.Keys.ToArray (); } }
 
 		public ICord GetCord(string name){
-			return cords [name];
+			if(cords.ContainsKey(name))
+				   return cords [name];
+				else
+					return null;
 		}
 
 		public void RemoveCord(string name)

@@ -29,6 +29,9 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="nunit.framework" />
+    <Reference Include="protobuf-net">
+      <HintPath>..\Spintools\protobuf-net.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Monday.cs" />
@@ -38,6 +41,8 @@
     <Compile Include="CordTests\TestCords.cs" />
     <Compile Include="CordTests\SayStringTest.cs" />
     <Compile Include="CordTests\SayFixedSizeObjectTest.cs" />
+    <Compile Include="CordTests\ProtoAskTest.cs" />
+    <Compile Include="CordTests\ProtoCommunicatorTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

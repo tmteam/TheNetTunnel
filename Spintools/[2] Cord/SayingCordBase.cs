@@ -7,6 +7,8 @@ namespace TheTunnel
 
 		protected void raiseOnReceive(Tmsg msg)	
 		{
+			if (OnReceiveT != null)
+				OnReceiveT (this, msg);
 			if (OnReceive != null)
 				OnReceive (this, msg);
 		}
@@ -18,7 +20,7 @@ namespace TheTunnel
 			RaiseNeedSend(resa);
 		}
 
-		public override bool Parse(byte[] qMsg)
+		public override bool Handle(byte[] qMsg)
 		{
 			if (qMsg.Length < 4)
 				return false;
@@ -37,7 +39,8 @@ namespace TheTunnel
 		/// <summary>
 		/// Occurs on new message receiving.
 		/// </summary>
-		public event Action<ISayingCord<Tmsg>, Tmsg> OnReceive;
+		public event Action<ISayingCord<Tmsg>, Tmsg> OnReceiveT;
+		public event Action<ISayingCord, object> OnReceive;
 	}
 }
 
