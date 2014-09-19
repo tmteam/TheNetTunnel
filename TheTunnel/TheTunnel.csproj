@@ -36,6 +36,25 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ContractExample.cs" />
+    <Compile Include="Serializators\ISerializer.cs" />
+    <Compile Include="Serializators\IDeserializer.cs" />
+    <Compile Include="Serializators\Primitives.cs" />
+    <Compile Include="Tools.cs" />
+    <Compile Include="ProtoTools.cs" />
+    <Compile Include="[0] TCP_IP\qTcpClient.cs" />
+    <Compile Include="[0] TCP_IP\qTcpServer.cs" />
+    <Compile Include="[1] Quant\qHead.cs" />
+    <Compile Include="[1] Quant\qReceiver.cs" />
+    <Compile Include="[1] Quant\qSender.cs" />
+    <Compile Include="[1] Quant\qSendQueue.cs" />
+    <Compile Include="[1] Quant\qSeparator.cs" />
+    <Compile Include="Cord\CordDispatcher.cs" />
+    <Compile Include="Cord\ICord.cs" />
+    <Compile Include="Cord\Cords.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="Serializators\" />
+    <Folder Include="Cord\" />
+  </ItemGroup>
 </Project>

@@ -50,5 +50,9 @@
       <Project>{E172EF9C-4663-435D-A236-3A8FC7535183}</Project>
       <Name>Try</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TheTunnel\TheTunnel.csproj">
+      <Project>{83C01563-E5FB-4AAF-BF85-5CA0A73AD661}</Project>
+      <Name>TheTunnel</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

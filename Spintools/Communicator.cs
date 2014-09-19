@@ -152,9 +152,7 @@ namespace TheTunnel
 						cord = cords [sc.attr.CordName] as SayingProtocord<object>;
 
 					Action<object> doit = (o) => cord.Send (o);
-
 					sc.property.SetValue (cordContract, doit, null);
-
 					cords.Add (cord.Name, cord);
 				}
 			}

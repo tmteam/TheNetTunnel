@@ -36,11 +36,6 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tools.cs" />
-    <Compile Include="[1] Quant\qReceiver.cs" />
-    <Compile Include="[1] Quant\qSender.cs" />
-    <Compile Include="[1] Quant\qSendQueue.cs" />
-    <Compile Include="[1] Quant\qSeparator.cs" />
-    <Compile Include="[1] Quant\qHead.cs" />
     <Compile Include="[2] Cord\AnsweringCordBase.cs" />
     <Compile Include="[2] Cord\AskingCordBase.cs" />
     <Compile Include="[2] Cord\CordBase.cs" />
@@ -51,19 +46,15 @@
     <Compile Include="[2] Cord\Protocord\ProtocordBase.cs" />
     <Compile Include="[2] Cord\Protocord\SayingProtocord.cs" />
     <Compile Include="[2] Cord\Protocord\AskingProtocord.cs" />
-    <Compile Include="[2] Cord\Protocord\ProtoTools.cs" />
     <Compile Include="[2] Cord\Protocord\AnsweringProtoCord.cs" />
     <Compile Include="Communicator.cs" />
-    <Compile Include="[0] TCP_IP\qTcpClient.cs" />
-    <Compile Include="[0] TCP_IP\qTcpServer.cs" />
     <Compile Include="ICordContract.cs" />
+    <Compile Include="[2] Cord\Protocord\ProtoTools.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Folder Include="[1] Quant\" />
     <Folder Include="[2] Cord\" />
     <Folder Include="[2] Cord\Protocord\" />
-    <Folder Include="[0] TCP_IP\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="protobuf-net.dll" />

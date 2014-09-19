@@ -50,6 +50,10 @@
       <Project>{35299810-870F-4FF0-A327-BAC6A5740C31}</Project>
       <Name>Spintools</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TheTunnel\TheTunnel.csproj">
+      <Project>{83C01563-E5FB-4AAF-BF85-5CA0A73AD661}</Project>
+      <Name>TheTunnel</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="QuantTests\" />
