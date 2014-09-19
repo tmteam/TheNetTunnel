@@ -13,6 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		LICENSE = LICENSE
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheTunnel", "TheTunnel\TheTunnel.csproj", "{83C01563-E5FB-4AAF-BF85-5CA0A73AD661}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -23,6 +25,10 @@ Global
 		{35299810-870F-4FF0-A327-BAC6A5740C31}.Debug|x86.Build.0 = Debug|Any CPU
 		{35299810-870F-4FF0-A327-BAC6A5740C31}.Release|x86.ActiveCfg = Release|Any CPU
 		{35299810-870F-4FF0-A327-BAC6A5740C31}.Release|x86.Build.0 = Release|Any CPU
+		{83C01563-E5FB-4AAF-BF85-5CA0A73AD661}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{83C01563-E5FB-4AAF-BF85-5CA0A73AD661}.Debug|x86.Build.0 = Debug|Any CPU
+		{83C01563-E5FB-4AAF-BF85-5CA0A73AD661}.Release|x86.ActiveCfg = Release|Any CPU
+		{83C01563-E5FB-4AAF-BF85-5CA0A73AD661}.Release|x86.Build.0 = Release|Any CPU
 		{A2AA9870-F8D7-424A-8F28-A1978B0A1C05}.Debug|x86.ActiveCfg = Debug|x86
 		{A2AA9870-F8D7-424A-8F28-A1978B0A1C05}.Debug|x86.Build.0 = Debug|x86
 		{A2AA9870-F8D7-424A-8F28-A1978B0A1C05}.Release|x86.ActiveCfg = Release|x86
