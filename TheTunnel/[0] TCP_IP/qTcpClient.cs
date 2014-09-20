@@ -23,7 +23,6 @@ namespace TheTunnel
 
 		public qTcpClient (TcpClient client)
 		{
-
 			this.Client = client;
 			sender = new qSender ();
 			sender.MaxQuantSize = 1024;
@@ -40,6 +39,7 @@ namespace TheTunnel
 		bool readWasStarted = false;
 
 		event Action<qTcpClient, qMsg> onReceive;
+
 		public event Action<qTcpClient, qMsg> OnReceive
 		{
 			add   { onReceive+= value;
@@ -53,6 +53,7 @@ namespace TheTunnel
 			}
 			remove{ onReceive-= value;}
 		}
+
 		public event Action<qTcpClient> OnDisconnect;
 
 		public void Stop()

@@ -51,6 +51,8 @@
     <Compile Include="Cord\CordDispatcher.cs" />
     <Compile Include="Cord\ICord.cs" />
     <Compile Include="Cord\Cords.cs" />
+    <Compile Include="[0] TCP_IP\TcpClientTunnel.cs" />
+    <Compile Include="[0] TCP_IP\TcpServerTunnel.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
