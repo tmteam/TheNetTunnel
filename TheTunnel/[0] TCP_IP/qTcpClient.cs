@@ -26,10 +26,11 @@ namespace TheTunnel
 			this.Client = client;
 			sender = new qSender ();
 			sender.MaxQuantSize = 1024;
-
 			receiver = new qReceiver ();
-			receiver.OnMsg+= (qReceiver arg1, qMsg arg2) => {
-				if(onReceive!=null) this.onReceive(this, arg2);};
+			receiver.OnMsg+= (qReceiver arg1, qMsg arg2) => 
+			{
+				if(onReceive!=null) this.onReceive(this, arg2);
+			};
 		}
 
 		public TcpClient Client{ get; protected set; }
@@ -42,7 +43,8 @@ namespace TheTunnel
 
 		public event Action<qTcpClient, qMsg> OnReceive
 		{
-			add   { onReceive+= value;
+			add   { 
+				onReceive+= value;
 				if(!readWasStarted)
 					readWasStarted = true;
 				NetworkStream networkStream = Client.GetStream();
@@ -59,8 +61,7 @@ namespace TheTunnel
 		public void Stop()
 		{
 			if (Client.Connected) {
-				Client.Close ();
-				raiseDisconnected ();
+				disconnect ();
 			}
 			else
 				throw new InvalidOperationException ();
@@ -91,20 +92,23 @@ namespace TheTunnel
 			catch
 			{
 				//An error has occured when reading
-				raiseDisconnected ();
+				disconnect ();
 				return;
 			}
 
 			if (read == 0)
 			{
 				//The connection has been closed.
-				raiseDisconnected ();
+				disconnect ();
 				return;
 			}
 
 			byte[] buffer = result.AsyncState as byte[];
 			Array.Resize (ref buffer, read);
 			receiver.Set (buffer);
+
+			if (!Client.Connected)
+				return;
 
 			//Start reading from the network again.
 			networkStream.BeginRead(buffer, 0, buffer.Length, readCallback, buffer);
@@ -118,7 +122,11 @@ namespace TheTunnel
 		/// when the write operation has completed.</returns>
 		void write(byte[] bytes)
 		{
+			if (!Client.Connected)
+				return;
+
 			NetworkStream networkStream = Client.GetStream();
+
 			//Start async write operation
 			networkStream.BeginWrite(bytes, 0, bytes.Length, writeCallback, null);
 		}
@@ -129,12 +137,20 @@ namespace TheTunnel
 		/// <param name="result">The AsyncResult object</param>
 		void writeCallback(IAsyncResult result)
 		{
-			NetworkStream networkStream = Client.GetStream();
-			networkStream.EndWrite(result);
+			try
+			{
+				NetworkStream networkStream = Client.GetStream();
+				networkStream.EndWrite(result);
+			}
+			catch {
+				disconnect ();
+			}
 		}
 
-		void raiseDisconnected()
+		void disconnect()
 		{
+			if (Client.Connected)
+				Client.Close ();
 			if (!disconnectMsgWasSended) {
 				disconnectMsgWasSended = true;
 				if (OnDisconnect != null)

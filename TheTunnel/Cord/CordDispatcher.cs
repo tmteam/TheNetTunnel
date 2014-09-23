@@ -6,11 +6,11 @@ using System.Reflection;
 
 namespace TheTunnel
 {
-	public class CordDispatcher2
+	public class CordDispatcher
 	{
 		public object Contract { get; protected set;}
 
-		public CordDispatcher2(object contract)
+		public CordDispatcher(object contract)
 		{
 			Senders = new Dictionary<short, IOutCord> ();
 			Receivers = new Dictionary<short, IInCord> ();
@@ -27,9 +27,11 @@ namespace TheTunnel
 				Receivers [INCid].Parse (msg, 2);
 		}
 
-		public void OnDisconnect()
+		public void OnDisconnect(DisconnectReason reason)
 		{
-
+			var dscn = Contract as IDisconnectListener;
+			if (dscn != null)
+				dscn.OnDisconnect (reason);
 		}
 
 		public void AddInCord(IInCord cord)
@@ -38,6 +40,7 @@ namespace TheTunnel
 				throw new ArgumentException ();
 			Receivers.Add (cord.INCid, cord);
 		}
+
 		public void AddOutCord(IOutCord cord)
 		{
 			if (Senders.ContainsKey (cord.OUTCid))
@@ -46,12 +49,12 @@ namespace TheTunnel
 			cord.NeedSend+= CordNeedSend;
 		}
 
+		public event Action<CordDispatcher, byte[]> NeedSend;
+
 		void CordNeedSend (IOutCord arg1, byte[] msg)
 		{
 			send (msg);
 		}
-
-		public event Action<CordDispatcher2, byte[]> NeedSend;
 
 		void send(byte[] msg)
 		{
@@ -91,18 +94,15 @@ namespace TheTunnel
 
 			foreach (var r in inCords) 
 				RegistrateIn(r.method, r.attr);
+
 		}
 
 		void RegistrateOut(PropertyInfo del, OutAttribute attr)
 		{
 			var adel = del.PropertyType;
-
 			var ainvk = adel.GetMethod ("Invoke");
-
 			var aprm = ainvk.GetParameters ().FirstOrDefault();
-
 			var cord = CreateOutCord (aprm.ParameterType, ainvk.ReturnType, attr);
-			
 			var askcord = cord as IAskCord;
 		
 			if(askcord!=null)
@@ -146,15 +146,12 @@ namespace TheTunnel
 		static IInCord CreateInCord(Type argType, Type returnType, InAttribute attr)
 		{
 			IInCord ans = null;
+			var des = SerializersFactory.GetDeserializer(argType);
 			if (returnType == typeof(void)) {
-				var dt = typeof(ProtoDeserializer<>).MakeGenericType (argType);
-				var des = Activator.CreateInstance (dt);
 				var gt = typeof(InCord<>).MakeGenericType (argType);
 				ans = Activator.CreateInstance (gt, attr.CordId, des) as IInCord;
 			} else {
-				var dt = typeof(ProtoDeserializer<>).MakeGenericType (argType);
-				var des = Activator.CreateInstance (dt) as IDeserializer;
-				var ser = new ProtoSerializer ();
+				var ser = SerializersFactory.GetSerializer (returnType);
 				ans = new AnsweringCord (attr.CordId, des, ser);
 			}
 			return ans;
@@ -163,20 +160,23 @@ namespace TheTunnel
 		static IOutCord CreateOutCord(Type argType, Type returnType, OutAttribute attr)
 		{
 			IOutCord ans = null;
+			var ser = SerializersFactory.GetSerializer (argType);
 			if (returnType == typeof(void)) {
-				var ser = new ProtoSerializer ();
 				var gt = typeof(OutCord<>).MakeGenericType (argType);
 				ans = Activator.CreateInstance (gt, attr.CordId, ser) as IOutCord;
 			} else {
-				var ser = new ProtoSerializer ();
-				var dt = typeof(ProtoDeserializer<>).MakeGenericType(returnType);
-				var des = Activator.CreateInstance (dt);
+				var des = SerializersFactory.GetDeserializer (returnType);
 				var gt  = typeof(AskCord<,>).MakeGenericType (returnType, argType);
-
 				ans = Activator.CreateInstance (gt, attr.CordId, ser, des) as IAskCord;
 			}
 			return ans;
 		}
+	}
+	public enum DisconnectReason:byte
+	{
+		ContractWish = 0,
+		UserWish = 1,
+		ConnectionIsLost = 2,
 	}
 }
 

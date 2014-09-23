@@ -66,6 +66,7 @@ namespace TheTunnel
 				} }}
 
 		public event Action<qTcpServer,qTcpClient> OnConnect;
+		public event Action<qTcpServer,qTcpClient> OnDisconnect;
 
 		void addClient(qTcpClient client)
 		{
@@ -82,6 +83,8 @@ namespace TheTunnel
 			lock (clients) {
 				clients.Remove (obj);
 			}
+			if (OnDisconnect != null)
+				OnDisconnect (this, obj);
 		}
 
 	}

@@ -3,10 +3,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{83C01563-E5FB-4AAF-BF85-5CA0A73AD661}</ProjectGuid>
+    <ProjectGuid>{9B1A1AF1-6681-46A8-9EA1-AC9A3F4E8742}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>TheTunnel</RootNamespace>
-    <AssemblyName>TheTunnel</AssemblyName>
+    <RootNamespace>SomeContract</RootNamespace>
+    <AssemblyName>SomeContract</AssemblyName>
     <ReleaseVersion>0.2</ReleaseVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -29,39 +29,25 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Xml" />
     <Reference Include="protobuf-net">
       <HintPath>..\..\..\Spinning\Spintools\protobuf-net.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Tools.cs" />
-    <Compile Include="ProtoTools.cs" />
-    <Compile Include="[0] TCP_IP\qTcpClient.cs" />
-    <Compile Include="[0] TCP_IP\qTcpServer.cs" />
-    <Compile Include="[1] Quant\qHead.cs" />
-    <Compile Include="[1] Quant\qReceiver.cs" />
-    <Compile Include="[1] Quant\qSender.cs" />
-    <Compile Include="[1] Quant\qSendQueue.cs" />
-    <Compile Include="[1] Quant\qSeparator.cs" />
-    <Compile Include="Cord\CordDispatcher.cs" />
-    <Compile Include="Cord\ICord.cs" />
-    <Compile Include="Cord\Cords.cs" />
-    <Compile Include="[0] TCP_IP\TcpClientTunnel.cs" />
-    <Compile Include="[0] TCP_IP\TcpServerTunnel.cs" />
-    <Compile Include="Attributes.cs" />
-    <Compile Include="ContractInterfaces.cs" />
-    <Compile Include="Serialization\ISerializer.cs" />
-    <Compile Include="Serialization\IDeserializer.cs" />
-    <Compile Include="Serialization\Primitives.cs" />
-    <Compile Include="Serialization\SerializersFactory.cs" />
-    <Compile Include="Serialization\Arrays.cs" />
-    <Compile Include="Serialization\ProtoBuf.cs" />
+    <Compile Include="FTPDataContracts.cs" />
+    <Compile Include="Chat\ChatContracts.cs" />
+    <Compile Include="Chat\ChatDataContracts.cs" />
+    <Compile Include="Chat\Server.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Folder Include="Cord\" />
-    <Folder Include="Serialization\" />
+    <ProjectReference Include="..\TheTunnel\TheTunnel.csproj">
+      <Project>{83C01563-E5FB-4AAF-BF85-5CA0A73AD661}</Project>
+      <Name>TheTunnel</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Chat\" />
   </ItemGroup>
 </Project>

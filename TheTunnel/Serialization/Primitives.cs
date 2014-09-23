@@ -76,13 +76,13 @@ namespace TheTunnel
 		}
 	}
 
-	public class UTF32Serializer: SerializerBase<string>{
+	public class UnicodeSerializer: SerializerBase<string>{
 		public override bool TrySerialize (string str, byte[] arr, int offset){
 			var size = str.Length * 4 + offset + offset;
 			if (size > arr.Length)
 				return false;
 
-			Encoding.UTF32.GetBytes(str,0, str.Length, arr, offset);
+			Encoding.Unicode.GetBytes(str,0, str.Length, arr, offset);
 			return true;
 		}
 
@@ -94,7 +94,7 @@ namespace TheTunnel
 			
 	}
 
-	public class UTF32Deserializer: DeserializerBase<string>
+	public class UnicodeDeserializer: DeserializerBase<string>
 	{
 		public override bool TryDeserializeT (byte[] arr, int offset, out string str)
 		{
@@ -103,37 +103,43 @@ namespace TheTunnel
 			if ((arr.Length - offset) % 4 != 0)
 				return false;
 			else {
-				str =  Encoding.UTF32.GetString (arr, offset, arr.Length - offset);
+				str =  Encoding.Unicode.GetString (arr, offset, arr.Length - offset);
 				return true;
 			}
 		}
 	}
 
-	public class ProtoSerializer: ISerializer
+	public class UTCFileTimeSerializer: SerializerBase<DateTime>
 	{
-		public bool TrySerialize (object obj, byte[] arr, int offset){
-			var res = ProtoTools.Serialize(obj, 0);
-			if (res.Length > arr.Length + offset)
+		public override bool TrySerialize (DateTime obj, byte[] arr, int offset){
+			var size = 8;
+			if(arr==null|| offset+size> arr.Length)
 				return false;
-			Array.Copy (res, 0, arr, offset, res.Length);
+			Tools.SetToArray<long> (obj.ToFileTimeUtc(), arr, offset, size);
 			return true;
 		}
 
-		public byte[] Serialize (object obj, int offset){
-			return ProtoTools.Serialize(obj, offset);
+		public override byte[] Serialize (DateTime obj, int offset){
+			var size = Marshal.SizeOf(obj);
+			byte[] ans = new byte[offset+ size];
+			Tools.SetToArray<long>(obj.ToFileTimeUtc(), ans, offset, size);
+			return ans;
 		}
+	}
 
-		public bool TrySerialize (object obj, int offset, out byte[] arr)
-		{
-			arr = Serialize (obj, offset);
+	public class UTCFileTimeDeserializer: DeserializerBase<DateTime>
+	{
+		public override bool TryDeserializeT(byte[] arr, int offset, out DateTime obj){
+			var size = 8;
+			if (offset + size > arr.Length) {
+				obj = DateTime.Now;
+				return false;
+			}
+			var ftUTC = Tools.ToStruct<long> (arr, offset, size);
+			obj = DateTime.FromFileTimeUtc (ftUTC);
 			return true;
 		}
 	}
-
-	public class ProtoDeserializer<T>: DeserializerBase<T>{
-		public override bool TryDeserializeT (byte[] arr, int offset, out T obj){
-			return ProtoTools.TryDeserialize (arr, offset, out obj);
-		}
-	}
+		
 }
 	

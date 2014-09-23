@@ -16,10 +16,12 @@ namespace TheTunnel
 			clientContracts = new Dictionary<TContract, TcpClientTunnel> ();
 			Server = new qTcpServer ();
 			Server.OnConnect+= server_onClientConnect;
+			Server.OnDisconnect+= server_onClientDisconnect;
 			Server.BeginListen(ip, port);
 		}
-			
+
 		public event Action<TcpServerTunnel<TContract>, TContract> OnConnect;
+		public event Action<TcpServerTunnel<TContract>, TContract> OnDisconnect;
 
 		public void Kick(TContract contract)
 		{
@@ -35,6 +37,17 @@ namespace TheTunnel
 
 			if(OnConnect!= null)
 				OnConnect(this, contract);
+		}
+
+		void server_onClientDisconnect (qTcpServer arg1, qTcpClient arg2)
+		{
+			var client = clientContracts.FirstOrDefault (c => c.Value.Client == arg2).Key;
+			if (client != null) {
+				clientContracts.Remove (client);
+				if (OnDisconnect != null)
+					OnDisconnect (this, client);
+			} else
+				throw new Exception ();
 		}
 	}
 }

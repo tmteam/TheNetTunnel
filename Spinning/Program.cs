@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 using ProtoBuf;
 using System.IO;
 using System.Net;
-
+using SomeContract;
 
 namespace TheTunnel
 {
@@ -15,75 +15,73 @@ namespace TheTunnel
 	{
 		static void Main(string[] args)
 		{
-			var server = new TcpServerTunnel<ChatServerContract2>  ();
-			server.OnConnect+= (arg1, arg2) => Console.WriteLine("IncomeConnection");
-
+			var srv = new ChatServer ();
+			srv.Open ();
+			Console.Write ("Opening the tunnel to the server...");
 			var client = new TcpClientTunnel ();
-			Console.WriteLine ("Opening the server tunnel");
-			server.OpenServer (new IPAddress(new byte[]{127,0,0,1}), 2048);
 
-			var ccc = new ChatClientContract2 ();
-
-			Console.WriteLine ("Connecting via client tunnel");
-			client.Connect (new IPAddress(new byte[]{127,0,0,1}), 2048, ccc);
-			Console.WriteLine ("Connected");
-
-			Console.WriteLine ("Sending primitive message");
-			for (int i = 0; i < 10; i++) {
-				ccc.SendMessage (new mymsg2{ Sender = "tmt", Message = "c2s"+ (i+1).ToString(), SendTime = DateTime.Now });
+			var ccc = new ChatClientContract ();
+			try
+			{
+				//Console.WriteLine("Press any key for connect");
+				Console.ReadKey();
+				client.Connect (new IPAddress(new byte[]{127,0,0,1}), 2049, ccc);
 			}
-			Console.WriteLine ("Asking..");
-				var res = ccc.AskSmth (new mymsg2{ Sender = "tmt", Message = "Heeey, Tel me smth ", SendTime = DateTime.Now });
+			catch(Exception ex) {
+				Console.WriteLine (ex.ToString ());
+				Console.WriteLine (" Fail. Goodbye");
+				return;
+			}
+		 	Console.WriteLine (" Connected");
+			Console.Write (" registration...");
 
-				if (res == null)
-					Console.WriteLine ("   silence...");
-				else
-					Console.WriteLine ("\tGot answer: " + res.ReceiveTime + " handled: " + res.Handled);
-			Console.ReadKey ();
+			UserInfo myself = new UserInfo{ FullName = "Sukhanov YP", Nick = "tmt" };
+			var res = ccc.RegistrateMe (myself);
+
+			if (res == null)
+				Console.WriteLine ("..silence");
+			else if (res.Result)
+				Console.WriteLine ("Confirmed at " + res.TimeStamp.ToShortTimeString ());
+			else {
+				Console.WriteLine ("Rejected. Bye.");
+				return;
+			}
+
+			Console.WriteLine ("write exit to close chat");
+			while(true)
+			{
+				var cmd = Console.ReadLine ();
+				if (cmd == "exit") {
+					client.Disconnect ();
+					return;
+				}
+				if(cmd.StartsWith("c "))
+					{
+						 var c = cmd.Remove (0, 2);
+						 ccc.SendMessage (new Msg {
+						 	User = myself,
+						 	Timestamp = DateTime.Now,
+						 	Message = c,
+						});
+					}
+				else if (cmd.StartsWith("cc "))
+					{
+						var c = cmd.Remove (0, 3);
+						var uis =ccc.Ask4UserList (c);
+						if(uis==null)
+							Console.WriteLine("nullget");
+						else
+						{
+							Console.WriteLine("Got "+uis.Length);
+							foreach(var r in uis)
+								Console.WriteLine("\t"+r);
+
+						}
+					}
+				else if(!srv.ParseCmd (cmd))
+					return;
+
+			}
 		}
 	}
-
-	[ProtoContract]
-	public class mymsg2{
-		[ProtoMember(1)] public string Sender{get;set;}
-		[ProtoMember(2)] public string Message{ get; set;}
-		[ProtoMember(3)] public DateTime SendTime{get;set;}
-	}
-	[ProtoContract]
-	public class sendResult2{
-		[ProtoMember(1)] public bool Handled{get;set;}
-		[ProtoMember(3)] public DateTime ReceiveTime{get;set;}
-	}
-
-	public class ChatClientContract2
-	{
-		[Out(3)] public Func<mymsg2, sendResult2> AskSmth{get;set;}
-		[Out(2)] public ddd SendMessage{get;set;}
-		[In(1)] public void OnServerMessage(mymsg2 msg)
-		{
-			Console.WriteLine ("Got message from server: \r\n\t" + msg.SendTime + "\r\n\t" + msg.Sender + "\r\n\t" + msg.Message + "\r\n");
-		}
-
-		public delegate void ddd(mymsg2 mm);
-	}
-
-	public class ChatServerContract2	{
-		[In(3)]
-		public sendResult2 AnswerSmth(mymsg2 msg)
-		{
-			num++;
-			Console.WriteLine (num.ToString()+") Got ask from client: \r\n\t" + msg.SendTime + "\r\n\t" + msg.Sender + "\r\n\t" + msg.Message + "\r\n");
-			return new sendResult2{ Handled = true, ReceiveTime = DateTime.Now }; 
-		}
-		int num = 0;
-		[In(2)]	
-		public void OnClientMessage(mymsg2 msg)
-		{
-			num++;
-
-			Console.WriteLine (num.ToString()+") Got message from client: \r\n\t" + msg.SendTime + "\r\n\t" + msg.Sender + "\r\n\t" + msg.Message + "\r\n");
-		}
-		[Out(1)] public Action<mymsg2> SendToClient{get;set;}
-	}
-
 }

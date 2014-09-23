@@ -44,8 +44,7 @@ namespace TheTunnel
             }
             odids.ForEach(id => queue.Remove(id));
         }
-
-		byte[] undoneQuant = null;
+		byte[] qBuff = new byte[0];
 
 		/// <summary>
 		/// Set the specified stream of bytes.
@@ -53,44 +52,41 @@ namespace TheTunnel
 		/// <param name="bytesfromstream">Bytesfromstream.</param>
 		public void Set(byte[] bytesfromstream)
 		{
-			byte[] arr = null;
-			if (undoneQuant == null)
-				arr = bytesfromstream;
-			else {
-				arr = new byte[bytesfromstream.Length + undoneQuant.Length];
-				undoneQuant.CopyTo (arr, 0);
-				bytesfromstream.CopyTo (arr, undoneQuant.Length);
-				undoneQuant = null;
-			}
-
+			qBuff = qBuff.Concat (bytesfromstream).ToArray ();
 			int offset = 0;
 			while(true)
 			{
-				var bodyOffset = offset + qheadSize;
-
-				var head = arr.ToStruct<qHead> (0, qheadSize);
-				if (head.lenght < qheadSize) {
-					undoneQuant = null;
-					SendOnError (head, qReceiveError.IncorrectLenght);
-					break;
+				if (qBuff.Length < qheadSize) {
+					if (offset > 0)
+					 qBuff = saveUndone (qBuff,offset);
+					return;
 				}
-				if (offset + head.lenght == arr.Length) {
+
+				var bodyOffset = offset + qheadSize;
+				var head = qBuff.ToStruct<qHead> (0, qheadSize);
+
+				if (offset + head.lenght == qBuff.Length) {
 					//fullquant
-					this.handleQuant (head, arr, bodyOffset);
+					this.handleQuant (head, qBuff, bodyOffset);
+					qBuff = new byte[0];
 					break;
-				} else if (offset + head.lenght < arr.Length) {
+				} else if (offset + head.lenght < qBuff.Length) {
 					//has additional Lenght
-					this.handleQuant (head, arr, bodyOffset);
+					this.handleQuant (head, qBuff, bodyOffset);
 					offset += head.lenght;
 				} else {
-					//save undone Quant
-					undoneQuant = new byte[arr.Length - offset];
-					Array.Copy (arr, offset, undoneQuant, 0, undoneQuant.Length);
+					qBuff = saveUndone (qBuff,offset);
 					break;
 				}
 			}
 		}
 
+		byte[] saveUndone(byte[] arr, int offset)
+		{
+			byte[] res = new byte[arr.Length - offset];
+			Array.Copy (arr, offset, res, 0, res.Length);
+			return res;
+		}
 
 		bool handleQuant(qHead head, byte[] stream, int bodyOffset)
         {

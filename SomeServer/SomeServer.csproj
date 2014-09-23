@@ -2,14 +2,14 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{E172EF9C-4663-435D-A236-3A8FC7535183}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <RootNamespace>Try</RootNamespace>
-    <AssemblyName>Try</AssemblyName>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProjectGuid>{BB517974-1211-43A1-8BC8-06FF446C9A34}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>SomeServer</RootNamespace>
+    <AssemblyName>SomeServer</AssemblyName>
     <ReleaseVersion>0.2</ReleaseVersion>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -17,41 +17,34 @@
     <DefineConstants>DEBUG;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
+    <Externalconsole>true</Externalconsole>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>full</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
+    <Externalconsole>true</Externalconsole>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="nunit.framework" />
-    <Reference Include="protobuf-net">
-      <HintPath>..\Spintools\protobuf-net.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Monday.cs" />
-    <Compile Include="QuantTests\qAssembleQueueTest.cs" />
-    <Compile Include="QuantTests\qRandomStreamReceiving.cs" />
-    <Compile Include="QuantTests\simpleAssembleSeparating.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\Spintools\Spintools.csproj">
-      <Project>{35299810-870F-4FF0-A327-BAC6A5740C31}</Project>
-      <Name>Spintools</Name>
+    <ProjectReference Include="..\SomeContract\SomeContract.csproj">
+      <Project>{9B1A1AF1-6681-46A8-9EA1-AC9A3F4E8742}</Project>
+      <Name>SomeContract</Name>
     </ProjectReference>
     <ProjectReference Include="..\TheTunnel\TheTunnel.csproj">
       <Project>{83C01563-E5FB-4AAF-BF85-5CA0A73AD661}</Project>
       <Name>TheTunnel</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="QuantTests\" />
   </ItemGroup>
 </Project>
