@@ -53,15 +53,27 @@
     <Compile Include="Attributes.cs" />
     <Compile Include="ContractInterfaces.cs" />
     <Compile Include="Serialization\ISerializer.cs" />
-    <Compile Include="Serialization\IDeserializer.cs" />
-    <Compile Include="Serialization\Primitives.cs" />
+    <Compile Include="Deserialization\IDeserializer.cs" />
+    <Compile Include="Deserialization\DeserializerBase.cs" />
+    <Compile Include="Serialization\UnicodeSerializer.cs" />
     <Compile Include="Serialization\SerializersFactory.cs" />
-    <Compile Include="Serialization\Arrays.cs" />
-    <Compile Include="Serialization\ProtoBuf.cs" />
+    <Compile Include="Serialization\UTCFileTimeSerializer.cs" />
+    <Compile Include="Serialization\ProtoSerializer.cs" />
+    <Compile Include="Serialization\PrimitiveSerializer.cs" />
+    <Compile Include="Serialization\SerializerBase.cs" />
+    <Compile Include="Deserialization\UTCFileTimeDeserializer.cs" />
+    <Compile Include="Deserialization\UnicodeDeserializer.cs" />
+    <Compile Include="Deserialization\PrimitiveDeserializer.cs" />
+    <Compile Include="Deserialization\ArrayDeserializer.cs" />
+    <Compile Include="Serialization\ArraySerializer.cs" />
+    <Compile Include="Deserialization\DeserializersFactory.cs" />
+    <Compile Include="Serialization\ByteArraySerializer.cs" />
+    <Compile Include="Deserialization\ByteArrayDeserializer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="Cord\" />
     <Folder Include="Serialization\" />
+    <Folder Include="Deserialization\" />
   </ItemGroup>
 </Project>

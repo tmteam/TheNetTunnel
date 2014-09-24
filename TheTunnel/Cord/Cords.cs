@@ -48,7 +48,6 @@ namespace TheTunnel
 			awaitingQueue = new Dictionary<int, answerAwaiter<Tanswer>> ();
 			this.OUTCid = OUTCid;
 			this.Serializer = serializer;
-			var crd = new InCord<Tanswer> ((short)(-OUTCid), deserializer);
 			this.Deserializer = deserializer;
 		}
 			
@@ -208,7 +207,6 @@ namespace TheTunnel
 		public void Answer (object val, ushort id)
 		{
 			byte[] qmsg = Serializer.Serialize (val, 4);
-			var v = OUTCid & 255;
 			qmsg [0] = (byte)(OUTCid & 255);
 			qmsg [1] = (byte)(OUTCid >> 8);
 			qmsg [2] = (byte)(id & 255);

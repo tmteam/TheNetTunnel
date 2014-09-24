@@ -28,7 +28,7 @@ namespace TheTunnel
 					msg = ProtoBuf.Serializer.Deserialize<T>(stream);
 					return true;
 				}
-				catch(Exception ex) {
+				catch{
 					msg = default(T);
 					return false;
 				}

@@ -146,12 +146,12 @@ namespace TheTunnel
 		static IInCord CreateInCord(Type argType, Type returnType, InAttribute attr)
 		{
 			IInCord ans = null;
-			var des = SerializersFactory.GetDeserializer(argType);
+			var des = DeserializersFactory.Create(argType);
 			if (returnType == typeof(void)) {
 				var gt = typeof(InCord<>).MakeGenericType (argType);
 				ans = Activator.CreateInstance (gt, attr.CordId, des) as IInCord;
 			} else {
-				var ser = SerializersFactory.GetSerializer (returnType);
+				var ser = SerializersFactory.Create (returnType);
 				ans = new AnsweringCord (attr.CordId, des, ser);
 			}
 			return ans;
@@ -160,12 +160,12 @@ namespace TheTunnel
 		static IOutCord CreateOutCord(Type argType, Type returnType, OutAttribute attr)
 		{
 			IOutCord ans = null;
-			var ser = SerializersFactory.GetSerializer (argType);
+			var ser = SerializersFactory.Create (argType);
 			if (returnType == typeof(void)) {
 				var gt = typeof(OutCord<>).MakeGenericType (argType);
 				ans = Activator.CreateInstance (gt, attr.CordId, ser) as IOutCord;
 			} else {
-				var des = SerializersFactory.GetDeserializer (returnType);
+				var des = DeserializersFactory.Create (returnType);
 				var gt  = typeof(AskCord<,>).MakeGenericType (returnType, argType);
 				ans = Activator.CreateInstance (gt, attr.CordId, ser, des) as IAskCord;
 			}

@@ -4,6 +4,7 @@ using NUnit.Framework;
 using System.Linq;
 using System.Runtime.InteropServices;
 using ProtoBuf;
+using TheTunnel;
 
 namespace Try
 {
@@ -17,128 +18,120 @@ namespace Try
 
 		public static Random rnd{get; private set;}
 
-		[Test]	public void Unicode_De_serialization()
+		public static T CheckAndRecreate<T>(T origin)
 		{
-			string test = @"suppose I should be upset, even feel violated, but I'm not. No, in fact, I think this is a friendly message, like ""Hey, wanna play?"" and yes, I want to play. I really, really do. ";
-			var ser = TheTunnel.SerializersFactory.GetSerializer (typeof(string));
-			var bytestring = ser.Serialize (test, 5);
-			List<byte> lb = new List<byte> (bytestring);
-			lb.Add (12);
-			lb.Add (0);
-			lb.Add (0);
-			bytestring = lb.ToArray ();
-			var deser = TheTunnel.SerializersFactory.GetDeserializer (typeof(string));
+			int offs = 7;
 
-			object ostrres;
-			if (!deser.TryDeserialize (bytestring, 5, out ostrres))
-				throw new Exception ("Deserialization failed");
-			if (String.Compare (test, (string)ostrres) != 0)
-				throw new Exception ("original and deserizlized strings are not equal");
+			var ser = TheTunnel.SerializersFactory.Create (typeof(T));
+			var deser = TheTunnel.DeserializersFactory.Create (typeof(T));
+
+			var stream = ser.Serialize (origin,offs);
+			byte[] trystream;
+
+			if (!ser.TrySerialize (origin, offs, out trystream))
+				throw new Exception ("TrySerialize(out object) failure");
+			if (!stream.SequenceEqual (trystream))
+				throw new Exception ("Serialize and TrySerialize(out object) results are not equal");
+
+			var serT = ser as ISerializer<T>;
+			if (serT != null) {
+				if (!serT.TrySerialize (origin, trystream, offs))
+					throw new Exception ("TrySerialize failure");
+				if (!stream.SequenceEqual (trystream))
+					throw new Exception ("Serialize and TrySerialize results are not equal");
+			}
+
+
+			object res;
+			if (!deser.TryDeserialize (stream, offs, out res))
+				throw new Exception ("Deserialization(object) failed");
+
+			T deserialized;
+			if(!(deser as IDeserializer<T>).TryDeserializeT(stream,offs, out deserialized))
+				throw new Exception ("DeserializationT failed");
+				
+			return deserialized;
 
 		}
 
-		[Test]	public void DateTime_De_serialization()
+		[Test]	public void Unicode()
 		{
-			DateTime tt = DateTime.Now;
+			string origin = @"suppose I should be upset, even feel violated, but I'm not. No, in fact, I think this is a friendly message, like ""Hey, wanna play?"" and yes, I want to play. I really, really do. ";
 
-			var ser = TheTunnel.SerializersFactory.GetSerializer (typeof(DateTime));
-			var deser = TheTunnel.SerializersFactory.GetDeserializer (typeof(DateTime));
+			var deserialized = CheckAndRecreate (origin);
 
-			var stream = ser.Serialize (tt,5);
+			if (String.Compare (origin, origin) != 0)
+				throw new Exception ("original and deserizlized strings are not equal");
+		}
 
-			object res;
-			if (!deser.TryDeserialize (stream, 5, out res))
-				throw new Exception ("Deserialization failed");
+		[Test]	public void UTCFileTime()
+		{
+			DateTime origin = DateTime.Now;
 
-			if (DateTime.Compare (tt, (DateTime)res) != 0) {
+			var deserialized = CheckAndRecreate (origin);
+
+			if (DateTime.Compare (origin, deserialized)!= 0) {
 				throw new Exception ("original and deserizlized timestamps are not equal");
 			}
 
 
 		}
 
-		[Test] public void ProtoBuf_DeSerialization()
+		[Test]  public void ProtoBuf()
 		{
-			var tt = ToiletType.GetRandomType ();
-			var ser = TheTunnel.SerializersFactory.GetSerializer (tt.GetType ());
-			var deser = TheTunnel.SerializersFactory.GetDeserializer (tt.GetType ());
-			var bt = ser.Serialize (tt, 7);
+			var origin = ToiletType.GetRandomType ();
 
-			object res;
-			if(!deser.TryDeserialize(bt, 7, out res))
-				throw new Exception ("Deserialization failed");
+			var deserialized = CheckAndRecreate (origin);
 
-			var dett = res as ToiletType;
-
-			if(!dett.IsEqual(tt))
+			if(!deserialized.IsEqual(origin))
 				throw new Exception ("original and deserializerd object are not equal");
 		}
 
-		[Test]	public void FixedArray_DeSerialization()
+		[Test]  public void ByteArray()
+		{
+			byte[] origin = new byte[10000];
+			rnd.NextBytes (origin);
+
+			var deserialized = CheckAndRecreate (origin);
+
+			if(!origin.SequenceEqual(deserialized))
+				throw new Exception ("original and deserizlized arrays are not equal");
+		}
+
+		[Test]	public void FixedArray()
 		{
 			int tc = 1000;
-
-			Toilet[] wcs = new Toilet[tc];
+			Toilet[] origin = new Toilet[tc];
 
 			for (int i = 0; i < tc; i++)
-				wcs [i] = Toilet.FindClosestToilet ();
+				origin [i] = Toilet.FindClosestToilet ();
 
-			var ser = TheTunnel.SerializersFactory.GetSerializer (wcs.GetType ());
-			var deser = TheTunnel.SerializersFactory.GetDeserializer (wcs.GetType ());
-
-			var bt = ser.Serialize (wcs, 7);
-
-			object res;
-			if(!deser.TryDeserialize(bt, 7, out res))
-				throw new Exception ("Deserialization failed");
-
-			var detoils = res as Toilet[];
-
-			if(detoils==null)
-				throw new Exception ("deserialized object has wrong type");
-				
-			if(detoils.Length!= wcs.Length)
-				throw new Exception ("original and deserializerd toilet array lenght are not equal");
+			var deserialized = CheckAndRecreate (origin);
 				
 			for(int i = 0; i<tc; i++)
-				if(!detoils[i].IsEqual(wcs[i]))
+				if(!deserialized[i].IsEqual(origin[i]))
 					throw new Exception ("original and deserializerd toilet["+i+"] are not equal");
 		}
 
-		[Test] public void UnicodeArray_DeSerialization(){
-			var ttar = Enumerable.Range (0, 100).Select (r => "string#"+r).ToArray ();
-			var ser = TheTunnel.SerializersFactory.GetSerializer (ttar.GetType ());
-			var deser = TheTunnel.SerializersFactory.GetDeserializer (ttar.GetType ());
-			var bt = 	ser.Serialize (ttar, 7);
+		[Test]  public void UnicodeArray()
+		{
+			var origin = Enumerable.Range (0, 100).Select (r => "string#"+r).ToArray ();
 
-			object res;
-			if(!deser.TryDeserialize(bt, 7, out res))
-				throw new Exception ("Deserialization failed");
+			var deserialized = CheckAndRecreate (origin);
 
-			var dett = res as string[];
-
-			if(dett.Length!= ttar.Length)
-				throw new Exception ("original and deserialized arrays lenght are not equal");
-
-			for(int i = 0; i<dett.Length; i++)
-				if(dett[i].CompareTo(ttar[i])!=0)
+			for(int i = 0; i<deserialized.Length; i++)
+				if(deserialized[i].CompareTo(origin[i])!=0)
 					throw new Exception ("original and deserializerd object are not equal");
 		}
 
-		[Test]  public void ProtoArray_DeSerialize(){
-			var ttar = Enumerable.Range (0, 100).Select (r => ToiletType.GetRandomType ()).ToArray ();
-			var ser = TheTunnel.SerializersFactory.GetSerializer (ttar.GetType ());
-			var deser = TheTunnel.SerializersFactory.GetDeserializer (ttar.GetType ());
-			var bt = 	ser.Serialize (ttar, 7);
+		[Test]  public void ProtoArray()
+		{
+			var origin = Enumerable.Range (0, 100).Select (r => ToiletType.GetRandomType ()).ToArray ();
 
-			object res;
-			if(!deser.TryDeserialize(bt, 7, out res))
-				throw new Exception ("Deserialization failed");
+			var deserialized = CheckAndRecreate (origin);
 
-			var dett = res as ToiletType[];
-
-			for(int i = 0; i<dett.Length; i++)
-				if(!dett[i].IsEqual(ttar[i]))
+			for(int i = 0; i<deserialized.Length; i++)
+				if(!deserialized[i].IsEqual(origin[i]))
 					throw new Exception ("original and deserializerd object are not equal");
 		}
 	}
