@@ -39,6 +39,7 @@
     <Compile Include="QuantTests\qAssembleQueueTest.cs" />
     <Compile Include="QuantTests\qRandomStreamReceiving.cs" />
     <Compile Include="QuantTests\simpleAssembleSeparating.cs" />
+    <Compile Include="De_Serialize.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

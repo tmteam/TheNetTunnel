@@ -19,9 +19,9 @@ namespace TheTunnel
 			}
 		}
 
-		public static bool TryDeserialize<T> (byte[] qMsg, int offset, out T msg)
+		public static bool TryDeserialize<T> (byte[] qMsg, int offset,int lenght, out T msg)
 		{
-			using (var stream = new MemoryStream(qMsg,offset, qMsg.Length-offset))
+			using (var stream = new MemoryStream(qMsg,offset, lenght))
 			{
 				try
 				{

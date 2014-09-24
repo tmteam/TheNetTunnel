@@ -8,6 +8,8 @@ namespace TheTunnel
 {
 	public abstract class SerializerBase<T>:ISerializer<T>, ISerializer 
 	{
+		public int? Size{ get; protected set;}
+
 		public virtual bool TrySerialize (T obj, int offset, out byte[] arr)
 		{
 			arr = Serialize (obj, offset);
@@ -35,6 +37,8 @@ namespace TheTunnel
 
 	public abstract class DeserializerBase<T>:IDeserializer<T>
 	{
+		public int? Size{ get; protected set;}
+
 		public abstract bool TryDeserializeT (byte[] arr, int offset, out T obj);
 
 		public virtual bool TryDeserialize (byte[] arr, int offset, out object obj)
@@ -48,6 +52,11 @@ namespace TheTunnel
 
 	public class PrimitiveSerializer<T>:SerializerBase<T> 
 	{
+		public PrimitiveSerializer()
+		{
+			Size = Marshal.SizeOf(typeof(T));
+		}
+
 		public override bool TrySerialize (T obj, byte[] arr, int offset){
 			var size = Marshal.SizeOf(obj);
 			if(arr==null|| offset+size> arr.Length)
@@ -64,7 +73,12 @@ namespace TheTunnel
 		}
 	}
 
-	public class PrimitiveDeserializer<T>:  DeserializerBase<T> where T: struct{
+	public class PrimitiveDeserializer<T>:  DeserializerBase<T> {
+
+		public PrimitiveDeserializer()
+		{ 
+			Size = Marshal.SizeOf (typeof(T));
+		}
 		public override bool TryDeserializeT(byte[] arr, int offset, out T obj){
 			var size = Marshal.SizeOf(typeof(T));
 			if (offset + size > arr.Length) {
@@ -77,18 +91,19 @@ namespace TheTunnel
 	}
 
 	public class UnicodeSerializer: SerializerBase<string>{
-		public override bool TrySerialize (string str, byte[] arr, int offset){
-			var size = str.Length * 4 + offset + offset;
-			if (size > arr.Length)
-				return false;
+		public UnicodeSerializer()
+		{ Size = null;}
 
+		public override bool TrySerialize (string str, byte[] arr, int offset){
 			Encoding.Unicode.GetBytes(str,0, str.Length, arr, offset);
 			return true;
 		}
 
 		public override byte[] Serialize (string str, int offset){
-			byte[] ans = new byte[str.Length*4 + offset];
-			Encoding.UTF32.GetBytes(str,0, str.Length, ans, offset);
+			var size = Encoding.Unicode.GetByteCount (str);
+			var ans = new byte[size + offset + 4];
+			BitConverter.GetBytes (size).CopyTo (ans, offset);
+			Encoding.Unicode.GetBytes(str,0, str.Length, ans, offset+4);
 			return ans;
 		}
 			
@@ -96,21 +111,27 @@ namespace TheTunnel
 
 	public class UnicodeDeserializer: DeserializerBase<string>
 	{
+		public UnicodeDeserializer()
+		{ Size = null;}
+
 		public override bool TryDeserializeT (byte[] arr, int offset, out string str)
 		{
 			str = null;
-			//Check utf32 covertion possibility
-			if ((arr.Length - offset) % 4 != 0)
+			if (arr.Length < offset + 4)
 				return false;
-			else {
-				str =  Encoding.Unicode.GetString (arr, offset, arr.Length - offset);
-				return true;
-			}
+			int strByteLength = BitConverter.ToInt32 (arr, offset);
+			if (arr.Length < offset + 4 + strByteLength)
+				return false;
+			str =  Encoding.Unicode.GetString (arr, offset+4, strByteLength);
+			return true;
 		}
 	}
 
 	public class UTCFileTimeSerializer: SerializerBase<DateTime>
 	{
+		public UTCFileTimeSerializer()
+		{ Size = sizeof(long);}
+
 		public override bool TrySerialize (DateTime obj, byte[] arr, int offset){
 			var size = 8;
 			if(arr==null|| offset+size> arr.Length)
@@ -120,15 +141,17 @@ namespace TheTunnel
 		}
 
 		public override byte[] Serialize (DateTime obj, int offset){
-			var size = Marshal.SizeOf(obj);
-			byte[] ans = new byte[offset+ size];
-			Tools.SetToArray<long>(obj.ToFileTimeUtc(), ans, offset, size);
+			byte[] ans = new byte[offset+ Size.Value];
+			Tools.SetToArray<long>(obj.ToFileTimeUtc(), ans, offset, Size.Value);
 			return ans;
 		}
 	}
 
 	public class UTCFileTimeDeserializer: DeserializerBase<DateTime>
 	{
+		public UTCFileTimeDeserializer()
+		{ Size = sizeof(long);}
+
 		public override bool TryDeserializeT(byte[] arr, int offset, out DateTime obj){
 			var size = 8;
 			if (offset + size > arr.Length) {
@@ -136,7 +159,7 @@ namespace TheTunnel
 				return false;
 			}
 			var ftUTC = Tools.ToStruct<long> (arr, offset, size);
-			obj = DateTime.FromFileTimeUtc (ftUTC);
+			obj = DateTime.FromFileTimeUtc (ftUTC).ToLocalTime();
 			return true;
 		}
 	}

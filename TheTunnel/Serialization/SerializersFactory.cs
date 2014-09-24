@@ -20,12 +20,10 @@ namespace TheTunnel
 				var gt = typeof(ArraySerializer<>).MakeGenericType (t);
 				return Activator.CreateInstance (gt) as ISerializer;
 			}
-			else if (t.IsClass 
-				&& !t.GetCustomAttributes(true)
-					.Any(a=>a.GetType() == typeof(StructLayoutAttribute) 
-						&& (a as StructLayoutAttribute).Value == LayoutKind.Explicit)) {
-				throw new ArgumentException("Type "+ t.Name+" cannot be serialized. Use protobuf serialization with [ProtoContractAttribute] in case of complex class or  [StructLayoutAttribute(Value = LayoutKind.Explicit)] in case of fixed-size types");
-			}
+			else if (t.IsClass && (t.StructLayoutAttribute.Pack!=1 || (t.StructLayoutAttribute.Value== LayoutKind.Auto)))
+				throw new ArgumentException("Type "+ t.Name+" cannot be serialized. "
+					+"Use protobuf serialization with [ProtoContractAttribute] in case of complex type "
+					+"or  [StructLayoutAttribute(LayoutKind.Explicit, Pack = 1)] // [StructLayoutAttribute(LayoutKind.Sequential, Pack = 1)]  in case of fixed-size type");
 			else
 			{
 				var gt =typeof(PrimitiveSerializer<>).MakeGenericType (t);
@@ -46,12 +44,10 @@ namespace TheTunnel
 				var gt = typeof(ArrayDeserializer<>).MakeGenericType (t);
 				return Activator.CreateInstance (gt) as IDeserializer;
 			}
-			else if (t.IsClass 
-				&& !t.GetCustomAttributes(true)
-					.Any(a=>a.GetType() == typeof(StructLayoutAttribute) 
-						&& (a as StructLayoutAttribute).Value == LayoutKind.Explicit)) {
-				throw new ArgumentException("Type "+ t.Name+" cannot be deserialized. Use protobuf deserialization with [ProtoContractAttribute] in case of complex type or  [StructLayoutAttribute(Value = LayoutKind.Explicit)] in case of fixed-size type");
-			}
+			else if (t.IsClass && (t.StructLayoutAttribute.Pack!=1 || (t.StructLayoutAttribute.Value== LayoutKind.Auto)))
+				throw new ArgumentException("Type "+ t.Name+" cannot be deserialized. "
+					+"Use protobuf deserialization with [ProtoContractAttribute] in case of complex type "
+					+"or  [StructLayoutAttribute(LayoutKind.Explicit, Pack = 1)] // [StructLayoutAttribute(LayoutKind.Sequential, Pack = 1)]  in case of fixed-size type");
 			else {
 				var gt =typeof(PrimitiveDeserializer<>).MakeGenericType (t);
 				return Activator.CreateInstance (gt) as IDeserializer;
