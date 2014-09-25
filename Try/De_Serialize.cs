@@ -8,13 +8,9 @@ using TheTunnel;
 
 namespace Try
 {
-	[TestFixture]
-	public class De_Serialize
+	[TestFixture]  public class De_Serialize
 	{
-		static De_Serialize()
-		{
-			rnd = new Random(DateTime.Now.Millisecond);
-		}
+		static De_Serialize() { rnd = new Random (DateTime.Now.Millisecond);}
 
 		public static Random rnd{get; private set;}
 
@@ -134,6 +130,32 @@ namespace Try
 				if(!deserialized[i].IsEqual(origin[i]))
 					throw new Exception ("original and deserializerd object are not equal");
 		}
+
+		[Test]  public void Sequence()
+		{
+			var origin = new TestSequence ();
+
+			var ser = new SequenceSerializer (origin.SequenceTypes);
+			var des = new SequenceDeserializer (origin.SequenceTypes);
+
+			var msg1 = ser.Serialize (origin.Sequence,7);
+			byte[] msg2;
+			ser.TrySerialize(origin.Sequence, 7, out msg2);
+
+			if (!msg1.SequenceEqual (msg2))
+				throw new Exception ("Serialize and TrySerialize results are not equal");
+
+			object[] deSequnce;
+
+			if (!des.TryDeserializeT (msg1, 7, out deSequnce))
+				throw new Exception ("Deserialize Failure");
+
+			var deserialized = new TestSequence();
+			deserialized.Sequence = deSequnce;
+
+			if (!deserialized.IsEqualTo (origin))
+				throw new Exception ("original and deserialized sequences are not equal");
+		}
 	}
 
 	[ProtoContract]
@@ -204,6 +226,47 @@ namespace Try
 				if (!A [i].IsEqual (B [i]))
 					return false;
 			return true;
+		}
+	}
+
+	public class TestSequence{
+
+		public int i = De_Serialize.rnd.Next();
+
+		public ToiletType toiletType = ToiletType.GetRandomType();
+
+		public double d = De_Serialize.rnd.NextDouble();
+
+		public string s = "str#"+De_Serialize.rnd.Next().ToString();
+
+		public DateTime t = DateTime.Now;
+
+		public Toilet toilet = Toilet.FindClosestToilet();
+
+		public Type[] SequenceTypes
+		{
+			get{ return Sequence.Select (s => s.GetType()).ToArray (); }
+		}
+
+		public object[] Sequence
+		{
+			get{ return new object[]{ i, toiletType, d, s, t, toilet };}
+			set{
+				if (value.Length != Sequence.Length)
+					throw new Exception ("Wrong input sequence lenght");
+				if (!value.Select (v => v.GetType ()).SequenceEqual (SequenceTypes))
+					throw new Exception ("wrong input types sequence");
+				i = (int)value [0];
+				toiletType = (ToiletType)value [1];
+				d = (double)value [2];
+				s = (string)value [3];
+				t = (DateTime)value [4];
+				toilet = (Toilet)value [5];
+			}
+		}
+		public bool IsEqualTo(TestSequence ts)
+		{
+			return i == ts.i && d == ts.d && t.CompareTo (ts.t) == 0 && s.CompareTo (ts.s) == 0 && toilet.IsEqual (ts.toilet) && toiletType.IsEqual (ts.toiletType);
 		}
 	}
 }

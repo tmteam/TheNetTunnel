@@ -11,10 +11,14 @@ using SomeContract;
 
 namespace TheTunnel
 {
+
+	delegate void dt(int i, double d, DateTime dt, string str);
 	public class Program
 	{
 		static void Main(string[] args)
 		{
+
+
 			var srv = new ChatServer ();
 			srv.Open ();
 			Console.Write ("Opening the tunnel to the server...");

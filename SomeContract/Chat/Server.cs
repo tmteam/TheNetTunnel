@@ -81,7 +81,8 @@ namespace SomeContract
 							Message = msg, 
 						};
 						c.SendMessage (m);
-					
+						var res = c.SendMessageInSequenceStyle (msg, "Server TT", DateTime.Now);
+						Console.WriteLine ("Seq answer from client: " + res);
 					}
 				}
 			return true;

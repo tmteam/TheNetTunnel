@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Reflection.Emit;
 
 
 namespace TheTunnel
@@ -101,49 +102,89 @@ namespace TheTunnel
 		{
 			var adel = del.PropertyType;
 			var ainvk = adel.GetMethod ("Invoke");
-			var aprm = ainvk.GetParameters ().FirstOrDefault();
-			var cord = CreateOutCord (aprm.ParameterType, ainvk.ReturnType, attr);
-			var askcord = cord as IAskCord;
-		
-			if(askcord!=null)
-			{
-				Delegate call = Delegate.CreateDelegate (del.PropertyType, askcord,  "AskT" );
-				del.SetValue (Contract, call, null);
-				AddInCord (askcord);
-				AddOutCord(askcord);
-			}
-			else
-			{
-				Delegate call = Delegate.CreateDelegate (del.PropertyType, cord,  "Send" );
-				del.SetValue (Contract, call, null);
-				AddOutCord(cord);
-			}
 
+			var parameters = ainvk.GetParameters ();
+			if (parameters.Length == 1) {// monoparameter cord
+				var cord = CreateOutMonoCord (parameters [0].ParameterType, ainvk.ReturnType, attr);
+				var askcord = cord as IAskCord;
+		
+				if (askcord != null) {
+					Delegate call = Delegate.CreateDelegate (del.PropertyType, askcord, "AskT");
+					del.SetValue (Contract, call, null);
+					AddInCord (askcord);
+					AddOutCord (askcord);
+				} else {
+					Delegate call = Delegate.CreateDelegate (del.PropertyType, cord, "Send");
+					del.SetValue (Contract, call, null);
+					AddOutCord (cord);
+				}
+			} else { //Sequence serialization
+				var returnType = ainvk.ReturnParameter.ParameterType;
+				var argTypes = parameters.Select (p => p.ParameterType).ToArray ();
+				if (returnType == typeof(void)) {
+					var ocord = new OutCord<object[]> (attr.CordId, new SequenceSerializer (argTypes));
+
+					var delegateHandler = HeavyReflectionTools.CreateConverterToArgsArrayAction(ocord.Send, argTypes);
+					var convertedHandler = Delegate.CreateDelegate (adel, delegateHandler, "Invoke");
+					del.SetValue (Contract, convertedHandler, null);
+
+					AddOutCord (ocord);
+				} else { // asking cord
+					var gt  = typeof(AskCord<,>).MakeGenericType (returnType, typeof(object[]));
+					var des = DeserializersFactory.Create (returnType);
+					var acord = Activator.CreateInstance (gt, attr.CordId,
+						new SequenceSerializer (argTypes), des) as IAskCord;
+
+					var delegateHandler = HeavyReflectionTools.CreateConverterToArgsArrayFunc(acord.Ask, returnType, argTypes);
+					var convertedHandler = Delegate.CreateDelegate (adel, delegateHandler, "Invoke");
+					del.SetValue (Contract, convertedHandler, null);
+
+					AddOutCord (acord);
+					AddInCord (acord);
+				}
+			}
 		}
 
 		void RegistrateIn(MethodInfo meth, InAttribute attr)
 		{
-			var inputParameter = meth.GetParameters ().Select (p => p.ParameterType).FirstOrDefault ();
-
+			var parameters = meth.GetParameters ();
 			var returnType = meth.ReturnType;
 
-			var cord = CreateInCord (inputParameter, returnType, attr);
+			if (parameters.Length == 1) { //Usual monoparameter cord
+				IInCord cord = CreateInMonoCord (parameters [0].ParameterType, returnType, attr);
 
-			var answeringCord = cord as IAnsweringCord;
-			if (answeringCord != null) {
-				answeringCord.OnAsk += (sender, id, msg) => {
-					var res = meth.Invoke (Contract, new object[]{ msg });
-					answeringCord.Answer (res, id);
-				};
-				AddInCord (answeringCord);
-				AddOutCord (answeringCord);
-			} else {
-				cord.OnReceive += (sender, msg) => meth.Invoke (Contract, new object[]{ msg });
-				AddInCord (cord);
+				var answeringCord = cord as IAnsweringCord;
+				if (answeringCord != null) { //If cord is answering
+					answeringCord.OnAsk += (sender, id, msg) => {
+						var res = meth.Invoke (Contract, new object[]{ msg });
+						answeringCord.Answer (res, id);
+					};
+					AddInCord (answeringCord);
+					AddOutCord (answeringCord);
+				} else { // case of no-answer cord
+					cord.OnReceive += (sender, msg) => meth.Invoke (Contract, new object[]{ msg });
+					AddInCord (cord);
+				}
+			} else { //Sequence deserialization
+				var types = parameters.Select (p => p.ParameterType).ToArray ();
+				if (returnType == typeof(void)) {// no-answer cord
+					var icord = new InCord<object[]> (attr.CordId, new SequenceDeserializer (types));
+					icord.OnReceiveT += (sender, msg) => meth.Invoke (Contract, msg);
+					AddInCord (icord);
+				} else {// answering cord
+					var ser = SerializersFactory.Create (returnType);
+					var acord = new AnsweringCord (attr.CordId, new SequenceDeserializer (types), ser);
+					acord.OnAsk += (sender, id, msg) => {
+						var res = meth.Invoke (Contract, msg as object[]);
+						acord.Answer (res, id);
+					};
+					AddInCord (acord);
+					AddOutCord (acord);
+				}
 			}
 		}
 
-		static IInCord CreateInCord(Type argType, Type returnType, InAttribute attr)
+		static IInCord CreateInMonoCord(Type argType, Type returnType, InAttribute attr)
 		{
 			IInCord ans = null;
 			var des = DeserializersFactory.Create(argType);
@@ -157,7 +198,7 @@ namespace TheTunnel
 			return ans;
 		}
 
-		static IOutCord CreateOutCord(Type argType, Type returnType, OutAttribute attr)
+		static IOutCord CreateOutMonoCord(Type argType, Type returnType, OutAttribute attr)
 		{
 			IOutCord ans = null;
 			var ser = SerializersFactory.Create (argType);
@@ -171,7 +212,12 @@ namespace TheTunnel
 			}
 			return ans;
 		}
+
+
+
 	}
+
+
 	public enum DisconnectReason:byte
 	{
 		ContractWish = 0,

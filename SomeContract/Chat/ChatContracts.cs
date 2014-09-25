@@ -5,17 +5,21 @@ namespace SomeContract
 {
 	public class ChatClientContract: IDisconnectable, IDisconnectListener
 	{
-		[In(2)]
-		public bool ReceiveMsg(Msg message)
-		{
+
+		[In(2)]	 public bool ReceiveMsg(Msg message)	{
 			Console.WriteLine (message.Timestamp.ToShortTimeString () + " [" + message.User.Nick + "] " + message.Message);
 			return true;
 		}
-		[In(3)]
-		public void BeforeDisconnect(DisconnectInfo reason)
-		{
+
+		[In(3)]	 public void BeforeDisconnect(DisconnectInfo reason)	{
 			Console.WriteLine ("DISCONNECTED ["+reason.Reason+"] by "+reason.Initiator.Nick+" message: \""+ reason.Message);
 		}
+
+		[In(10)] public string ReceiveMsgSequenceStyle(string message, string sender, DateTime timestamp){
+			Console.WriteLine ("Received sequence-style message: " + timestamp.ToShortTimeString () + " [" + sender + "] " + message);
+			return "Sequence Message was received: " + message;
+		}
+
 
 		[Out(1)] public Func<UserInfo, RegistrationResults> RegistrateMe{ get; set;}
 		[Out(2)] public Func<Msg, bool> SendMessage{get; set;}
@@ -52,28 +56,28 @@ namespace SomeContract
 		}
 
 		public UserInfo User{get; protected set;}
-		[In(1)]
-		public RegistrationResults RegistrateMe(UserInfo User){
+		[In(1)]	public RegistrationResults RegistrateMe(UserInfo User){
 			Console.WriteLine ("Registration ask from " + User.Nick + " (" + User.FullName + ")");
 			this.User = User;
 			return new RegistrationResults{ Result = true, TimeStamp = DateTime.Now};
 		}
 
-		[In(2)]
-		public bool OnReceiveMsg(Msg message){
+		[In(2)]	public bool OnReceiveMsg(Msg message){
 			if (OnMessage != null)
 				OnMessage (this, message);
 			return true;
 		}
 
-		[In(4)]
-		public int[] GetUserList(string reason)
+		[In(4)]	public int[] GetUserList(string reason)
 		{	Console.WriteLine ("Asking for user list with reason: "+ reason);
 			return new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 42 };
 		}
 
 		[Out(3)] public Action<DisconnectInfo> DisconnectUser{ get; set;}
 		[Out(2)] public Func<Msg,bool> SendMessage{get; set;}
+
+		public delegate string dsmiss(string message, string sender, DateTime timstamp);
+		[Out(10)] public dsmiss SendMessageInSequenceStyle{ get; set;}
 
 		public event Action<ChatServerContract, Msg> OnMessage;
 
