@@ -20,42 +20,40 @@ This protocol is designed for a using over TCP tranport.
 
 Simple chat implementation on TT:
 
+Client code:
 ~~~c#
-//////////////////
-//[Client-side]//
-////////////////
-	
+
 public class ClientContract{
 	[Out(1)] public Func<string,string,bool> SendMessage{get;set;}
 
-	[In(2)]  public void ReceiveMessage(DateTime timeStamp, string sender, string message){
-			Console.WriteLine ("["+timeStamp.ToShortTimeString()+"]" + sender + ": " + message);
+	[In(2)]  public void ReceiveMessage(DateTime time, string nick, string msg){
+			Console.WriteLine ("["+time+"]" + nick + ": " + msg);
 	}
 }
 	
 static void Main(string[] args)
 {
-	TcpClientTunnel client = new TcpClientTunnel ();
-	ClientContract contract = new ClientContract ();
+	var client = new TcpClientTunnel ();
+	var contract = new ClientContract ();
 		
 	Console.WriteLine ("Connecting to 172.16.31.34..");
 	client.Connect (new IPAddress (new byte[]{ 172, 16, 31, 34 }), 1234, contract);
+	
 	Console.WriteLine ("Succesfully to connected!");
-
+	//Let's Chat!
 	while (true) {
 		var msg = Console.ReadLine ();
-	        contract.SendMessage ("tmt", msg);
+	        if(contract.SendMessage ("tmt", msg))
+	        	Console.WriteLine("[message accepted]"
 	}
 }
-	
-	
-///////////////////
-//[Server-side]///
-/////////////////
-	
+~~~
+Server code:
+~~~C#	
+
 public class ServerContract{
 	[In(1)]  public bool MsgFromClient(string nick, string message){
-		Console.WriteLine ("["+timeStamp.ToShortTimeString()+"] " + nick + ": " + message);
+		Console.WriteLine (nick + ": " + message);
 		return true; //we are always happy to take a message
 	}
 		
@@ -64,7 +62,7 @@ public class ServerContract{
 	
 static void Main(string[] args)
 {
-	TcpServerTunnel<ServerContract> server = new TcpServerTunnel<ServerContract>();
+	var server = new TcpServerTunnel<ServerContract>();
 	
 	server.OpenServer (IPAddress.Any, 1234);
 	
@@ -72,7 +70,7 @@ static void Main(string[] args)
 		Console.WriteLine("Client connected"); 
 		contract.SndMsg(DateTime.Now,"serv","Welcome to the tunnel");
 	};
-	
+	//Chatting:
 	while (true) {
 		var msg = Console.ReadLine ();
 		foreach (var contract in server.Contracts)
