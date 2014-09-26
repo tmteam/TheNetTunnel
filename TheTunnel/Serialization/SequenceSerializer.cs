@@ -16,12 +16,13 @@ namespace TheTunnel
 				serializers [i] = SerializersFactory.Create (types [i]);
 			Size = null;
 		}
-
+	
 		public bool TrySerialize (object[] obj, int offset, out byte[] arr)
 		{
 			arr = null;
 			if (obj.Length != serializers.Length)
 				return false;
+	
 			List<byte[]> res = new List<byte[]> ();
 			res.Add (new byte[offset]);
 			for(int i = 0; i< obj.Length; i++)
@@ -51,6 +52,7 @@ namespace TheTunnel
 		{
 			if (obj.Length != serializers.Length)
 				return false;
+
 			int totalLength = offset;
 			for(int i = 0; i< obj.Length; i++)
 			{
@@ -81,6 +83,7 @@ namespace TheTunnel
 
 		public byte[] Serialize (object[] obj, int offset)
 		{
+
 			byte[] ans;
 			if (TrySerialize (obj, offset, out ans))
 				return ans;

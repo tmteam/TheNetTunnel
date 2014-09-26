@@ -40,12 +40,6 @@
     <Compile Include="ProtoTools.cs" />
     <Compile Include="[0] TCP_IP\qTcpClient.cs" />
     <Compile Include="[0] TCP_IP\qTcpServer.cs" />
-    <Compile Include="[1] Quant\qHead.cs" />
-    <Compile Include="[1] Quant\qReceiver.cs" />
-    <Compile Include="[1] Quant\qSender.cs" />
-    <Compile Include="[1] Quant\qSendQueue.cs" />
-    <Compile Include="[1] Quant\qSeparator.cs" />
-    <Compile Include="Cord\CordDispatcher.cs" />
     <Compile Include="[0] TCP_IP\TcpClientTunnel.cs" />
     <Compile Include="[0] TCP_IP\TcpServerTunnel.cs" />
     <Compile Include="Attributes.cs" />
@@ -69,19 +63,25 @@
     <Compile Include="Deserialization\ByteArrayDeserializer.cs" />
     <Compile Include="Serialization\SequenceSerializer.cs" />
     <Compile Include="Deserialization\SequenceDeserializer.cs" />
-    <Compile Include="Cord\AnsweringCord.cs" />
-    <Compile Include="Cord\AskCord.cs" />
-    <Compile Include="Cord\InCord.cs" />
-    <Compile Include="Cord\OutCord.cs" />
-    <Compile Include="Cord\HeavyReflectionTools.cs" />
-    <Compile Include="Cord\_FuncCallConverterSubFactories.cs" />
-    <Compile Include="Cord\_ActionCallConverterSubFactories %28copy%29.cs" />
-    <Compile Include="Cord\__Interfaces.cs" />
+    <Compile Include="[1] Light\qHead.cs" />
+    <Compile Include="[1] Light\qReceiver.cs" />
+    <Compile Include="[1] Light\qSender.cs" />
+    <Compile Include="[1] Light\qSendQueue.cs" />
+    <Compile Include="[1] Light\qSeparator.cs" />
+    <Compile Include="[2] Cord\CordDispatcher.cs" />
+    <Compile Include="[2] Cord\__Interfaces.cs" />
+    <Compile Include="[2] Cord\AnsweringCord.cs" />
+    <Compile Include="[2] Cord\AskCord.cs" />
+    <Compile Include="[2] Cord\InCord.cs" />
+    <Compile Include="[2] Cord\OutCord.cs" />
+    <Compile Include="[2] Cord\HeavyReflectionTools.cs" />
+    <Compile Include="[2] Cord\_FuncCallConverterSubFactories.cs" />
+    <Compile Include="[2] Cord\_ActionCallConverterSubFactories %28copy%29.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Folder Include="Cord\" />
     <Folder Include="Serialization\" />
     <Folder Include="Deserialization\" />
+    <Folder Include="[2] Cord\" />
   </ItemGroup>
 </Project>

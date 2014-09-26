@@ -7,85 +7,55 @@ using System.Runtime.InteropServices;
 using ProtoBuf;
 using System.IO;
 using System.Net;
-using SomeContract;
+using TheTunnel;
 
-namespace TheTunnel
+
+namespace Spinning
 {
-
-	delegate void dt(int i, double d, DateTime dt, string str);
 	public class Program
 	{
 		static void Main(string[] args)
 		{
-
-
-			var srv = new ChatServer ();
-			srv.Open ();
-			Console.Write ("Opening the tunnel to the server...");
-			var client = new TcpClientTunnel ();
-
-			var ccc = new ChatClientContract ();
-			try
-			{
-				//Console.WriteLine("Press any key for connect");
-				Console.ReadKey();
-				client.Connect (new IPAddress(new byte[]{127,0,0,1}), 2049, ccc);
-			}
-			catch(Exception ex) {
-				Console.WriteLine (ex.ToString ());
-				Console.WriteLine (" Fail. Goodbye");
-				return;
-			}
-		 	Console.WriteLine (" Connected");
-			Console.Write (" registration...");
-
-			UserInfo myself = new UserInfo{ FullName = "Sukhanov YP", Nick = "tmt" };
-			var res = ccc.RegistrateMe (myself);
-
-			if (res == null)
-				Console.WriteLine ("..silence");
-			else if (res.Result)
-				Console.WriteLine ("Confirmed at " + res.TimeStamp.ToShortTimeString ());
-			else {
-				Console.WriteLine ("Rejected. Bye.");
-				return;
-			}
-
-			Console.WriteLine ("write exit to close chat");
-			while(true)
-			{
-				var cmd = Console.ReadLine ();
-				if (cmd == "exit") {
-					client.Disconnect ();
-					return;
-				}
-				if(cmd.StartsWith("c "))
+			TcpClientTunnel client = new TcpClientTunnel ();
+			client.OnDisconnect += (sender, reason) => Console.WriteLine ("Disconnected. Reason: " + reason); ;
+			ClientContract contract = new ClientContract ();
+			Console.WriteLine ("Press any key to connect");
+			Console.ReadKey ();
+			Console.WriteLine ("Trying to connect...");
+			while (true) {
+				try {
+					client.Connect (new IPAddress (new byte[]{ 172, 16, 31, 34 }), 1234, contract);
+					break;
+				} catch (Exception ex) {
+					Console.WriteLine ("Cannot connect because of " + ex.Message);
+					bool reconnect = false;
+					while(true)
 					{
-						 var c = cmd.Remove (0, 2);
-						 ccc.SendMessage (new Msg {
-						 	User = myself,
-						 	Timestamp = DateTime.Now,
-						 	Message = c,
-						});
-					}
-				else if (cmd.StartsWith("cc "))
-					{
-						var c = cmd.Remove (0, 3);
-						var uis =ccc.Ask4UserList (c);
-						if(uis==null)
-							Console.WriteLine("nullget");
-						else
-						{
-							Console.WriteLine("Got "+uis.Length);
-							foreach(var r in uis)
-								Console.WriteLine("\t"+r);
-
+						Console.WriteLine ("Reconnect?[y/n]");
+						var rc = Console.ReadKey ();
+						if (rc.Key == ConsoleKey.Y) {
+							reconnect = true;
+							break;
+						} else if(rc.Key== ConsoleKey.N) {
+							reconnect = false;
+							break;
 						}
 					}
-				else if(!srv.ParseCmd (cmd))
-					return;
+					if (!reconnect) {
+						Console.WriteLine ("Bye");
+						return;
+					}
+				}
+			}
+				Console.WriteLine ("Succesfully to connected!");
 
+			while (true) {
+				var msg = Console.ReadLine ();
+				if (msg == "exit")
+					return;
+				contract.SendMessage ("tmt", msg);
 			}
 		}
 	}
+
 }

@@ -5,8 +5,6 @@ using System.Net;
 namespace TheTunnel
 {
 	//based on http://robjdavey.wordpress.com/2011/02/11/asynchronous-tcp-client-example/ example
-
-
 	public class qTcpClient
 	{
 		public static qTcpClient Connect(IPAddress ip, int port)
@@ -34,14 +32,10 @@ namespace TheTunnel
 		}
 
 		public TcpClient Client{ get; protected set; }
-		qSender sender;
-		qReceiver receiver;
-		bool disconnectMsgWasSended = false;
-		bool readWasStarted = false;
 
-		event Action<qTcpClient, qMsg> onReceive;
+		event delQuantReceive onReceive;
 
-		public event Action<qTcpClient, qMsg> OnReceive
+		public event delQuantReceive OnReceive
 		{
 			add   { 
 				onReceive+= value;
@@ -79,6 +73,12 @@ namespace TheTunnel
 				}
 			}
 		}
+
+		qSender sender;
+		qReceiver receiver;
+		bool disconnectMsgWasSended = false;
+		bool readWasStarted = false;
+
 
 		void readCallback(IAsyncResult result)
 		{
@@ -158,5 +158,6 @@ namespace TheTunnel
 			}
 		}
 	}
+	public delegate void delQuantReceive(qTcpClient client, qMsg msg);
 }
 

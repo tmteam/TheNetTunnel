@@ -7,13 +7,13 @@ namespace TheTunnel
 	/// </summary>
 	public static class HeavyReflectionTools
 	{
-		public static Delegate CreateConverterToArgsArrayAction(Action<object[]> action, Type[] argTypes)
-		{
+		public static Delegate CreateConverterToArgsArrayAction(Action<object[]> action, Type[] argTypes){
+
 			Type t = null;
 			switch (argTypes.Length){
 			    case 0:  t = typeof(ActionCallConverterSubFactory);  break;
-    			case 1:	 t = typeof(ActionCallConverterSubFactory<>);  break;
-			    case 2:	 t = typeof(ActionCallConverterSubFactory<,>);  break;
+    			case 1:	 t = typeof(ActionCallConverterSubFactory<>); break;
+			    case 2:	 t = typeof(ActionCallConverterSubFactory<,>); break;
 				case 3:	 t = typeof(ActionCallConverterSubFactory<,,>); break;
 				case 4:	 t = typeof(ActionCallConverterSubFactory<,,,>); break;
 				case 5:	 t = typeof(ActionCallConverterSubFactory<,,,,>); break;
@@ -38,7 +38,6 @@ namespace TheTunnel
 		public static Delegate CreateConverterToArgsArrayFunc(Func<object, object> func,Type returnType, Type[] argTypes)
 		{
 			Type t = null;
-
 			switch (argTypes.Length){
 				case 0:  t = typeof(FuncCallConverterSubFactory<>); break;
 				case 1:	 t = typeof(FuncCallConverterSubFactory<,>); break;

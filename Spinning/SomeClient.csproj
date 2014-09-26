@@ -39,13 +39,10 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ClientContract.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\Spintools\Spintools.csproj">
-      <Project>{35299810-870F-4FF0-A327-BAC6A5740C31}</Project>
-      <Name>Spintools</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Try\Try.csproj">
       <Project>{E172EF9C-4663-435D-A236-3A8FC7535183}</Project>
       <Name>Try</Name>
@@ -53,10 +50,6 @@
     <ProjectReference Include="..\TheTunnel\TheTunnel.csproj">
       <Project>{83C01563-E5FB-4AAF-BF85-5CA0A73AD661}</Project>
       <Name>TheTunnel</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SomeContract\SomeContract.csproj">
-      <Project>{9B1A1AF1-6681-46A8-9EA1-AC9A3F4E8742}</Project>
-      <Name>SomeContract</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

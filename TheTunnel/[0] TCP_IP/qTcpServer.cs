@@ -43,7 +43,6 @@ namespace TheTunnel
 			}
 		}
 
-
 		public void EndListen()
 		{
 			IsListening = false;
@@ -63,10 +62,10 @@ namespace TheTunnel
 		List<qTcpClient> clients = new List<qTcpClient>();
 		public qTcpClient[] Clients{get{lock (clients) {
 					return clients.ToArray ();
-				} }}
+				}}}
 
-		public event Action<qTcpServer,qTcpClient> OnConnect;
-		public event Action<qTcpServer,qTcpClient> OnDisconnect;
+		public event delLightConnecter OnConnect;
+		public event delLightConnecter OnDisconnect;
 
 		void addClient(qTcpClient client)
 		{
@@ -86,7 +85,7 @@ namespace TheTunnel
 			if (OnDisconnect != null)
 				OnDisconnect (this, obj);
 		}
-
 	}
+	public delegate void delLightConnecter(qTcpServer sender, qTcpClient client);
 }
 
