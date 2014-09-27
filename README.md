@@ -44,7 +44,7 @@ static void Main(string[] args)
 	while (true) {
 		var msg = Console.ReadLine ();
 	        if(contract.SendMessage ("tmt", msg))
-	        	Console.WriteLine("[message accepted]"
+	        	Console.WriteLine("[message sended]");
 	}
 }
 ~~~
@@ -54,7 +54,7 @@ Server code:
 public class ServerContract{
 	[In(1)]  public bool MsgFromClient(string nick, string message){
 		Console.WriteLine (nick + ": " + message);
-		return true; //we are always happy to take a message
+		return true; //we are always happy to receive a message
 	}
 		
 	[Out(2)] public Action<DateTime,string,string> SndMsg{get;set;}
