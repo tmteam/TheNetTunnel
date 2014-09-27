@@ -87,9 +87,9 @@ In case of this primitive chat, protocol implementation is also very clear:
 
 ~~~
 
- 1) SendMessageToServer  timestamp:UTC nick:UTF16    message:UTF16
+   1 VOID SendMessageToServer  UTC:timestamp  STRING:nick    STRING:message
  
- 2) SendMessageToClient  nick:UTF16  message:UTF16 -> INT8 //will not lie to yourself - bool is always byte
+ <-2 BYTE SendMessageToClient  STRING:nick    STRING:message  #will not lie to yourself - bool is always byte
 
 ~~~
 
