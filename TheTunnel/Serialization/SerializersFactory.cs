@@ -22,11 +22,15 @@ namespace TheTunnel
 			else if (t.IsArray) {	
 				var gt = typeof(ArraySerializer<>).MakeGenericType (t);
 				return Activator.CreateInstance (gt) as ISerializer;
+			} else if (t.IsClass && (t.StructLayoutAttribute.Pack != 1 || (t.StructLayoutAttribute.Value == LayoutKind.Auto)))
+				throw new ArgumentException ("Type " + t.Name + " cannot be serialized. "
+				+ "Use protobuf serialization with [ProtoContractAttribute] in case of complex type "
+				+ "or  [StructLayoutAttribute(LayoutKind.Explicit, Pack = 1)] // [StructLayoutAttribute(LayoutKind.Sequential, Pack = 1)]  in case of fixed-size type");
+			else if (t.IsEnum) {
+				var underT = Enum.GetUnderlyingType (t);
+				var gt =typeof(PrimitiveConvertSerializer<,>).MakeGenericType (t,underT);
+				return Activator.CreateInstance (gt) as ISerializer;
 			}
-			else if (t.IsClass && (t.StructLayoutAttribute.Pack!=1 || (t.StructLayoutAttribute.Value== LayoutKind.Auto)))
-				throw new ArgumentException("Type "+ t.Name+" cannot be serialized. "
-					+"Use protobuf serialization with [ProtoContractAttribute] in case of complex type "
-					+"or  [StructLayoutAttribute(LayoutKind.Explicit, Pack = 1)] // [StructLayoutAttribute(LayoutKind.Sequential, Pack = 1)]  in case of fixed-size type");
 			else
 			{
 				var gt =typeof(PrimitiveSerializer<>).MakeGenericType (t);

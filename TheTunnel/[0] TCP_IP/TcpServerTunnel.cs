@@ -76,6 +76,6 @@ namespace TheTunnel
 				OnDisconnect (this, client);
 		}
 	}
-	public delegate void delConnecter<TContract>(TcpServerTunnel<TContract> server, TContract serverContract) where TContract: class, new();
+	public delegate void delConnecter<TContract>(TcpServerTunnel<TContract> server, TContract contract) where TContract: class, new();
 }
 

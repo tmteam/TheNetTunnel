@@ -8,6 +8,7 @@
     <RootNamespace>TheTunnel</RootNamespace>
     <AssemblyName>TheTunnel</AssemblyName>
     <ReleaseVersion>0.2</ReleaseVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -77,6 +78,8 @@
     <Compile Include="[2] Cord\HeavyReflectionTools.cs" />
     <Compile Include="[2] Cord\_FuncCallConverterSubFactories.cs" />
     <Compile Include="[2] Cord\_ActionCallConverterSubFactories %28copy%29.cs" />
+    <Compile Include="Serialization\PrimitiveConvertSerializer.cs" />
+    <Compile Include="Deserialization\PrimitiveConverterDeserializer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

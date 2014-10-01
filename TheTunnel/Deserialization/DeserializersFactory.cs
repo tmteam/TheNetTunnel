@@ -29,6 +29,10 @@ namespace TheTunnel
 			throw new ArgumentException("Type "+ t.Name+" cannot be deserialized. "
 				+"Use protobuf deserialization with [ProtoContractAttribute] in case of complex type "
 				+"or  [StructLayoutAttribute(LayoutKind.Explicit, Pack = 1)] // [StructLayoutAttribute(LayoutKind.Sequential, Pack = 1)]  in case of fixed-size type");
+		else if (t.IsEnum) {
+				var gt = typeof(PrimitiveConverterDeserializer<,>).MakeGenericType (t, Enum.GetUnderlyingType (t));
+				return Activator.CreateInstance (gt) as IDeserializer;
+		}
 		else {
 			var gt =typeof(PrimitiveDeserializer<>).MakeGenericType (t);
 			return Activator.CreateInstance (gt) as IDeserializer;
