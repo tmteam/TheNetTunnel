@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
-namespace Spinning
+
+namespace SomeFTPlikeClient_Example
 {
 
 	public abstract class CmdBase
@@ -10,12 +11,14 @@ namespace Spinning
 		public FileTransferClientContract Contract {get;set;}
 		public string Signature { get; protected set;}
 	}
+
 	public class SendMessage: CmdBase{
 		public SendMessage(){ Signature = "msg";}
 		public override void Run (string arg){
 			Contract.SendMessage(arg);
 		}
 	}
+
 	public class GetCurrentDirrectory: CmdBase{
 		public GetCurrentDirrectory(){
 			Signature = "cur";
@@ -26,6 +29,7 @@ namespace Spinning
 			Console.WriteLine ("Current dirrectory: " + Contract.CurrentDirrectory);
 		}
 	}
+
 	public class ChangeDirrectory:CmdBase{
 		public ChangeDirrectory(){ Signature = "cd";}
 		public override void Run (string arg)
@@ -36,6 +40,7 @@ namespace Spinning
 			}
 		}
 	}
+
 	public class GetDirContent: CmdBase{
 		public GetDirContent(){ Signature = "ls";}
 		public override void Run (string arg)

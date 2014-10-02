@@ -10,7 +10,7 @@ using System.Net;
 using TheTunnel;
 
 
-namespace Spinning
+namespace SomeFTPlikeClient_Example
 {
 
 	class ServerContract{}
@@ -64,6 +64,12 @@ namespace Spinning
 			cc.RegistrateCmd (new ChangeDirrectory ());
 			cc.RegistrateCmd (new SendMessage ());
 			cc.RegistrateCmd (new GetFullFile ());
+
+			Console.WriteLine ("\r\nCommands:\r\n");
+
+			foreach (var c in cc.Commands.Keys)
+				Console.WriteLine("\t-"+c);
+
 			while (true) {
 				var input = Console.ReadLine ();
 				if (input == "exit")
@@ -76,29 +82,5 @@ namespace Spinning
 				client.Disconnect ();
 		}
 	}
-	public class CmdCenter
-	{
-		FileTransferClientContract contract;
-		public CmdCenter(FileTransferClientContract contract)
-		{
-			this.contract = contract;
-		}
-		Dictionary<string, CmdBase> commands = new Dictionary<string, CmdBase>();
 
-		public 	void RegistrateCmd(CmdBase cmd)	{
-			commands.Add (cmd.Signature, cmd);
-			cmd.Contract = contract;
-		}
-
-		public void RunCommand(string cmd)
-		{
-			if (string.IsNullOrWhiteSpace (cmd))
-				return;
-			var arr = cmd.Split (new char[]{ ' ' }, StringSplitOptions.RemoveEmptyEntries);
-			if(!commands.ContainsKey(arr[0].ToLower()))
-				Console.WriteLine("unknown command \""+ arr[0]+"\"");
-			else
-				commands[arr[0].ToLower()].Run(cmd.Remove(0,arr[0].Length).Trim());
-		}
-	}
 }

@@ -2,7 +2,7 @@
 using TheTunnel;
 using ProtoBuf;
 
-namespace Spinning
+namespace SomeFTPlikeClient_Example
 {
 	[ProtoContract]
 	public class pbFileInfo{

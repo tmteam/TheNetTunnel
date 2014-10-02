@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SomeClient", "Spinning\SomeClient.csproj", "{A2AA9870-F8D7-424A-8F28-A1978B0A1C05}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SomeFTPlikeClient_Example", "Spinning\SomeFTPlikeClient_Example.csproj", "{A2AA9870-F8D7-424A-8F28-A1978B0A1C05}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Try", "Try\Try.csproj", "{E172EF9C-4663-435D-A236-3A8FC7535183}"
 EndProject
@@ -35,7 +35,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = Spinning\SomeClient.csproj
+		StartupItem = Spinning\SomeFTPlikeClient_Example.csproj
 		Policies = $0
 		$0.VersionControlPolicy = $1
 		$1.inheritsSet = Mono
