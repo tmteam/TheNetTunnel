@@ -12,26 +12,34 @@ using TheTunnel;
 
 namespace Spinning
 {
+
+	class ServerContract{}
 	public class Program
 	{
 		static void Main(string[] args)
 		{
+
 			TcpClientTunnel client = new TcpClientTunnel ();
 			client.OnDisconnect += (sender, reason) => Console.WriteLine ("Disconnected. Reason: " + reason); ;
-			ClientContract contract = new ClientContract ();
-			Console.WriteLine ("Press any key to connect");
-			Console.ReadKey ();
+
+			var contract = new FileTransferClientContract ();
 			Console.WriteLine ("Trying to connect...");
+
 			while (true) {
 				try {
-					client.Connect (new IPAddress (new byte[]{ 172, 16, 31, 34 }), 1234, contract);
+					Console.Write("ip: ");
+					var ip = Console.ReadLine();
+					var ipprs = IPAddress.Parse(ip);
+					Console.Write("port :");
+					var port = int.Parse(Console.ReadLine());
+					client.Connect (ipprs, port, contract);
 					break;
 				} catch (Exception ex) {
-					Console.WriteLine ("Cannot connect because of " + ex.Message);
+					Console.WriteLine ("Cannot connect because of " + ex.ToString());
 					bool reconnect = false;
 					while(true)
 					{
-						Console.WriteLine ("Reconnect?[y/n]");
+						Console.WriteLine ("Try reconnect?[y/n]");
 						var rc = Console.ReadKey ();
 						if (rc.Key == ConsoleKey.Y) {
 							reconnect = true;
@@ -47,15 +55,50 @@ namespace Spinning
 					}
 				}
 			}
-				Console.WriteLine ("Succesfully to connected!");
 
+			Console.WriteLine ("Succesfully to connected!");
+
+			var cc = new CmdCenter (contract);
+			cc.RegistrateCmd (new GetCurrentDirrectory ());
+			cc.RegistrateCmd (new GetDirContent ());
+			cc.RegistrateCmd (new ChangeDirrectory ());
+			cc.RegistrateCmd (new SendMessage ());
+			cc.RegistrateCmd (new GetFullFile ());
 			while (true) {
-				var msg = Console.ReadLine ();
-				if (msg == "exit")
-					return;
-				contract.SendMessage ("tmt", msg);
+				var input = Console.ReadLine ();
+				if (input == "exit")
+					break;
+				else
+					cc.RunCommand (input);
 			}
+			Console.WriteLine ("Bye");
+			if(client.IsConnected)
+				client.Disconnect ();
 		}
 	}
+	public class CmdCenter
+	{
+		FileTransferClientContract contract;
+		public CmdCenter(FileTransferClientContract contract)
+		{
+			this.contract = contract;
+		}
+		Dictionary<string, CmdBase> commands = new Dictionary<string, CmdBase>();
 
+		public 	void RegistrateCmd(CmdBase cmd)	{
+			commands.Add (cmd.Signature, cmd);
+			cmd.Contract = contract;
+		}
+
+		public void RunCommand(string cmd)
+		{
+			if (string.IsNullOrWhiteSpace (cmd))
+				return;
+			var arr = cmd.Split (new char[]{ ' ' }, StringSplitOptions.RemoveEmptyEntries);
+			if(!commands.ContainsKey(arr[0].ToLower()))
+				Console.WriteLine("unknown command \""+ arr[0]+"\"");
+			else
+				commands[arr[0].ToLower()].Run(cmd.Remove(0,arr[0].Length).Trim());
+		}
+	}
 }

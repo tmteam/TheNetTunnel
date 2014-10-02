@@ -50,6 +50,14 @@ namespace Try
 
 		}
 
+		[Test] public void Enum()
+		{
+			var e = testEn.first;
+			var deserialized = CheckAndRecreate(e);
+			if(e!=deserialized)
+				throw new Exception ("original and deserizlized enums are not equal");
+		}
+
 		[Test]	public void Unicode()
 		{
 			string origin = @"suppose I should be upset, even feel violated, but I'm not. No, in fact, I think this is a friendly message, like ""Hey, wanna play?"" and yes, I want to play. I really, really do. ";
@@ -156,6 +164,12 @@ namespace Try
 			if (!deserialized.IsEqualTo (origin))
 				throw new Exception ("original and deserialized sequences are not equal");
 		}
+	}
+
+	enum testEn:byte{
+		first = 1,
+		second = 2,
+		third = 3,
 	}
 
 	[ProtoContract]

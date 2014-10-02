@@ -32,21 +32,18 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="protobuf-net">
-      <HintPath>..\Spintools\protobuf-net.dll</HintPath>
+      <HintPath>..\..\..\Spinning\Spintools\protobuf-net.dll</HintPath>
     </Reference>
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ClientContract.cs" />
+    <Compile Include="FileTransferClientContract.cs" />
+    <Compile Include="ICmd.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\Try\Try.csproj">
-      <Project>{E172EF9C-4663-435D-A236-3A8FC7535183}</Project>
-      <Name>Try</Name>
-    </ProjectReference>
     <ProjectReference Include="..\TheTunnel\TheTunnel.csproj">
       <Project>{83C01563-E5FB-4AAF-BF85-5CA0A73AD661}</Project>
       <Name>TheTunnel</Name>

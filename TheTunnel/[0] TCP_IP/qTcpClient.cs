@@ -57,8 +57,7 @@ namespace TheTunnel
 			if (Client.Connected) {
 				disconnect ();
 			}
-			else
-				throw new InvalidOperationException ();
+			throw new InvalidOperationException ();
 		}
 
 		public void SendMessage(byte[] qMsg)
