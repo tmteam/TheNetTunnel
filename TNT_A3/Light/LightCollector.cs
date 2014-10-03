@@ -1,41 +1,57 @@
 ﻿using System;
+using System.IO;
+using System.Runtime.InteropServices;
 
-namespace TNT_A3
+namespace TheTunnel
 {
-	using System;
-	using System.IO;
-
-	namespace TheTunnelA3
+	public class LightCollector
 	{
-		public class LightCollector
+		static int DefaultHeadSize = Marshal.SizeOf(typeof(QuantumHead));
+		public LightCollector()
 		{
-			public void Set(byte[] packetFromAStream)
-			{
 
-			}
-			public bool HasNewLightMessages{get{ return false; }}
-
-			public void Next()
-			{
-
-			}
 		}
-		public class LightMessageAssembler
+		public DateTime lastTS;
+
+		MemoryStream stream = null;
+
+		int lenght = 0;
+
+		public bool Collect(QuantumHead head, byte[] packetFromAStream, int headStart)
 		{
-			public void Initialize(int id)
+			lastTS = DateTime.Now;
+			int bodyStart = headStart + DefaultHeadSize;
+			int bodyLen = head.length - DefaultHeadSize;
+			if(stream == null)
 			{
-				this.id = id;
+				if (head.type == QuantumType.Start) {
+					lenght= BitConverter.ToInt32 (packetFromAStream, bodyStart );
+					stream = new MemoryStream (lenght);
+					stream.Write (packetFromAStream, bodyStart + 4, bodyLen - 4); 
+				} else//Stream is null and its mean Error
+					return true;
 			}
+			if (head.type == QuantumType.Data) {
+				stream.Write (packetFromAStream, bodyStart, bodyLen); 
+			} else {
+				stream = null;
+				return true;
+			}
+			if (stream.Length == lenght)
+				return true;
+			if (stream.Length < lenght)
+				return false;
 
-
-			public DateTime latstTS;
-			public int bytesDone;
-			public MemoryStream stream;
-			public int id;
-
+			stream = null;
+			return true;
+		}
+		public void Clear()
+		{
+			throw new NotImplementedException ();
+		}
+		public MemoryStream GetLightMessageStream()
+		{
+			return stream;
 		}
 	}
-
-
 }
-

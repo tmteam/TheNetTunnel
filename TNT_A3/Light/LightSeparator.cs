@@ -13,13 +13,13 @@
 
 			public void Initialize(Stream stream,  int msgId)
 			{
-				left = stream.Length - stream.Position;
+				left = (int)(stream.Length - stream.Position);
 				this.msgId = msgId;
 				got1Sended = false;
 			}
 
 			int  left;
-			public bool Left{ get{ return left; }}
+			public int Left{ get{ return left; }}
 
 			int msgId;
 			public int MsgId{ get { return msgId; } }
@@ -29,15 +29,15 @@
 
 			public byte[] Next(int maxQuantSize)
 			{
-				left = currentStream.Length - currentStream.Position;
+				left = (int)(currentStream.Length - currentStream.Position);
 				var actualHeadSize = got1Sended ? DefaultHeadSize : (DefaultHeadSize + 4);
 				var head = new QuantumHead {
-					lenght = (ushort)Math.Min(actualHeadSize+left,maxQuantSize),
+					length = (ushort)Math.Min(actualHeadSize+left,maxQuantSize),
 					msgId = msgId,
 					type = got1Sended ? QuantumType.Data : QuantumType.Start,
 				};
 
-				byte[] Quant = new byte[head.lenght];
+				byte[] Quant = new byte[head.length];
 
 				//Head
 				head.SetToArray (Quant, 0, DefaultHeadSize);
@@ -47,7 +47,7 @@
 					Array.Copy(BitConverter.GetBytes(left),0,Quant,DefaultHeadSize,4);
 
 				//data
-				currentStream.Read (Quant, actualHeadSize, head.lenght-actualHeadSize);
+				currentStream.Read (Quant, actualHeadSize, head.length-actualHeadSize);
 
 				got1Sended = true;
 				return Quant;

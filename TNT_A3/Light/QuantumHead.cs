@@ -6,9 +6,9 @@ namespace TheTunnel
 	[StructLayout(LayoutKind.Explicit, Size= 7)]
 	public struct QuantumHead
 	{
-		[FieldOffset(0)] UInt16 lenght;
-		[FieldOffset(2)] Int32 msgId;
-		[FieldOffset(6)] QuantumType type;
+		[FieldOffset(0)] public UInt16 length;
+		[FieldOffset(2)] public Int32 msgId;
+		[FieldOffset(6)] public QuantumType type;
 	}
 
 	public enum QuantumType: byte{

@@ -35,6 +35,8 @@
     <Compile Include="Light\LightSeparator.cs" />
     <Compile Include="Light\QuantumHead.cs" />
     <Compile Include="Light\LightCollector.cs" />
+    <Compile Include="Light\QuantumReceiver.cs" />
+    <Compile Include="Tools.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
