@@ -7,10 +7,8 @@ namespace TheTunnel
 {
 	//based on http://robjdavey.wordpress.com/2011/02/11/asynchronous-tcp-client-example/ example
 	public class LightTcpClient
-	{
-		public static LightTcpClient Connect(IPAddress ip, int port)
-		{
-			TcpClient client = new TcpClient ();
+	{	public static LightTcpClient Connect(IPAddress ip, int port)
+		{	TcpClient client = new TcpClient ();
 
 			client.Connect (new IPEndPoint (ip, port));
 
@@ -19,6 +17,7 @@ namespace TheTunnel
 			else
 				throw new System.Net.Sockets.SocketException();
 		}
+
 		int maxQSize = 900;
 		public LightTcpClient (TcpClient client)
 		{
@@ -45,7 +44,8 @@ namespace TheTunnel
 				NetworkStream networkStream = Client.GetStream();
 				byte[] buffer = new byte[Client.ReceiveBufferSize];
 
-				//Now we are connected start asyn read operation.
+				//Now we are connected.
+				//start async read operation.
 				networkStream.BeginRead(buffer, 0, buffer.Length, readCallback, buffer);
 			}
 			remove{ onReceive-= value;}
@@ -159,6 +159,7 @@ namespace TheTunnel
 			}
 		}
 	}
+
 	public delegate void delQuantReceive(LightTcpClient client, MemoryStream msg);
 }
 

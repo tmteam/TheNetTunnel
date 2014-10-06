@@ -4,11 +4,35 @@ using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
 using System.Reflection;
+using System.IO;
 
 namespace TheTunnel
 {
     public static class Tools
     {
+		public static void CopyToAnotherStream(this Stream stream,  Stream targetStream,int lenght)
+		{
+			int lasts = lenght;
+			while (lasts>0) {
+
+				byte[] arr = new byte[lasts > 4096 ? 4096 : lasts];
+				stream.Read (arr, 0, arr.Length);
+				targetStream.Write (arr, 0, arr.Length);
+				lasts -= arr.Length;
+			}
+		}
+		public static void WriteToStream<T>(this T str, Stream stream, int size = -1) 
+		{
+			if(size==-1)
+				size = Marshal.SizeOf(str);
+			var arr = new byte[size];
+			IntPtr ptr = Marshal.AllocHGlobal(size);
+			Marshal.StructureToPtr(str, ptr, true);
+			Marshal.Copy(ptr, arr, size, size);
+			Marshal.FreeHGlobal(ptr);
+			stream.Write (arr, 0, size);
+		}
+
         public static void SetToArray<T>(this T str, byte[] array, int dest,  int size = -1) 
         {
             if(size==-1)
