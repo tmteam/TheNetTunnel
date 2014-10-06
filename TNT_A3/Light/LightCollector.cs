@@ -7,10 +7,7 @@ namespace TheTunnel
 	public class LightCollector
 	{
 		static int DefaultHeadSize = Marshal.SizeOf(typeof(QuantumHead));
-		public LightCollector()
-		{
 
-		}
 		public DateTime lastTS;
 
 		MemoryStream stream = null;
@@ -31,7 +28,7 @@ namespace TheTunnel
 				} else//Stream is null and its mean Error
 					return true;
 			}
-			if (head.type == QuantumType.Data) {
+			else if (head.type == QuantumType.Data) {
 				stream.Write (packetFromAStream, bodyStart, bodyLen); 
 			} else {
 				stream = null;
@@ -47,7 +44,8 @@ namespace TheTunnel
 		}
 		public void Clear()
 		{
-			throw new NotImplementedException ();
+			stream = null;
+			lenght = 0;
 		}
 		public MemoryStream GetLightMessageStream()
 		{

@@ -27,7 +27,6 @@ namespace TheTunnel
             }
         }
 
-        
 		public int Send(byte[] msg)
         {
             var quantums = separator.Separate(msg, maxQuantSize, Id);

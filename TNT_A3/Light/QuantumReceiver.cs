@@ -36,13 +36,13 @@ namespace TheTunnel
 			int offset = 0;
 			while(true)
 			{
-				if (qBuff.Length < DefaultHeadSize) {
+				if (qBuff.Length < DefaultHeadSize+ offset) {
 					if (offset > 0)
 						qBuff = saveUndone (qBuff,offset);
 					return;
 				}
 
-				var head = qBuff.ToStruct<QuantumHead> (0, DefaultHeadSize);
+				var head = qBuff.ToStruct<QuantumHead> (offset, DefaultHeadSize);
 
 				if (offset + head.length == qBuff.Length) {
 					//fullquant
@@ -68,51 +68,6 @@ namespace TheTunnel
 			byte[] res = new byte[arr.Length - offset];
 			Array.Copy (arr, offset, res, 0, res.Length);
 			return res;
-		}
-
-		public void SetOld(byte[] packetFromAStream)
-		{
-			//Warm optimization hell
-
-			int position = 0;
-
-			if (undoneByteCount >0) {
-				if (undoneByteCount <= packetFromAStream.Length) {
-					//finish quant receiving:
-					Array.Copy (packetFromAStream, 0, lastHandled, lastHead.length - undoneByteCount, undoneByteCount);
-					handle (lastHead, lastHandled,0);
-				}
-				else {
-					//The quant still undone
-					Array.Copy (packetFromAStream, 0, lastHandled, lastHead.length - undoneByteCount, packetFromAStream.Length);
-					undoneByteCount -= packetFromAStream.Length;
-					return;
-				}
-			}
-
-			while (position<packetFromAStream.Length) {
-				var dataLeft = packetFromAStream.Length - position;
-
-				if (dataLeft >= DefaultHeadSize) {
-					lastHead = Tools.ToStruct<QuantumHead> (packetFromAStream, position, DefaultHeadSize);
-					if (lastHead.length >= dataLeft) {
-						//HandleQuant
-						handle (lastHead, packetFromAStream, position);
-						position += lastHead.length;
-					} else {
-						undoneByteCount = lastHead.length - dataLeft;
-						lastHandled = new byte[lastHead.length];
-						Array.Copy (packetFromAStream, position, lastHandled, 0, undoneByteCount);
-						return;
-					}
-				} else {
-					//???
-				}
-			}
-
-			position = undoneByteCount;
-			undoneByteCount = 0;
-			lastHandled = null;
 		}
 
 		void handle(QuantumHead head, byte[] msg, int quantBeginOffset){
@@ -144,6 +99,7 @@ namespace TheTunnel
 				}
 			}
 		}
+
 		Dictionary<int, LightCollector> collectors = new Dictionary<int, LightCollector>();
 
 		public event Action<QuantumReceiver, QuantumHead,MemoryStream> OnLightMessage;
