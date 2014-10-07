@@ -8,32 +8,7 @@ namespace A3Expit
 {
 	public class Light
 	{
-		public Random rnd = new Random(DateTime.Now.Millisecond);
 
-		MemoryStream GetRandomStream(int length)
-		{
-			MemoryStream ans = new MemoryStream ();
-			int maxArrSize = 1000;
-			while (ans.Length < length) {
-				byte[] buff = new byte[maxArrSize];
-				rnd.NextBytes (buff);
-				ans.Write (buff, 0, (int)Math.Min (length-ans.Length, buff.Length));
-			}
-			return ans;
-		}
-
-		bool CompareStreams (MemoryStream a, MemoryStream b)
-		{
-			a.Position = 0;
-			b.Position = 0;
-			while (a.Position < a.Length) {
-				var Bsended = a.ReadByte ();
-				var Breceived = b.ReadByte ();
-				if (Bsended != Breceived)
-					return false;
-			}
-			return true;
-		}
 
 		public void Short_SR()
 		{
@@ -98,15 +73,15 @@ namespace A3Expit
 		public void MultiSR()
 		{
 
-			var s0 = GetRandomStream (1);
-			var s1 = GetRandomStream (10);
-			var s2 = GetRandomStream (100);
-			var s3 = GetRandomStream (1000);
-			var s4 = GetRandomStream (10000);
-			var s5 = GetRandomStream (100000);
-			var s6 = GetRandomStream (1000000);
-			var s7 = GetRandomStream (10000000);
-			var s8 = GetRandomStream (100000000);
+			var s0 = Tools.GetRandomStream (1);
+			var s1 = Tools.GetRandomStream (10);
+			var s2 = Tools.GetRandomStream (100);
+			var s3 = Tools.GetRandomStream (1000);
+			var s4 = Tools.GetRandomStream (10000);
+			var s5 = Tools.GetRandomStream (100000);
+			var s6 = Tools.GetRandomStream (1000000);
+			var s7 = Tools.GetRandomStream (10000000);
+			var s8 = Tools.GetRandomStream (100000000);
 
 			TestMultipleSendAndReceive(new MemoryStream[]{s0,s1,s2,s3,s4,s5,s6, s7, s8});
 		}
@@ -250,7 +225,7 @@ namespace A3Expit
 			//Immitate Stream-Style Delivery;
 			TransportStream.Position = 0;
 			while (TransportStream.Position < TransportStream.Length) {
-				var size = rnd.Next () % (MaxQuantumSize * 5);
+				var size = Tools.rnd.Next () % (MaxQuantumSize * 5);
 				size = (int)Math.Min (TransportStream.Length - TransportStream.Position, size);
 				byte[] msg = new byte[size];
 				TransportStream.Read (msg, 0, size);
@@ -271,7 +246,7 @@ namespace A3Expit
 				if (!streams.ContainsKey ((int)r.Length))
 					throw new Exception ("incorrect length received");
 				var snd = streams [(int)r.Length];
-				if (!CompareStreams (snd, r))
+				if (!Tools.CompareStreams (snd, r))
 					throw new Exception ("Sended and received messages are not equal");
 				streams.Remove ((int)r.Length);
 			}

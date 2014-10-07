@@ -28,7 +28,7 @@ namespace TheTunnel
 			var arr = new byte[size];
 			IntPtr ptr = Marshal.AllocHGlobal(size);
 			Marshal.StructureToPtr(str, ptr, true);
-			Marshal.Copy(ptr, arr, size, size);
+			Marshal.Copy(ptr, arr, 0, size);
 			Marshal.FreeHGlobal(ptr);
 			stream.Write (arr, 0, size);
 		}

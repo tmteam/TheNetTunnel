@@ -9,6 +9,7 @@ namespace TheTunnel
 
 		public bool TrySerialize (object obj, byte[] arr, int offset){
 			var res = ProtoTools.Serialize(obj, 0);
+
 			if (res.Length > arr.Length + offset)
 				return false;
 			Array.Copy (res, 0, arr, offset, res.Length);

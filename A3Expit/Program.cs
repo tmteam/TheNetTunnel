@@ -6,7 +6,8 @@ namespace A3Expit
 	{
 		public static void Main (string[] args)
 		{
-			SendReceiveTest ();
+			//SendReceiveTest ();
+			De_SerializationTest ();
 		}
 
 		public static void SendReceiveTest()
@@ -45,6 +46,12 @@ namespace A3Expit
 			Console.WriteLine ("MultiSR");
 			test.MultiSR ();
 			Console.WriteLine ("Done");
+		}
+
+		public static void De_SerializationTest()
+		{
+			var test = new De_Serialization ();
+			test.Primitive ();
 		}
 	}
 }
