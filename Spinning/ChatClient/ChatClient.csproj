@@ -3,10 +3,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProjectGuid>{A2AA9870-F8D7-424A-8F28-A1978B0A1C05}</ProjectGuid>
+    <ProjectGuid>{003491C1-87A5-4D4F-9228-ABDE18570085}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Spinning</RootNamespace>
-    <AssemblyName>Spinning</AssemblyName>
+    <RootNamespace>ChatClient</RootNamespace>
+    <AssemblyName>ChatClient</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <ReleaseVersion>0.2</ReleaseVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
@@ -31,20 +32,15 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="protobuf-net">
-      <HintPath>..\..\..\Spinning\Spintools\protobuf-net.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="FileTransferClientContract.cs" />
-    <Compile Include="ICmd.cs" />
-    <Compile Include="CmdCenter.cs" />
+    <Compile Include="ClientContract.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\TNT_A3\TheTunnel.csproj">
+    <ProjectReference Include="..\..\TNT_A3\TheTunnel.csproj">
       <Project>{9FFEC001-2177-4EA1-A2B5-6D50A7436AE5}</Project>
       <Name>TheTunnel</Name>
     </ProjectReference>

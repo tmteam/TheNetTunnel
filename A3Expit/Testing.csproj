@@ -49,9 +49,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\TNT_A3\TNT_A3.csproj">
+    <ProjectReference Include="..\TNT_A3\TheTunnel.csproj">
       <Project>{9FFEC001-2177-4EA1-A2B5-6D50A7436AE5}</Project>
-      <Name>TNT_A3</Name>
+      <Name>TheTunnel</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

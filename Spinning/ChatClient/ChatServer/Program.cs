@@ -27,15 +27,18 @@ namespace ChatServer
 					contract.ReceiveMessage-= HandleReceiveMessage;
 				}
 			};
-
+			Console.WriteLine ("Opening the server");
 			server.OpenServer (IPAddress.Any, 4242);
+			Console.WriteLine ("Waiting for a clients");
 			while (true) {
 				var msg = Console.ReadLine();
 				if(msg== "exit")
 					return;
 				lock (clients) {
 					foreach (var c in clients) {
-						c.SendMessage (DateTime.Now, nick, msg);
+						var res = c.SendMessage (DateTime.Now, nick, msg);
+						if (!res)
+							Console.WriteLine ("Send failure");
 					}
 				}
 			}
@@ -45,8 +48,11 @@ namespace ChatServer
 		static void HandleReceiveMessage (DateTime arg1, string nick, string msg)
 		{
 			lock (clients) {
-				foreach (var c in clients) 
-					c.SendMessage (DateTime.Now, "ECHO-"+nick, msg);
+				foreach (var c in clients) {
+					var res = c.SendMessage (DateTime.Now, "ECHO-" + nick, msg);
+					if (!res)
+						Console.WriteLine ("Send failure");
+				}
 			}
 		}
 	}
