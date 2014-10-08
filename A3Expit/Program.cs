@@ -8,6 +8,8 @@ namespace A3Expit
 		{
 			//SendReceiveTest ();
 			De_SerializationTest ();
+			//CordDispatcherTest cdt = new CordDispatcherTest ();
+			//cdt.PrimitiveSendReceive ();
 		}
 
 		public static void SendReceiveTest()
@@ -52,6 +54,9 @@ namespace A3Expit
 		{
 			var test = new De_Serialization ();
 			test.Primitive ();
+			test.UTF ();
+			test.FixedSizeArrays ();
+			test.DynamicSizeArrays ();
 		}
 	}
 }

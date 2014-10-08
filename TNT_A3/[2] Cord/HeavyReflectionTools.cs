@@ -49,7 +49,7 @@ namespace TheTunnel
 		/// <returns>The converter to arguments array action.</returns>
 		/// <param name="action">Action.</param>
 		/// <param name="argTypes">Argument types.</param>
-		public static Delegate CreateConverterToArgsArrayFunc(Func<object, object> func,Type returnType, Type[] argTypes)
+		public static Delegate CreateConverterToArgsArrayFunc(Func<object[], object> func,Type returnType, Type[] argTypes)
 		{
 			Type t = null;
 			switch (argTypes.Length){

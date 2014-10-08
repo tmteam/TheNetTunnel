@@ -76,6 +76,8 @@
     <Compile Include="[2] Cord\InCord.cs" />
     <Compile Include="[2] Cord\AnsweringCord.cs" />
     <Compile Include="[2] Cord\AskCord.cs" />
+    <Compile Include="[2] Cord\CordDispatcher.cs" />
+    <Compile Include="[2] Cord\ContractInterfaces.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
