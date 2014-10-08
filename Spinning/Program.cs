@@ -19,7 +19,7 @@ namespace SomeFTPlikeClient_Example
 		static void Main(string[] args)
 		{
 
-			TcpClientTunnel client = new TcpClientTunnel ();
+			LightTunnelClient client = new LightTunnelClient ();
 			client.OnDisconnect += (sender, reason) => Console.WriteLine ("Disconnected. Reason: " + reason); ;
 
 			var contract = new FileTransferClientContract ();

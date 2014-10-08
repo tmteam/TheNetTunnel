@@ -1,10 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SomeFTPlikeClient_Example", "Spinning\SomeFTPlikeClient_Example.csproj", "{A2AA9870-F8D7-424A-8F28-A1978B0A1C05}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Try", "Try\Try.csproj", "{E172EF9C-4663-435D-A236-3A8FC7535183}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{39BEEFD1-EABB-4E09-813E-2FB3F8C46F5C}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
@@ -15,7 +11,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheTunnel", "TheTunnel\TheT
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TNT_A3", "TNT_A3\TNT_A3.csproj", "{9FFEC001-2177-4EA1-A2B5-6D50A7436AE5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "A3Expit", "A3Expit\A3Expit.csproj", "{50A5DF27-CCF2-4D72-B65C-85AAA6647511}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testing", "A3Expit\Testing.csproj", "{50A5DF27-CCF2-4D72-B65C-85AAA6647511}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{DE2EE164-CAE2-4645-9D1B-9D0DDE2E5009}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SomeFTPlikeClient_Example", "Spinning\SomeFTPlikeClient_Example.csproj", "{A2AA9870-F8D7-424A-8F28-A1978B0A1C05}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Chat", "Chat", "{8D35CC6C-6B60-4E2A-A26B-F5B89C371B5C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatClient", "Spinning\ChatClient\ChatClient.csproj", "{003491C1-87A5-4D4F-9228-ABDE18570085}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatServer", "Spinning\ChatClient\ChatServer\ChatServer.csproj", "{237784B6-1522-48F0-8623-A43B573F25B4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,6 +29,14 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{003491C1-87A5-4D4F-9228-ABDE18570085}.Debug|x86.ActiveCfg = Debug|x86
+		{003491C1-87A5-4D4F-9228-ABDE18570085}.Debug|x86.Build.0 = Debug|x86
+		{003491C1-87A5-4D4F-9228-ABDE18570085}.Release|x86.ActiveCfg = Release|x86
+		{003491C1-87A5-4D4F-9228-ABDE18570085}.Release|x86.Build.0 = Release|x86
+		{237784B6-1522-48F0-8623-A43B573F25B4}.Debug|x86.ActiveCfg = Debug|x86
+		{237784B6-1522-48F0-8623-A43B573F25B4}.Debug|x86.Build.0 = Debug|x86
+		{237784B6-1522-48F0-8623-A43B573F25B4}.Release|x86.ActiveCfg = Release|x86
+		{237784B6-1522-48F0-8623-A43B573F25B4}.Release|x86.Build.0 = Release|x86
 		{50A5DF27-CCF2-4D72-B65C-85AAA6647511}.Debug|x86.ActiveCfg = Debug|x86
 		{50A5DF27-CCF2-4D72-B65C-85AAA6647511}.Debug|x86.Build.0 = Debug|x86
 		{50A5DF27-CCF2-4D72-B65C-85AAA6647511}.Release|x86.ActiveCfg = Release|x86
@@ -39,15 +53,15 @@ Global
 		{A2AA9870-F8D7-424A-8F28-A1978B0A1C05}.Debug|x86.Build.0 = Debug|x86
 		{A2AA9870-F8D7-424A-8F28-A1978B0A1C05}.Release|x86.ActiveCfg = Release|x86
 		{A2AA9870-F8D7-424A-8F28-A1978B0A1C05}.Release|x86.Build.0 = Release|x86
-		{E172EF9C-4663-435D-A236-3A8FC7535183}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{E172EF9C-4663-435D-A236-3A8FC7535183}.Debug|x86.Build.0 = Debug|Any CPU
-		{E172EF9C-4663-435D-A236-3A8FC7535183}.Release|x86.ActiveCfg = Release|Any CPU
-		{E172EF9C-4663-435D-A236-3A8FC7535183}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{A2AA9870-F8D7-424A-8F28-A1978B0A1C05} = {DE2EE164-CAE2-4645-9D1B-9D0DDE2E5009}
+		{8D35CC6C-6B60-4E2A-A26B-F5B89C371B5C} = {DE2EE164-CAE2-4645-9D1B-9D0DDE2E5009}
+		{003491C1-87A5-4D4F-9228-ABDE18570085} = {8D35CC6C-6B60-4E2A-A26B-F5B89C371B5C}
+		{237784B6-1522-48F0-8623-A43B573F25B4} = {8D35CC6C-6B60-4E2A-A26B-F5B89C371B5C}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = A3Expit\A3Expit.csproj
+		StartupItem = Spinning\ChatClient\ChatClient.csproj
 		Policies = $0
 		$0.VersionControlPolicy = $1
 		$1.inheritsSet = Mono

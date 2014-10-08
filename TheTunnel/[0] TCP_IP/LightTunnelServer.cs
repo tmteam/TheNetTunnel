@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 namespace TheTunnel
 {
-	public class TcpServerTunnel<TContract> where TContract: class, new()
+	public class LightTunnelServer<TContract> where TContract: class, new()
 	{
-		Dictionary<TContract, TcpClientTunnel> contracts;
+		Dictionary<TContract, LightTunnelClient> contracts;
 		public TContract[] Contracts{ 
 			get {
 				lock (contracts) {
@@ -18,7 +18,7 @@ namespace TheTunnel
 		{
 			if (Server != null)
 				throw new InvalidOperationException ("Server is already open");
-			contracts = new Dictionary<TContract, TcpClientTunnel> ();
+			contracts = new Dictionary<TContract, LightTunnelClient> ();
 			Server = new qTcpServer ();
 			Server.OnConnect+= server_onClientConnect;
 			Server.OnDisconnect+= server_onClientDisconnect;
@@ -32,7 +32,7 @@ namespace TheTunnel
 			Server = null;
 		}
 
-		public TcpClientTunnel GetTunnel(TContract contract)
+		public LightTunnelClient GetTunnel(TContract contract)
 		{
 			lock(contracts)
 			{
@@ -55,7 +55,7 @@ namespace TheTunnel
 		void server_onClientConnect (qTcpServer server, qTcpClient newClient)
 		{
 			var contract = new TContract ();
-			var tunnel = new TcpClientTunnel (newClient, contract);
+			var tunnel = new LightTunnelClient (newClient, contract);
 			lock (contracts) {
 				contracts.Add (contract, tunnel);
 			}
@@ -76,6 +76,6 @@ namespace TheTunnel
 				OnDisconnect (this, client);
 		}
 	}
-	public delegate void delConnecter<TContract>(TcpServerTunnel<TContract> server, TContract contract) where TContract: class, new();
+	public delegate void delConnecter<TContract>(LightTunnelServer<TContract> server, TContract contract) where TContract: class, new();
 }
 

@@ -41,8 +41,6 @@
     <Compile Include="ProtoTools.cs" />
     <Compile Include="[0] TCP_IP\qTcpClient.cs" />
     <Compile Include="[0] TCP_IP\qTcpServer.cs" />
-    <Compile Include="[0] TCP_IP\TcpClientTunnel.cs" />
-    <Compile Include="[0] TCP_IP\TcpServerTunnel.cs" />
     <Compile Include="Attributes.cs" />
     <Compile Include="ContractInterfaces.cs" />
     <Compile Include="Serialization\ISerializer.cs" />
@@ -80,6 +78,8 @@
     <Compile Include="[2] Cord\_ActionCallConverterSubFactories %28copy%29.cs" />
     <Compile Include="Serialization\PrimitiveConvertSerializer.cs" />
     <Compile Include="Deserialization\PrimitiveConverterDeserializer.cs" />
+    <Compile Include="[0] TCP_IP\LightTunnelClient.cs" />
+    <Compile Include="[0] TCP_IP\LightTunnelServer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
