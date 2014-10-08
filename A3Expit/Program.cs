@@ -6,56 +6,31 @@ namespace A3Expit
 	{
 		public static void Main (string[] args)
 		{
-			//SendReceiveTest ();
+			SendReceiveTest ();
 			De_SerializationTest ();
-			//CordDispatcherTest cdt = new CordDispatcherTest ();
-			//cdt.PrimitiveSendReceive ();
+			CordDispatcherTest ();
 		}
 
 		public static void SendReceiveTest()
 		{
+			Console.WriteLine ("Testing Light ...\r\n{");
+
 			var test = new Light ();
-
-			Console.WriteLine ("Short_SR");
 			test.Short_SR ();
-			Console.WriteLine ("Done");
-			
-			Console.WriteLine ();
-
-			Console.WriteLine ("Long_SR");
 			test.Long_SR ();
-			Console.WriteLine ("Done");
-
-			Console.WriteLine ();
-
-			Console.WriteLine ("Huge_SR");
 			test.Huge_SR ();
-			Console.WriteLine ("Done");
-
-
-			Console.WriteLine ("Short_FULLSR");
 			test.Short_SRFULL ();
-			Console.WriteLine ("Done");
-
-			Console.WriteLine ();
-
-			Console.WriteLine ("HUGE_FULLSR");
 			test.Huge_FullSR ();
-			Console.WriteLine ("Done");
-
-			Console.WriteLine ();
-
-			Console.WriteLine ("MultiSR");
 			test.MultiSR ();
-			Console.WriteLine ("Done");
+
+			Console.WriteLine("}\r\nSuccesfully");
 		}
 
 		public static void De_SerializationTest()
 		{
-			Console.Write ("De_serialization test...");
+			Console.Write ("Testing De_serialization ...");
 
 			var test = new De_Serialization ();
-
 			test.Primitive ();
 			test.Enum ();
 			test.Unicode ();
@@ -64,6 +39,19 @@ namespace A3Expit
 			test.FixedSizeArrays ();
 			test.DynamicSizeArrays ();
 			test.Sequence ();
+
+			Console.WriteLine("Succesfully");
+		}
+
+		public static void CordDispatcherTest()
+		{
+			Console.Write ("Testing CordDispatcher ...");
+
+			var test = new CordDispatcherTest ();
+			test.PrimitiveJustOut ();
+			test.ComplexJustOut ();
+			test.PrimitiveAsk ();
+			test.ComplexAsk ();
 
 			Console.WriteLine("Succesfully");
 		}

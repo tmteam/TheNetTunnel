@@ -53,16 +53,13 @@ namespace TheTunnel
 			if(ainvk.ReturnType== typeof(void))	{
 				// Call
 				var oCord = JustOutCordFactory (parameters, attr);
-				call = Delegate.CreateDelegate (del.PropertyType, oCord, "Send");
-
-				if (parameters.Length != 1)
+				if (parameters.Length == 1) 
+					call = Delegate.CreateDelegate (del.PropertyType, oCord, "Send");
+				else
 				{
-					//Replace Action<T> call with Action<object[]> call:
-					var ACTcall = call as Action<object[]>;
-					if (ACTcall == null)
-						throw new Exception ("internal problem: call cant be converted to Action<object[]>");
 					var delegateHandler 
-						= HeavyReflectionTools.CreateConverterToArgsArrayAction(ACTcall, parameters);
+						= HeavyReflectionTools
+							.CreateConverterToArgsArrayAction((oCord as IOutCord<object[]>).Send, parameters);
 					call = Delegate.CreateDelegate (adel, delegateHandler, "Invoke");
 				}
 				ans = oCord;
@@ -70,16 +67,13 @@ namespace TheTunnel
 			else{
 				// Question
 				var aCord = AskCordFactory (parameters, ainvk.ReturnType, attr);
-				call = Delegate.CreateDelegate (del.PropertyType, aCord, "AskT");
-
-				if(parameters.Length !=1)
+				if(parameters.Length==1)
+					call = Delegate.CreateDelegate (del.PropertyType, aCord, "AskT");
+				else
 				{
-					//Replace Func<Tin,Tout> call with Func<object[], Tout> call:
-					var FNCcall = call as Func<object[], object>;
-					if (FNCcall == null)
-						throw new Exception ("internal problem: call cant be converted to Func<object[], object>");
 					var delegateHandler 
-						= HeavyReflectionTools.CreateConverterToArgsArrayFunc(FNCcall, ainvk.ReturnType, parameters);
+						= HeavyReflectionTools
+							.CreateConverterToArgsArrayFunc((aCord as IAskCord).Ask, ainvk.ReturnType, parameters);
 					call = Delegate.CreateDelegate (adel, delegateHandler, "Invoke");
 				}
 				ans = aCord;

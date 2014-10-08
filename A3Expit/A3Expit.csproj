@@ -42,9 +42,9 @@
     <Compile Include="Light.cs" />
     <Compile Include="De_Serialization.cs" />
     <Compile Include="Tools.cs" />
-    <Compile Include="CordDispatcher.cs" />
     <Compile Include="TestContracts.cs" />
     <Compile Include="TestTypes.cs" />
+    <Compile Include="CordDispatcherTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

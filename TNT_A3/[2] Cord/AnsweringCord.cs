@@ -23,18 +23,22 @@ namespace TheTunnel
 
 		public event Action<IOutCord, MemoryStream, int> NeedSend;
 
-		public event Action<IAnsweringCord, ushort, object> OnAsk;
+		public event Action<IAnsweringCord, short, object> OnAsk;
 
 		public event Action<IInCord, object> OnReceive;
 
-		public void SendAnswer (object answer, ushort questionId)
+		byte[] bHeadBuff = new byte[4]; 
+		short[] sHeadBuff = new short[2];
+		public void SendAnswer (object answer, short questionId)
 		{
-
 			MemoryStream str = new MemoryStream ();
-			str.WriteByte ((byte)(OUTCid & 255));
-			str.WriteByte ((byte)(OUTCid >> 8));
-			str.WriteByte ((byte)(questionId & 255));
-			str.WriteByte ((byte)(questionId >> 8));
+
+			sHeadBuff[0] = OUTCid;
+			sHeadBuff[1] = questionId;
+			
+			System.Buffer.BlockCopy(sHeadBuff,0,bHeadBuff,0,4);
+
+			str.Write (bHeadBuff, 0, 4);
 
 			Serializer.Serialize (answer, str);
 
@@ -46,8 +50,8 @@ namespace TheTunnel
 		public void Parse (MemoryStream stream)
 		{
 			stream.Read (buffId, 0, 2);
-			var id = BitConverter.ToUInt16 (buffId, 0);
-			var askObj = Deserializer.Deserialize (stream, (int)stream.Length - 2);
+			var id = BitConverter.ToInt16 (buffId, 0);
+			var askObj = Deserializer.Deserialize (stream, (int)(stream.Length - stream.Position));
 			if (OnReceive != null)
 				OnReceive (this, askObj);
 			if (OnAsk != null)

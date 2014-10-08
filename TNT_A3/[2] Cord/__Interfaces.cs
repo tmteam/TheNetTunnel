@@ -31,8 +31,8 @@ namespace TheTunnel
 
 		public interface IAnsweringCord:IInCord, IOutCord
 		{
-			void SendAnswer(object val, ushort id);
-			event Action<IAnsweringCord, ushort, object> OnAsk;
+			void SendAnswer(object val, short id);
+			event Action<IAnsweringCord, short, object> OnAsk;
 		}
 
 		public interface IAskCord: IOutCord,IInCord

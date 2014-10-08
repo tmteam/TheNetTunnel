@@ -17,7 +17,7 @@ namespace TheTunnel
 
 			Type t = null;
 			switch (argTypes.Length){
-			    case 0:  t = typeof(ActionCallConverterSubFactory);  break;
+				case 0:  return new ActionCallConverterSubFactory().GetActionConverter(action);
     			case 1:	 t = typeof(ActionCallConverterSubFactory<>); break;
 			    case 2:	 t = typeof(ActionCallConverterSubFactory<,>); break;
 				case 3:	 t = typeof(ActionCallConverterSubFactory<,,>); break;
