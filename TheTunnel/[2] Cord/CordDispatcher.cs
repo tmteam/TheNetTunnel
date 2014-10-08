@@ -95,7 +95,6 @@ namespace TheTunnel
 
 			foreach (var r in inCords) 
 				RegistrateIn(r.method, r.attr);
-
 		}
 
 		void RegistrateOut(PropertyInfo del, OutAttribute attr)

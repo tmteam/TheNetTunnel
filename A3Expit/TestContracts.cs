@@ -79,6 +79,7 @@ namespace A3Expit
 		[Out(4)] public Func<string[],string[],string> Concat2Arrays{get;set;}
 		[Out(5)] public Func<ToiletType,ToiletType> Copy{get;set;}
 	}
+
 	public class FuncContractB{
 		[In(1)] public int Twice(int arg){
 			return arg*2;
@@ -95,6 +96,11 @@ namespace A3Expit
 		[In(5)] public ToiletType Copy(ToiletType t){
 			return t;
 		}
+	}
+
+	public class PingPongContract{
+		[Out(1)]  public Func<int,int, ProtoPoint> SendPing { get; set; }
+		[In (1)]  public event Func<int, int, ProtoPoint> ReceivePong;
 	}
 }
 

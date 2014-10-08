@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 
 namespace A3Expit
 {
@@ -52,6 +53,7 @@ namespace A3Expit
 			test.ComplexJustOut ();
 			test.PrimitiveAsk ();
 			test.ComplexAsk ();
+			test.EventPingPong ();
 
 			Console.WriteLine("Succesfully");
 		}

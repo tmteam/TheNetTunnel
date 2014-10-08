@@ -117,14 +117,66 @@ namespace TheTunnel
 			}
 		}
 
-//		public static IInCord InCordFactory(PropertyInfo del, InAttribute attr, object Contract)
-//		{
-//			var adel = del.PropertyType;
-//			var ainvk = adel.GetMethod ("Invoke");
-//			return InCordFactory(ainvk, attr, 
-//
-//		}
+		public static IInCord InCordFactory(FieldInfo fieldOfEvent, InAttribute attr, object Contract)
+		{
+			var meth = fieldOfEvent.FieldType.GetMethod ("Invoke");
 
+			var parameters = meth.GetParameters ().Select(p=>p.ParameterType).ToArray();
+			var returnType = meth.ReturnType;
+
+			if (parameters.Length == 1) { //Usual monoparameter cord
+				if (returnType == typeof(void)) {
+					var ccord = JustInCordFactory (parameters, attr);
+					ccord.OnReceive += (sender, msg) => 
+					{
+						var eventDelegate = fieldOfEvent.GetValue (Contract) as MulticastDelegate;
+
+						if (eventDelegate != null)
+							foreach (var handler in eventDelegate.GetInvocationList()) 
+								handler.Method.Invoke (handler.Target, new object[] { msg });
+					};
+					return ccord;
+				} else {
+					var acord = AnswerCordFactory (parameters, returnType, attr);
+					acord.OnAsk += (sender, id, msg) => {
+						var eventDelegate = fieldOfEvent.GetValue (Contract) as MulticastDelegate;
+						object ans = null;
+						if (eventDelegate != null)
+						{
+							foreach (var handler in eventDelegate.GetInvocationList()) 
+								ans = handler.Method.Invoke (handler.Target, new object[] { msg });
+							acord.SendAnswer (ans, id);
+						}
+					};
+					return acord;
+				}
+			} else { //Sequence deserialization
+				if (returnType == typeof(void)) {// no-answer cord
+					var icord = new InCord<object[]> (attr.CordId, new SequenceDeserializer (parameters));
+					icord.OnReceiveT += (sender, msg) => {
+						var eventDelegate = fieldOfEvent.GetValue (Contract) as MulticastDelegate;
+						if (eventDelegate != null)
+							foreach (var handler in eventDelegate.GetInvocationList()) 
+								handler.Method.Invoke (handler.Target, msg);
+					};
+					return icord;
+				} else {// answering cord
+					var ser = SerializersFactory.Create (returnType);
+					var acord = new AnsweringCord (attr.CordId, new SequenceDeserializer (parameters), ser);
+					acord.OnAsk += (sender, id, msg) => {
+						object ans = null;
+						var eventDelegate = fieldOfEvent.GetValue (Contract) as MulticastDelegate;
+						if (eventDelegate != null)
+						{
+							foreach (var handler in eventDelegate.GetInvocationList()) 
+								ans = handler.Method.Invoke (handler.Target, msg as object[]);
+							acord.SendAnswer(ans, id);
+						}
+					};
+					return acord;
+				}
+			}
+		}
 	}
 }
 

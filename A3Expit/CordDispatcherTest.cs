@@ -110,6 +110,31 @@ namespace A3Expit
 		
 		}
 
+		public void EventPingPong()
+		{
+			var A = new PingPongContract ();
+			var B = new PingPongContract ();
+			ConnectContracts (A, B);
+			A.ReceivePong += (x, y) => {
+				x++;
+				return new ProtoPoint{ X = x, Y = y };
+			};
+			B.ReceivePong += (x, y) => {
+				y++;
+				return new ProtoPoint{ X = x, Y = y };
+			};
+			int cx = 0, cy = 0;
+			for (int i = 0; i < 500; i++) {
+				var pong = A.SendPing (cx, cy);
+				pong = B.SendPing (pong.X, pong.Y);
+				cx = pong.X;
+				cy = pong.Y;
+			}
+			if (cx != 500 || cx != cy)
+				throw new Exception ("EventPingPong fail");
+
+		}
+
 		void ConnectContracts(object A, object B)
 		{
 			CordDispatcher ACD = new CordDispatcher (A);
@@ -119,7 +144,7 @@ namespace A3Expit
 				arg2.Position = 0;
 				BCD.Handle (arg2);
 			};
-			BCD.NeedSend+= (CordDispatcher arg1, System.IO.MemoryStream arg2) => {
+			BCD.NeedSend += (CordDispatcher arg1, System.IO.MemoryStream arg2) => {
 				arg2.Position = 0;
 				ACD.Handle(arg2);
 			};

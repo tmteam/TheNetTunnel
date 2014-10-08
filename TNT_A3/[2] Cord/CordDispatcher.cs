@@ -23,6 +23,7 @@ namespace TheTunnel
 		Dictionary<Int16, IInCord> Receivers;
 
 		byte[] idBuff = new byte[2];
+
 		public void Handle(MemoryStream stream)
 		{
 			stream.Read (idBuff, 0, 2);
@@ -68,6 +69,8 @@ namespace TheTunnel
 			this.Contract = contract;
 			var type = Contract.GetType ();
 
+			#region delegates->out
+
 			var outCords = type
 				.GetProperties ()
 				.Select (p => new 
@@ -84,8 +87,12 @@ namespace TheTunnel
 				var iCord =  oCord as IInCord;
 				if (iCord != null)	AddInCord (iCord);
 			}
+			#endregion
 
-			var inCords = type
+
+			#region input->methods
+
+			var inCordsMethods = type
 				.GetMethods ()
 				.Select (m => new 
 					{
@@ -95,12 +102,34 @@ namespace TheTunnel
 				.Where (m => m.attr != null)
 				.ToArray ();
 
-			foreach (var r in inCords) {
+			foreach (var r in inCordsMethods) {
 				var iCord = CordFacroty.InCordFactory (r.method, r.attr, contract);
 				AddInCord (iCord);
 				var oCord = iCord as IOutCord;
 				if (oCord != null)	AddOutCord (oCord);
 			}
+			#endregion
+
+
+			#region input->events
+
+			var inCordsEvents = type
+				.GetEvents()
+				.Select (f => new 
+					{
+						field = type.GetField(f.Name, BindingFlags.Instance | BindingFlags.NonPublic), 
+						attr = f.GetCustomAttributes (typeof(InAttribute), true).FirstOrDefault () as InAttribute 
+					})
+				.Where (m => m.attr != null)
+				.ToArray ();
+
+			foreach (var r in inCordsEvents) {
+				var iCord = CordFacroty.InCordFactory (r.field, r.attr, contract);
+				AddInCord (iCord);
+				var oCord = iCord as IOutCord;
+				if (oCord != null)	AddOutCord (oCord);
+			}
+			#endregion
 		}
 			
 	}
