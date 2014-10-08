@@ -52,11 +52,20 @@ namespace A3Expit
 
 		public static void De_SerializationTest()
 		{
+			Console.Write ("De_serialization test...");
+
 			var test = new De_Serialization ();
+
 			test.Primitive ();
-			test.UTF ();
+			test.Enum ();
+			test.Unicode ();
+			test.UTCFileTime ();
+			test.ProtoBuf ();
 			test.FixedSizeArrays ();
 			test.DynamicSizeArrays ();
+			test.Sequence ();
+
+			Console.WriteLine("Succesfully");
 		}
 	}
 }

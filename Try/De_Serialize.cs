@@ -166,7 +166,7 @@ namespace Try
 		}
 	}
 
-	enum testEn:byte{
+	public enum testEn:byte{
 		first = 1,
 		second = 2,
 		third = 3,
