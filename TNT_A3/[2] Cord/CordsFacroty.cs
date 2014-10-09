@@ -76,6 +76,7 @@ namespace TheTunnel
 							.CreateConverterToArgsArrayFunc((aCord as IAskCord).Ask, ainvk.ReturnType, parameters);
 					call = Delegate.CreateDelegate (adel, delegateHandler, "Invoke");
 				}
+				aCord.MaxAwaitMs = (int)attr.MaxAnswerAwaitInterval;
 				ans = aCord;
 			}
 			del.SetValue (Contract, call, null);

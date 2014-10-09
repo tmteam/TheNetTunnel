@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace A3Expit
 {
-	public class De_Serialization
+	public class Test_De_Serialization
 	{
 		public void Primitive()
 		{

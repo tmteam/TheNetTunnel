@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
+
+
 namespace TheTunnel
 {
 //	(NO ONE IS - SAFE)
@@ -11,8 +14,8 @@ namespace TheTunnel
 	public class LightTunnelClient{
 		public LightTunnelClient(){}
 		public LightTunnelClient(LightTcpClient client, object contract){
-			this.Client = client;
 			CordDispatcher = new CordDispatcher (contract);
+			this.Client = client;
 		}
 
 		public bool IsConnected{
@@ -31,7 +34,7 @@ namespace TheTunnel
 
 		void client_OnReceive (LightTcpClient client, System.IO.MemoryStream msg)
 		{
-			CordDispatcher.Handle (msg);
+			ThreadPool.QueueUserWorkItem(new WaitCallback((s)=>CordDispatcher.Handle (msg)));
 		}
 
 		CordDispatcher cordDispatcher;
@@ -55,8 +58,9 @@ namespace TheTunnel
 			
 		public void Connect(IPAddress ip, int port, object contract)
 		{
-			Client =  LightTcpClient.Connect (ip, port);
 			CordDispatcher = new CordDispatcher (contract);
+			Client =  LightTcpClient.Connect (ip, port);
+			Client.AllowReceive = true;
 		}
 
 		public void Disconnect()

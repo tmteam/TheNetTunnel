@@ -2,13 +2,17 @@
 using System.Net.Sockets;
 using System.Net;
 using System.IO;
+using System.Diagnostics;
 
 namespace TheTunnel
 {
 	//based on http://robjdavey.wordpress.com/2011/02/11/asynchronous-tcp-client-example/ example
 	public class LightTcpClient
 	{	public static LightTcpClient Connect(IPAddress ip, int port)
-		{	TcpClient client = new TcpClient ();
+		{	
+
+			TcpClient client = new TcpClient ();
+
 
 			client.Connect (new IPEndPoint (ip, port));
 
@@ -23,46 +27,51 @@ namespace TheTunnel
 		{
 			this.Client = client;
 			sender = new QuantumSender ();
-			//sender.MaxQuantSize = 1024;
 			receiver = new QuantumReceiver ();
 			receiver.OnLightMessage += (QuantumReceiver arg1, QuantumHead arg2, System.IO.MemoryStream arg3) => {
-				if(onReceive!=null)
-					onReceive(this, arg3);
+				if(OnReceive!=null)
+					OnReceive(this, arg3);
 			};
 		}
 
+		public bool IsConnected{ get { return Client == null ? false : Client.Connected; } }
+
 		public TcpClient Client{ get; protected set; }
 
-		event delQuantReceive onReceive;
 
-		public event delQuantReceive OnReceive
-		{
-			add   { 
-				onReceive+= value;
-				if(!readWasStarted)
-					readWasStarted = true;
-				NetworkStream networkStream = Client.GetStream();
-				byte[] buffer = new byte[Client.ReceiveBufferSize];
-
-				//Now we are connected.
-				//start async read operation.
-				networkStream.BeginRead(buffer, 0, buffer.Length, readCallback, buffer);
+		bool allowReceive = false;
+		public bool AllowReceive{
+			get{ return allowReceive; }
+			set { 
+				if (allowReceive != value) {
+					allowReceive = value; 
+					if (value) {
+						if (!readWasStarted) {
+							readWasStarted = true;
+							NetworkStream networkStream = Client.GetStream();
+							byte[] buffer = new byte[Client.ReceiveBufferSize];
+							//start async read operation.
+							networkStream.BeginRead(buffer, 0, buffer.Length, readCallback, buffer);
+						}
+					}
+					if (!value)
+						throw new InvalidOperationException ("cannot stop reading. [spb]");
+				}
 			}
-			remove{ onReceive-= value;}
 		}
+
+		public event delQuantReceive OnReceive;
 
 		public event Action<LightTcpClient> OnDisconnect;
 
-		public void Stop()
-		{
-			if (Client.Connected) {
+		public void Stop(){
+			if (Client.Connected)
 				disconnect ();
-			}
-			throw new InvalidOperationException ();
 		}
 
-		public void SendMessage(MemoryStream streamOfLight)
-		{
+		public void SendMessage(MemoryStream streamOfLight)	{
+			if (streamOfLight.Length == 20) {
+			}
 			lock(sender)
 			{
 				sender.Set (streamOfLight);
@@ -105,14 +114,17 @@ namespace TheTunnel
 			}
 
 			byte[] buffer = result.AsyncState as byte[];
-			Array.Resize (ref buffer, read);
-			receiver.Set (buffer);
+			byte[] readed = new byte[read];
+			Array.Copy (buffer, readed, read);
+
 
 			if (!Client.Connected)
 				return;
+			receiver.Set (readed);
 
 			//Start reading from the network again.
 			networkStream.BeginRead(buffer, 0, buffer.Length, readCallback, buffer);
+
 		}
 
 		/// <summary>

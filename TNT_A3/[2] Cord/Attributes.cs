@@ -8,8 +8,13 @@ namespace TheTunnel
 		public readonly Int16 CordId;
 	}
 	public class OutAttribute: Attribute{
-		public OutAttribute(Int16 Id){ this.CordId = Id;} 
+		public OutAttribute(Int16 Id, UInt32 MaxAnswerAwaitInterval = 60000)
+		{ 
+			this.CordId = Id;
+			this.MaxAnswerAwaitInterval = MaxAnswerAwaitInterval;
+		} 
 		public readonly Int16 CordId;
+		public readonly UInt32 MaxAnswerAwaitInterval;
 	}
 }
 

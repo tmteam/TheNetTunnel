@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Reflection;
+using System.Diagnostics;
+using System.Threading;
 
 namespace A3Expit
 {
@@ -10,6 +12,7 @@ namespace A3Expit
 			SendReceiveTest ();
 			De_SerializationTest ();
 			CordDispatcherTest ();
+			FinalLightTunnelTest ();
 		}
 
 		public static void SendReceiveTest()
@@ -31,7 +34,7 @@ namespace A3Expit
 		{
 			Console.Write ("Testing De_serialization ...");
 
-			var test = new De_Serialization ();
+			var test = new Test_De_Serialization ();
 			test.Primitive ();
 			test.Enum ();
 			test.Unicode ();
@@ -48,13 +51,25 @@ namespace A3Expit
 		{
 			Console.Write ("Testing CordDispatcher ...");
 
-			var test = new CordDispatcherTest ();
+			var test = new Test_CordDispatcher ();
 			test.PrimitiveJustOut ();
 			test.ComplexJustOut ();
 			test.PrimitiveAsk ();
 			test.ComplexAsk ();
 			test.EventPingPong ();
 
+			Console.WriteLine("Succesfully");
+		}
+
+		public static void FinalLightTunnelTest()
+		{
+			Console.Write ("Testing Light Tunnel ...");
+
+			var test = new Test_FinalLightTunnel ();
+			test.ManyConnections ();
+			test.PingPong ();
+			test.RecursionCall ();
+			test.CuteDDDOS ();
 			Console.WriteLine("Succesfully");
 		}
 	}

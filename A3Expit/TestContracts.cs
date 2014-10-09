@@ -99,7 +99,7 @@ namespace A3Expit
 	}
 
 	public class PingPongContract{
-		[Out(1)]  public Func<int,int, ProtoPoint> SendPing { get; set; }
+		[Out(1, MaxAnswerAwaitInterval:10000)]  public Func<int,int, ProtoPoint> SendPing { get; set; }
 		[In (1)]  public event Func<int, int, ProtoPoint> ReceivePong;
 	}
 

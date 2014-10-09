@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Diagnostics;
+
+
 namespace TheTunnel
 {
 	public class LightTunnelServer<TContract> where TContract: class, new()
@@ -23,6 +26,7 @@ namespace TheTunnel
 			Server.OnConnect+= server_onClientConnect;
 			Server.OnDisconnect+= server_onClientDisconnect;
 			Server.BeginListen(ip, port);
+
 		}
 
 		public void CloseServer(){
@@ -43,7 +47,9 @@ namespace TheTunnel
 			}
 		}
 
-		public event delConnecter<TContract> OnConnect;
+		public event delConnecterInfo<TContract> BeforeConnect;
+		public event delConnecter<TContract> AfterConnect;
+
 		public event delConnecter<TContract> OnDisconnect;
 
 		public void Kick(TContract contract)
@@ -52,15 +58,24 @@ namespace TheTunnel
 			tunnel.Disconnect();
 		}
 
-		void server_onClientConnect (LightTcpServer server, LightTcpClient newClient)
+		void server_onClientConnect (LightTcpServer sender, LightTcpClient newClient, ConnectInfo info)
 		{
 			var contract = new TContract ();
 			var tunnel = new LightTunnelClient (newClient, contract);
+
 			lock (contracts) {
 				contracts.Add (contract, tunnel);
 			}
-			if(OnConnect!= null)
-				OnConnect(this, contract);
+
+			if (BeforeConnect != null)
+				BeforeConnect (this, contract, info);
+			if (!info.AllowConnection)
+				return;
+
+			newClient.AllowReceive = true;
+
+			if(AfterConnect!= null)
+				AfterConnect(this, contract);
 		}
 		void server_onClientDisconnect (LightTcpServer server, LightTcpClient oldClient)
 		{
@@ -76,6 +91,7 @@ namespace TheTunnel
 				OnDisconnect (this, client);
 		}
 	}
-	public delegate void delConnecter<TContract>(LightTunnelServer<TContract> server, TContract contract) where TContract: class, new();
+	public delegate void delConnecterInfo<TContract>(LightTunnelServer<TContract> sender, TContract contract, ConnectInfo info) where TContract: class, new();
+	public delegate void delConnecter<TContract>(LightTunnelServer<TContract> sender, TContract contract) where TContract: class, new();
 }
 

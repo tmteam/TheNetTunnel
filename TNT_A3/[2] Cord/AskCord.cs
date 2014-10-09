@@ -15,7 +15,7 @@ namespace TheTunnel
 			this.SerializerT = serializer as ISerializer<Tquestion>;
 			this.Deserializer = deserializer;
 			this.DeserializerT = deserializer;
-			MaxAwaitMs = 60000;
+			MaxAwaitMs = 10000;
 		}
 
 		int id = 0;
@@ -58,7 +58,7 @@ namespace TheTunnel
 			if (NeedSend != null)
 				NeedSend (this, str, (int)str.Length);
 
-			var hasAns = aa.mre.WaitOne (1000);
+			var hasAns = aa.mre.WaitOne (MaxAwaitMs);
 			if (hasAns)
 				answer= aa.ans;
 			else {

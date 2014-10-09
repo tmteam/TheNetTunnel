@@ -55,7 +55,7 @@ Global
 		{237784B6-1522-48F0-8623-A43B573F25B4} = {8D35CC6C-6B60-4E2A-A26B-F5B89C371B5C}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = Spinning\ChatClient\ChatClient.csproj
+		StartupItem = A3Expit\Testing.csproj
 		Policies = $0
 		$0.VersionControlPolicy = $1
 		$1.inheritsSet = Mono

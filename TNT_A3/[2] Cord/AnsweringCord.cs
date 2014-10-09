@@ -41,7 +41,7 @@ namespace TheTunnel
 			str.Write (bHeadBuff, 0, 4);
 
 			Serializer.Serialize (answer, str);
-
+			str.Position = 0;
 			if (NeedSend != null)
 				NeedSend (this, str, (int)str.Length);
 		}

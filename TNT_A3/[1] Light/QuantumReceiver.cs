@@ -10,8 +10,6 @@ namespace TheTunnel
 	{
 		static int DefaultHeadSize = Marshal.SizeOf(typeof(QuantumHead));
 
-
-
 		byte[] qBuff = new byte[0];
 
 		/// <summary>
@@ -84,6 +82,7 @@ namespace TheTunnel
 				collectors.Remove (head.msgId);
 
 				if (stream != null) {
+					stream.Position = 0;
 					if (OnLightMessage != null)
 						OnLightMessage (this, head, stream);
 				} else {

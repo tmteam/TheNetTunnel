@@ -5,9 +5,9 @@ using TheTunnel;
 
 namespace A3Expit
 {
-	public class CordDispatcherTest
+	public class Test_CordDispatcher
 	{
-		public CordDispatcherTest()
+		public Test_CordDispatcher()
 		{
 			tt = Enumerable.Range (0, 100).Select (r => ToiletType.GetRandomType ()).ToArray ();
 		}
