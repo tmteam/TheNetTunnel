@@ -4,7 +4,7 @@ using System.Linq;
 using TheTunnel;
 using TheTunnel.Cords;
 
-namespace A3Expit
+namespace Testing
 {
 	public class Test_CordDispatcher
 	{

@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Diagnostics;
 using System.Threading;
 
-namespace A3Expit
+namespace Testing
 {
 	class MainClass
 	{

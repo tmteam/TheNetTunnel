@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using TheTunnel.Light;
 
-namespace A3Expit
+namespace Testing
 {
 	public class Light
 	{

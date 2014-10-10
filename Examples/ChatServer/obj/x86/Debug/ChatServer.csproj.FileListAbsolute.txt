@@ -1,0 +1,9 @@
+C:\code\TNT\TheTunnel\Examples\ChatServer\bin\Debug\ChatServer.exe.config
+C:\code\TNT\TheTunnel\Examples\ChatServer\bin\Debug\ChatServer.exe
+C:\code\TNT\TheTunnel\Examples\ChatServer\bin\Debug\ChatServer.pdb
+C:\code\TNT\TheTunnel\Examples\ChatServer\bin\Debug\TNT.dll
+C:\code\TNT\TheTunnel\Examples\ChatServer\bin\Debug\protobuf-net.dll
+C:\code\TNT\TheTunnel\Examples\ChatServer\bin\Debug\TNT.pdb
+C:\code\TNT\TheTunnel\Examples\ChatServer\obj\x86\Debug\ChatServer.csprojResolveAssemblyReference.cache
+C:\code\TNT\TheTunnel\Examples\ChatServer\obj\x86\Debug\ChatServer.exe
+C:\code\TNT\TheTunnel\Examples\ChatServer\obj\x86\Debug\ChatServer.pdb

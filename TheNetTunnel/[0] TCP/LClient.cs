@@ -119,11 +119,16 @@ namespace TheTunnel
 
 			if (!Client.Connected)
 				return;
+
 			receiver.Set (readed);
 
+            
 			//Start reading from the network again.
-			networkStream.BeginRead(buffer, 0, buffer.Length, readCallback, buffer);
-
+            try
+            {
+                networkStream.BeginRead(buffer, 0, buffer.Length, readCallback, buffer);
+            }
+            catch { return; }
 		}
 
 		/// <summary>

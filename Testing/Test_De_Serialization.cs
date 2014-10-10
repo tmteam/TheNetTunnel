@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using TheTunnel.Serialization;
 using TheTunnel.Deserialization;
 
-namespace A3Expit
+namespace Testing
 {
 	public class Test_De_Serialization
 	{

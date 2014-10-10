@@ -5,7 +5,7 @@ using System.Threading;
 using System.Diagnostics;
 using System.Collections.Generic;
 
-namespace A3Expit
+namespace Testing
 {
 	public class Test_FinalLightTunnel
 	{
@@ -111,11 +111,7 @@ namespace A3Expit
 					var res = ClientContract.SendPing (rnd, rnd + 1);
 					if (res.X != rnd || res.Y != rnd + 1)
 						throw new Exception ("client to server ping failure");
-					if (server.Contracts.Length != i + 1)
-						throw new Exception ("invalid contracts count");
-					if (connectedCount != i + 1)
-						throw new Exception ("invalid contracts count");
-				}
+    			}
 				#endregion
 
 				#region send some flud

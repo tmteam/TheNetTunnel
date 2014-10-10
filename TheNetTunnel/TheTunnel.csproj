@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -6,7 +6,7 @@
     <ProjectGuid>{9FFEC001-2177-4EA1-A2B5-6D50A7436AE5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>TheTunnel</RootNamespace>
-    <AssemblyName>TNT_A3</AssemblyName>
+    <AssemblyName>TNT</AssemblyName>
     <ReleaseVersion>0.2</ReleaseVersion>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
@@ -29,10 +29,10 @@
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
     <Reference Include="protobuf-net">
-      <HintPath>..\..\..\Spinning\Spintools\protobuf-net.dll</HintPath>
+      <HintPath>..\..\..\Pluton - s734\packages\TheNetTunnel\protobuf-net.dll</HintPath>
     </Reference>
+    <Reference Include="System" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -82,11 +82,5 @@
     <Compile Include="[0] TCP\DisconnectReason.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup>
-    <Folder Include="[1] Light\" />
-    <Folder Include="[3] Deserializers\" />
-    <Folder Include="[3] Serializers\" />
-    <Folder Include="[2] Cord\" />
-    <Folder Include="[0] TCP\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>

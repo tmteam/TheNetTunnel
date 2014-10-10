@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace A3Expit
+namespace Testing
 {
 	public static class Tools
 	{

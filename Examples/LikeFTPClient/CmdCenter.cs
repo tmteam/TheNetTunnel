@@ -21,7 +21,7 @@ namespace SomeFTPlikeClient_Example
 
 		public void RunCommand(string cmd)
 		{
-			if (string.IsNullOrWhiteSpace (cmd))
+			if (string.IsNullOrEmpty (cmd))
 				return;
 			var arr = cmd.Split (new char[]{ ' ' }, StringSplitOptions.RemoveEmptyEntries);
 			if(!Commands.ContainsKey(arr[0].ToLower()))
