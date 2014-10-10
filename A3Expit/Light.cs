@@ -3,6 +3,7 @@ using System.IO;
 using TheTunnel;
 using System.Diagnostics;
 using System.Collections.Generic;
+using TheTunnel.Light;
 
 namespace A3Expit
 {
@@ -89,7 +90,7 @@ namespace A3Expit
 		public void TestSendAndReceiveBasics(MemoryStream sendStream)
 		{
 			Console.WriteLine ("Test Send And Receive for size " + sendStream.Length+" b");
-			var sep = new TheTunnel.LightSeparator ();
+			var sep = new LightSeparator ();
 
 			var asm = new QuantumReceiver ();
 

@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Runtime.InteropServices;
 
-namespace TheTunnel
+namespace TheTunnel.Serialization
 {
 	public static class SerializersFactory
 	{

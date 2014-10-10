@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace TheTunnel
+namespace TheTunnel.Light
 {
 	public class QuantumReceiver
 	{
@@ -55,6 +55,12 @@ namespace TheTunnel
 			}
 		}
 
+		public event Action<QuantumReceiver, QuantumHead,MemoryStream> OnLightMessage;
+
+		public event Action<QuantumReceiver, QuantumHead, byte[]> OnCollectingError;
+
+
+
 		byte[] saveUndone(byte[] arr, int offset)
 		{
 			if (offset == 0)
@@ -97,11 +103,6 @@ namespace TheTunnel
 		}
 
 		Dictionary<int, LightCollector> collectors = new Dictionary<int, LightCollector>();
-
-		public event Action<QuantumReceiver, QuantumHead,MemoryStream> OnLightMessage;
-
-		public event Action<QuantumReceiver, QuantumHead, byte[]> OnCollectingError;
-
 	}
 }
 

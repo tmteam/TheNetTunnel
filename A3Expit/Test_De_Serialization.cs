@@ -3,6 +3,8 @@ using System.IO;
 using System.Linq;
 using TheTunnel;
 using System.Collections.Generic;
+using TheTunnel.Serialization;
+using TheTunnel.Deserialization;
 
 namespace A3Expit
 {
@@ -90,8 +92,8 @@ namespace A3Expit
 
 		public static T CheckAndRecreate<T>(T origin)
 		{
-			var ser = TheTunnel.SerializersFactory.Create (typeof(T));
-			var deser = TheTunnel.DeserializersFactory.Create (typeof(T));
+			var ser = SerializersFactory.Create (typeof(T));
+			var deser = DeserializersFactory.Create (typeof(T));
 			MemoryStream stream = new MemoryStream();
 			ser.Serialize (origin, stream);
 
@@ -122,8 +124,8 @@ namespace A3Expit
 		public static object[] CheckAndRecreateSequence(object[] origin)
 		{
 			var types = origin.Select (o => o.GetType ()).ToArray ();
-			var ser = TheTunnel.SerializersFactory.Create (types);
-			var deser = TheTunnel.DeserializersFactory.Create (types);
+			var ser = SerializersFactory.Create (types);
+			var deser = DeserializersFactory.Create (types);
 
 			MemoryStream stream = new MemoryStream();
 			ser.Serialize (origin, stream);

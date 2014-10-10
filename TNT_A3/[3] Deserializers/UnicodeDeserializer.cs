@@ -3,7 +3,7 @@ using System;
 using System.Text;
 using System.IO;
 
-namespace TheTunnel
+namespace TheTunnel.Deserialization
 {
 	public class UnicodeDeserializer: DeserializerBase<string>
 	{

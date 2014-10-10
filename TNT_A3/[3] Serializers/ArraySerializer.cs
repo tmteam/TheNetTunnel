@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace TheTunnel
+namespace TheTunnel.Serialization
 {
 	public class ArraySerializer<T>: SerializerBase<T>
 	{

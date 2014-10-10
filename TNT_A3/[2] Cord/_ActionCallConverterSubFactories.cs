@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TheTunnel
+namespace TheTunnel.Cords
 {
 	interface IActionCallConverterSubFactory
 	{

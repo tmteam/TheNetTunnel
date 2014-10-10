@@ -1,8 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using TheTunnel.Serialization;
+using TheTunnel.Deserialization;
 
-namespace TheTunnel
+namespace TheTunnel.Cords
 {
 		public interface IOutCord
 		{

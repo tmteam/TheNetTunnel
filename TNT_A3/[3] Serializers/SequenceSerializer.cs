@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-namespace TheTunnel
+
+namespace TheTunnel.Serialization
 {
 	public class SequenceSerializer: ISerializer<object[]>
 	{

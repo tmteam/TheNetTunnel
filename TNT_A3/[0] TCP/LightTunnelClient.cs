@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using TheTunnel.Cords;
 
 
 namespace TheTunnel
@@ -13,7 +14,7 @@ namespace TheTunnel
 
 	public class LightTunnelClient{
 		public LightTunnelClient(){}
-		public LightTunnelClient(LightTcpClient client, object contract){
+		public LightTunnelClient(LClient client, object contract){
 			CordDispatcher = new CordDispatcher (contract);
 			this.Client = client;
 		}
@@ -22,8 +23,8 @@ namespace TheTunnel
 			get{return client == null ? false : client.Client == null ? false : client.Client.Connected; }
 		}
 
-		LightTcpClient client;
-		public LightTcpClient Client{ 
+		LClient client;
+		public LClient Client{ 
 			get{return client; }
 			protected set{client = value; 
 				if (client != null) {
@@ -31,11 +32,6 @@ namespace TheTunnel
 					Client.OnReceive+= client_OnReceive;
 				}
 			} }
-
-		void client_OnReceive (LightTcpClient client, System.IO.MemoryStream msg)
-		{
-			ThreadPool.QueueUserWorkItem(new WaitCallback((s)=>CordDispatcher.Handle (msg)));
-		}
 
 		CordDispatcher cordDispatcher;
 		public CordDispatcher CordDispatcher{
@@ -50,16 +46,13 @@ namespace TheTunnel
 						dscnctable.DisconnectMe+= handleDisconnectMe;
 			}}
 		}
-
-		void cordDispather_NeedSend (CordDispatcher sender, System.IO.MemoryStream streamOfLight)
-		{
-			Client.SendMessage (streamOfLight);
-		}
 			
+		public event delTcpClientDisconnect OnDisconnect; 
+
 		public void Connect(IPAddress ip, int port, object contract)
 		{
 			CordDispatcher = new CordDispatcher (contract);
-			Client =  LightTcpClient.Connect (ip, port);
+			Client =  LClient.Connect (ip, port);
 			Client.AllowReceive = true;
 		}
 
@@ -69,9 +62,22 @@ namespace TheTunnel
 			Client.Stop ();
 		}
 
-		public event delTcpClientDisconnect OnDisconnect; 
+		DisconnectReason disconnectReason = DisconnectReason.ConnectionIsLost;
 
-		void onTcpDisconnect (LightTcpClient obj){
+
+		#region private
+
+		void client_OnReceive (LClient client, System.IO.MemoryStream msg)
+		{
+			ThreadPool.QueueUserWorkItem(new WaitCallback((s)=>CordDispatcher.Handle (msg)));
+		}
+
+		void cordDispather_NeedSend (CordDispatcher sender, System.IO.MemoryStream streamOfLight)
+		{
+			Client.SendMessage (streamOfLight);
+		}
+
+		void onTcpDisconnect (LClient obj){
 			if (OnDisconnect != null)
 				OnDisconnect (this, disconnectReason);
 
@@ -84,9 +90,9 @@ namespace TheTunnel
 			Client.Stop ();
 		}
 
-		DisconnectReason disconnectReason = DisconnectReason.ConnectionIsLost;
-
+		#endregion
 	}
+
 	public delegate void delTcpClientDisconnect (LightTunnelClient sender, DisconnectReason reason);
 }
 

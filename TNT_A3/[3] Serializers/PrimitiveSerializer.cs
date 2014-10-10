@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.IO;
 
-namespace TheTunnel
+namespace TheTunnel.Serialization
 {
 	public class PrimitiveSerializer<T>:SerializerBase<T>
 	{

@@ -6,7 +6,7 @@ using System.Reflection.Emit;
 using System.IO;
 
 
-namespace TheTunnel
+namespace TheTunnel.Cords
 {
 	public class CordDispatcher
 	{
@@ -103,7 +103,7 @@ namespace TheTunnel
 				.ToArray ();
 
 			foreach (var r in inCordsMethods) {
-				var iCord = CordFacroty.InCordFactory (r.method, r.attr, contract);
+				var iCord = CordFacroty.InCordByMethodFactory (r.method, r.attr, contract);
 				AddInCord (iCord);
 				var oCord = iCord as IOutCord;
 				if (oCord != null)	AddOutCord (oCord);
@@ -124,7 +124,7 @@ namespace TheTunnel
 				.ToArray ();
 
 			foreach (var r in inCordsEvents) {
-				var iCord = CordFacroty.InCordFactory (r.field, r.attr, contract);
+				var iCord = CordFacroty.InCordByEventFactory (r.field, r.attr, contract);
 				AddInCord (iCord);
 				var oCord = iCord as IOutCord;
 				if (oCord != null)	AddOutCord (oCord);
@@ -132,14 +132,6 @@ namespace TheTunnel
 			#endregion
 		}
 			
-	}
-
-
-	public enum DisconnectReason:byte
-	{
-		ContractWish = 0,
-		UserWish = 1,
-		ConnectionIsLost = 2,
 	}
 }
 

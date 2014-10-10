@@ -1,7 +1,8 @@
 ﻿using System;
 using System.IO;
+using TheTunnel.Serialization;
 
-namespace TheTunnel
+namespace TheTunnel.Cords
 {
 	public class OutCord<T>: IOutCord<T>
 	{

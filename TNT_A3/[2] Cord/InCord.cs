@@ -1,7 +1,8 @@
 ﻿using System;
 using System.IO;
+using TheTunnel.Deserialization;
 
-namespace TheTunnel
+namespace TheTunnel.Cords
 {
 	public class InCord<T> : IInCord<T>
 	{

@@ -2,7 +2,7 @@
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace TheTunnel
+namespace TheTunnel.Light
 {
 	public class LightCollector
 	{
@@ -44,13 +44,13 @@ namespace TheTunnel
 			stream = null;
 			return true;
 		}
-		public void Clear()
-		{
+
+		public void Clear(){
 			stream = null;
 			lenght = 0;
 		}
-		public MemoryStream GetLightMessageStream()
-		{
+
+		public MemoryStream GetLightMessageStream(){
 			return stream;
 		}
 	}

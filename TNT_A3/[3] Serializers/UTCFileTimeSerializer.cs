@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TheTunnel
+namespace TheTunnel.Serialization
 {
 	public class UTCFileTimeSerializer: SerializerBase<DateTime>
 	{

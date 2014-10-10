@@ -5,19 +5,11 @@
 	using System.Runtime.InteropServices;
 	using System.IO;
 
-	namespace TheTunnel
+	namespace TheTunnel.Light
 	{
 		public class LightSeparator 
 		{
 			static int DefaultHeadSize = Marshal.SizeOf(typeof(QuantumHead));
-
-			public void Initialize(Stream stream,  int msgId)
-			{
-				dataLeft = (int)(stream.Length - stream.Position);
-				this.msgId = msgId;
-				got1Sended = false;
-				currentStream = stream;
-			}
 
 			int  dataLeft;
 			public int DataLeft{ get{ return dataLeft; }}
@@ -27,6 +19,14 @@
 
 			Stream currentStream;
 			bool got1Sended = false;
+
+			public void Initialize(Stream stream,  int msgId)
+			{
+				dataLeft = (int)(stream.Length - stream.Position);
+				this.msgId = msgId;
+				got1Sended = false;
+				currentStream = stream;
+			}
 
 			public byte[] Next(int maxQuantSize)
 			{

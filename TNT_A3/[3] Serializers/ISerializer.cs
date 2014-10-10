@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace TheTunnel
+namespace TheTunnel.Serialization
 {
 	public interface ISerializer 
 	{

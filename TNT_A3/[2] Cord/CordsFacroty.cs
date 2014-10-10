@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Reflection;
 using System.Linq;
+using TheTunnel.Deserialization;
+using TheTunnel.Serialization;
 
-namespace TheTunnel
+namespace TheTunnel.Cords
 {
 	public static class CordFacroty
 	{
@@ -83,7 +85,7 @@ namespace TheTunnel
 			return ans;
 		}
 
-		public static IInCord InCordFactory(MethodInfo meth, InAttribute attr, object Contract)
+		public static IInCord InCordByMethodFactory(MethodInfo meth, InAttribute attr, object Contract)
 		{
 			var parameters = meth.GetParameters ().Select(p=>p.ParameterType).ToArray();
 			var returnType = meth.ReturnType;
@@ -118,7 +120,7 @@ namespace TheTunnel
 			}
 		}
 
-		public static IInCord InCordFactory(FieldInfo fieldOfEvent, InAttribute attr, object Contract)
+		public static IInCord InCordByEventFactory(FieldInfo fieldOfEvent, InAttribute attr, object Contract)
 		{
 			var meth = fieldOfEvent.FieldType.GetMethod ("Invoke");
 

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TheTunnel
+namespace TheTunnel.Deserialization
 {
 	public class UTCFileTimeDeserializer: DeserializerBase<DateTime>
 	{

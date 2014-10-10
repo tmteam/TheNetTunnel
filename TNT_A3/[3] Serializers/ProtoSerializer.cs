@@ -1,8 +1,7 @@
 ﻿using System;
 
-namespace TheTunnel
+namespace TheTunnel.Serialization
 {
-
 	public class ProtoSerializer<T>: SerializerBase<T>
 	{
 		public ProtoSerializer(){Size = null;}

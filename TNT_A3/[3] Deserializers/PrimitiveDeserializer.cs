@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace TheTunnel
+namespace TheTunnel.Deserialization
 {
 	public class PrimitiveDeserializer<T>: DeserializerBase<T> {
 

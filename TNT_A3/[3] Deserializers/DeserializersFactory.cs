@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Runtime.InteropServices;
 
-namespace TheTunnel
+namespace TheTunnel.Deserialization
 {
 	public static class DeserializersFactory
 	{

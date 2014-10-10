@@ -7,17 +7,24 @@ namespace ChatClient
 	{
 		public static void Main (string[] args)
 		{
-			ClientContract contract = null;
+			var contract = new ClientContract ();
+			contract.ReceiveMessage += (DateTime time, string nick, string msg) => {
+				Console.WriteLine("["+time.ToLongTimeString()+"] "+nick+": "+ msg);
+				return true;
+			};
+
 			TheTunnel.LightTunnelClient client = null;
+
 			while (true) {
 				Console.WriteLine ("Enter an ip:");
 				var ip = Console.ReadLine ();
 				var port = "4242";
 
-				contract = new ClientContract ();
-
 				client = new TheTunnel.LightTunnelClient ();
-				client.OnDisconnect+= ClientOnDisconnect;
+				client.OnDisconnect += (TheTunnel.LightTunnelClient sender, TheTunnel.DisconnectReason reason) => {
+					Console.WriteLine ("Server Connection is closed. Reason: " + reason);
+				};
+
 				try
 				{
 					client.Connect (IPAddress.Parse (ip), int.Parse (port), contract);
@@ -34,12 +41,7 @@ namespace ChatClient
 			}
 			Console.WriteLine ("Succesfully connected");
 
-			/*contract.ReceiveMessage += (DateTime sendtime, string  nck, string msg) => {
-				Console.WriteLine(sendtime.ToLongTimeString()+" ["+nck+"]: "+ msg);
-				return true;
-			};*/
-
-			while (true) {
+		   while (true) {
 				var msg = Console.ReadLine();
 				if(msg== "exit")
 					return;
@@ -47,12 +49,6 @@ namespace ChatClient
 					return;
 				contract.SendMessage(DateTime.Now, "TNT", msg);
 			}
-		
-		}
-
-		static void ClientOnDisconnect (TheTunnel.LightTunnelClient sender, TheTunnel.DisconnectReason reason)
-		{
-			Console.WriteLine ("Server Connection is closed.");
 		}
 	}
 }

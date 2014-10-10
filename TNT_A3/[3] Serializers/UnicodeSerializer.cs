@@ -2,7 +2,7 @@
 using System.Text;
 using System.IO;
 
-namespace TheTunnel
+namespace TheTunnel.Serialization
 {
 	public class UnicodeSerializer: SerializerBase<string>{
 		public UnicodeSerializer()

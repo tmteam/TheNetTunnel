@@ -3,27 +3,25 @@ using System.Net.Sockets;
 using System.Net;
 using System.IO;
 using System.Diagnostics;
+using TheTunnel.Light;
 
 namespace TheTunnel
 {
 	//based on http://robjdavey.wordpress.com/2011/02/11/asynchronous-tcp-client-example/ example
-	public class LightTcpClient
-	{	public static LightTcpClient Connect(IPAddress ip, int port)
+	public class LClient
+	{	public static LClient Connect(IPAddress ip, int port)
 		{	
-
 			TcpClient client = new TcpClient ();
-
 
 			client.Connect (new IPEndPoint (ip, port));
 
 			if (client.Connected)
-				return new LightTcpClient (client);
+				return new LClient (client);
 			else
 				throw new System.Net.Sockets.SocketException();
 		}
 
-		int maxQSize = 900;
-		public LightTcpClient (TcpClient client)
+		public LClient (TcpClient client)
 		{
 			this.Client = client;
 			sender = new QuantumSender ();
@@ -37,7 +35,6 @@ namespace TheTunnel
 		public bool IsConnected{ get { return Client == null ? false : Client.Connected; } }
 
 		public TcpClient Client{ get; protected set; }
-
 
 		bool allowReceive = false;
 		public bool AllowReceive{
@@ -62,7 +59,7 @@ namespace TheTunnel
 
 		public event delQuantReceive OnReceive;
 
-		public event Action<LightTcpClient> OnDisconnect;
+		public event Action<LClient> OnDisconnect;
 
 		public void Stop(){
 			if (Client.Connected)
@@ -83,12 +80,14 @@ namespace TheTunnel
 			}
 		}
 
+		#region private 
+		int maxQSize = 900;
+
 		QuantumSender sender;
 		QuantumReceiver receiver;
 
 		bool disconnectMsgWasSended = false;
 		bool readWasStarted = false;
-
 
 		void readCallback(IAsyncResult result)
 		{
@@ -170,8 +169,9 @@ namespace TheTunnel
 					OnDisconnect (this);
 			}
 		}
+		#endregion
 	}
 
-	public delegate void delQuantReceive(LightTcpClient client, MemoryStream msg);
+	public delegate void delQuantReceive(LClient client, MemoryStream msg);
 }
 

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-namespace TheTunnel
+namespace TheTunnel.Deserialization
 {
 	public class SequenceDeserializer:DeserializerBase<object[]>
 	{

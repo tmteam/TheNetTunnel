@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
+using TheTunnel.Deserialization;
+using TheTunnel.Serialization;
 
-namespace TheTunnel
+namespace TheTunnel.Cords
 {
 	public class AnsweringCord:IAnsweringCord
 	{

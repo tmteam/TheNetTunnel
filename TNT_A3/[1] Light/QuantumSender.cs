@@ -3,12 +3,10 @@ using System.IO;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace TheTunnel
+namespace TheTunnel.Light
 {
 	public class QuantumSender
 	{
-		int msgId;
-
 		public void Set(MemoryStream lightMessage)
 		{
 			var id = Interlocked.Increment (ref msgId);
@@ -50,13 +48,15 @@ namespace TheTunnel
 			return true;
 		}
 
+		public void Clear()	{
+			queue.Clear ();
+		}
+
+		int msgId;
 		int qPos = 0;
 		List<LightSeparator> queue = new List<LightSeparator>();
 		List<LightSeparator> used = new List<LightSeparator>();
-		public void Clear()
-		{
-			queue.Clear ();
-		}
+	
 	}
 }
 

@@ -15,14 +15,18 @@ namespace TheTunnel
 					return contracts.Keys.ToArray ();
 				}}}
 
-		public LightTcpServer Server{ get; protected set; }
+		public LServer Server{ get; protected set; }
+
+		public event delConnecterInfo<TContract> BeforeConnect;
+		public event delConnecter<TContract> AfterConnect;
+		public event delConnecter<TContract> OnDisconnect;
 
 		public void OpenServer(System.Net.IPAddress ip, int port)
 		{
 			if (Server != null)
 				throw new InvalidOperationException ("Server is already open");
 			contracts = new Dictionary<TContract, LightTunnelClient> ();
-			Server = new LightTcpServer ();
+			Server = new LServer ();
 			Server.OnConnect+= server_onClientConnect;
 			Server.OnDisconnect+= server_onClientDisconnect;
 			Server.BeginListen(ip, port);
@@ -47,18 +51,16 @@ namespace TheTunnel
 			}
 		}
 
-		public event delConnecterInfo<TContract> BeforeConnect;
-		public event delConnecter<TContract> AfterConnect;
-
-		public event delConnecter<TContract> OnDisconnect;
-
 		public void Kick(TContract contract)
 		{
 			var tunnel = GetTunnel (contract);
 			tunnel.Disconnect();
 		}
 
-		void server_onClientConnect (LightTcpServer sender, LightTcpClient newClient, ConnectInfo info)
+
+		#region private 
+
+		void server_onClientConnect (LServer sender, LClient newClient, ConnectInfo info)
 		{
 			var contract = new TContract ();
 			var tunnel = new LightTunnelClient (newClient, contract);
@@ -77,7 +79,8 @@ namespace TheTunnel
 			if(AfterConnect!= null)
 				AfterConnect(this, contract);
 		}
-		void server_onClientDisconnect (LightTcpServer server, LightTcpClient oldClient)
+	
+		void server_onClientDisconnect (LServer server, LClient oldClient)
 		{
 			TContract client = null;
 			lock (contracts) {
@@ -90,6 +93,7 @@ namespace TheTunnel
 			if (OnDisconnect != null)
 				OnDisconnect (this, client);
 		}
+		#endregion
 	}
 	public delegate void delConnecterInfo<TContract>(LightTunnelServer<TContract> sender, TContract contract, ConnectInfo info) where TContract: class, new();
 	public delegate void delConnecter<TContract>(LightTunnelServer<TContract> sender, TContract contract) where TContract: class, new();

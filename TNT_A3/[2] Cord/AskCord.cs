@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.IO;
+using TheTunnel.Serialization;
+using TheTunnel.Deserialization;
 
-namespace TheTunnel
+namespace TheTunnel.Cords
 {
 	public class AskCord<Tanswer,Tquestion>: IAskCord<Tanswer,Tquestion>
 	{
@@ -18,19 +20,23 @@ namespace TheTunnel
 			MaxAwaitMs = 10000;
 		}
 
-		int id = 0;
+		public int MaxAwaitMs { get; set; }
 
-		public event Action<IOutCord, MemoryStream, int> NeedSend;
+		public short INCid {
+			get { return (short)-OUTCid; }
+		}
 
 		public short OUTCid { get;	protected set; }
 
 		public ISerializer Serializer {	get; protected set; }
-
 		ISerializer<Tquestion> SerializerT;
 	
 		public IDeserializer Deserializer {get; protected set; }
-
 		IDeserializer<Tanswer> DeserializerT;
+
+		public event Action<IOutCord, MemoryStream, int> NeedSend;
+		public event Action<IInCord, object> OnReceive;
+
 
 		public Tanswer AskT (Tquestion question)
 		{
@@ -75,6 +81,20 @@ namespace TheTunnel
 		{
 			return AskT ((Tquestion)question);
 		}
+
+		public void Parse (System.IO.MemoryStream stream)
+		{
+			stream.Read (idBuff, 0, 2);
+			var id = BitConverter.ToUInt16 (idBuff, 0);
+			var obj = DeserializerT.DeserializeT (stream, (int)(stream.Length - stream.Position));
+			if (OnReceive != null)
+				OnReceive (this, obj);
+			answerCord_OnAnswer (id, obj);
+
+		}
+
+		int id = 0;
+		byte[] idBuff = new byte[2];
 			
 		Dictionary<int, answerAwaiter<Tanswer>> awaitingQueue; 
 
@@ -92,27 +112,6 @@ namespace TheTunnel
 				aa.mre.Set ();
 			}
 		}
-
-		public event Action<IInCord, object> OnReceive;
-
-		byte[] idBuff = new byte[2];
-		public void Parse (System.IO.MemoryStream stream)
-		{
-			stream.Read (idBuff, 0, 2);
-			var id = BitConverter.ToUInt16 (idBuff, 0);
-			var obj = DeserializerT.DeserializeT (stream, (int)(stream.Length - stream.Position));
-			if (OnReceive != null)
-				OnReceive (this, obj);
-			answerCord_OnAnswer (id, obj);
-
-		}
-
-		public int MaxAwaitMs { get; set; }
-
-		public short INCid {
-			get { return (short)-OUTCid; }
-		}
-
 	}
 
 	class answerAwaiter <Tanswer>
