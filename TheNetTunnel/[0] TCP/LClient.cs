@@ -95,14 +95,11 @@ namespace TheTunnel
         /// </summary>
         /// <param name="streamOfLight"></param>
 		public void SendMessage(MemoryStream streamOfLight)	{
-			lock(qSender)
-			{
 				qSender.Set (streamOfLight);
 				byte[] buff;
 				int id;
 				while (qSender.TryNext(maxQSize, out buff, out id))
 					write(buff);
-			}
 		}
 
 		#region private 

@@ -7,13 +7,22 @@ namespace Testing
 {
 	class MainClass
 	{
-		public static void Main (string[] args)
-		{
-			SendReceiveTest ();
-			De_SerializationTest ();
-			CordDispatcherTest ();
-			FinalLightTunnelTest ();
-		}
+        public static void Main(string[] args)
+        {
+            try
+            {
+                SendReceiveTest();
+                De_SerializationTest();
+                CordDispatcherTest();
+                FinalLightTunnelTest();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Tests failed: " + ex.ToString());
+            }
+            Console.WriteLine("PAK2C..");
+            Console.ReadKey();
+        }
 
 		public static void SendReceiveTest()
 		{

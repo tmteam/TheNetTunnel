@@ -80,7 +80,7 @@ namespace Testing
 				connectedCount++;
 				var rnd = Tools.rnd.Next();
 				var res = contract.SendPing(rnd, rnd+1);
-				if(res.X!=rnd || res.Y!= rnd+1)
+				if(res==null || res.X!=rnd || res.Y!= rnd+1)
 					throw new Exception("server to client ping failure");
 			};
 
