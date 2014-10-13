@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using TheTunnel.Cords;
 
 namespace Testing
 {
@@ -31,6 +32,25 @@ namespace Testing
 			}
 			return true;
 		}
+        public static void ConnectContractsDirectly<Ta, Tb>(Ta A, Tb B)
+            where Ta : class, new()
+            where Tb : class, new()
+        {
+            CordDispatcher<Ta> ACD = new CordDispatcher<Ta>(A);
+            CordDispatcher<Tb> BCD = new CordDispatcher<Tb>(B);
+
+            ACD.NeedSend += (object arg1, System.IO.MemoryStream arg2) =>
+            {
+                arg2.Position = 0;
+                BCD.Handle(arg2);
+            };
+            BCD.NeedSend += (object arg1, System.IO.MemoryStream arg2) =>
+            {
+                arg2.Position = 0;
+                ACD.Handle(arg2);
+            };
+
+        }
 	}
 }
 

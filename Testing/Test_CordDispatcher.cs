@@ -26,7 +26,7 @@ namespace Testing
 			var A = new ActionContractA ();
 			var B = new ActionContractB ();
 
-			ConnectContracts (A, B);
+            Tools.ConnectContractsDirectly(A, B);
 		
 			A.SendInt (i);
 			A.SendString (str);
@@ -52,7 +52,7 @@ namespace Testing
 			var A = new ActionContractA ();
 			var B = new ActionContractB ();
 
-			ConnectContracts (A, B);
+            Tools.ConnectContractsDirectly(A, B);
 
 			A.SendVoid ();
 			A.SendFixedSequence (i, d, s);
@@ -72,7 +72,7 @@ namespace Testing
 		public void PrimitiveAsk(){
 			var A = new FuncContractA ();
 			var B = new FuncContractB ();
-			ConnectContracts (A, B);
+            Tools.ConnectContractsDirectly(A, B);
 
 			var twiceI = A.Twice (i);
 			if (twiceI != i * 2)
@@ -86,7 +86,7 @@ namespace Testing
 		public void ComplexAsk(){
 			var A = new FuncContractA ();
 			var B = new FuncContractB ();
-			ConnectContracts (A, B);
+            Tools.ConnectContractsDirectly(A, B);
 
 			var dArr1 = Enumerable.Range (0, 100).Select(ii=>Convert.ToDouble(ii)).ToArray ();
 			var dArr2 = Enumerable.Range (100, 200).Select(ii=>Convert.ToDouble(ii)).ToArray ();
@@ -115,7 +115,7 @@ namespace Testing
 		{
 			var A = new PingPongContract ();
 			var B = new PingPongContract ();
-			ConnectContracts (A, B);
+            Tools.ConnectContractsDirectly(A, B);
 			A.ReceivePong += (x, y) => {
 				x++;
 				return new ProtoPoint{ X = x, Y = y };
@@ -136,23 +136,7 @@ namespace Testing
 
 		}
 
-		void ConnectContracts<Ta, Tb>(Ta A, Tb B) 
-            where Ta: class, new() 
-            where Tb: class, new()
-		{
-			CordDispatcher<Ta> ACD = new CordDispatcher<Ta> (A);
-			CordDispatcher<Tb> BCD = new CordDispatcher<Tb> (B);
-
-			ACD.NeedSend += (object arg1, System.IO.MemoryStream arg2) => {
-				arg2.Position = 0;
-				BCD.Handle (arg2);
-			};
-			BCD.NeedSend += (object arg1, System.IO.MemoryStream arg2) => {
-				arg2.Position = 0;
-				ACD.Handle(arg2);
-			};
-
-		}
+		
 	
 	}
 }

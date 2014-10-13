@@ -1,0 +1,9 @@
+C:\code\TNT\TheTunnel\Examples\LikeFTPClient\bin\Release\LikeFTPClient_Example.exe.config
+C:\code\TNT\TheTunnel\Examples\LikeFTPClient\bin\Release\LikeFTPClient_Example.exe
+C:\code\TNT\TheTunnel\Examples\LikeFTPClient\bin\Release\LikeFTPClient_Example.pdb
+C:\code\TNT\TheTunnel\Examples\LikeFTPClient\bin\Release\protobuf-net.dll
+C:\code\TNT\TheTunnel\Examples\LikeFTPClient\bin\Release\TNT.dll
+C:\code\TNT\TheTunnel\Examples\LikeFTPClient\bin\Release\TNT.pdb
+C:\code\TNT\TheTunnel\Examples\LikeFTPClient\obj\x86\Release\LikeFTPClient_Example.exe
+C:\code\TNT\TheTunnel\Examples\LikeFTPClient\obj\x86\Release\LikeFTPClient_Example.pdb
+C:\code\TNT\TheTunnel\Examples\LikeFTPClient\obj\x86\Release\SomeFTPlikeClient_Example.csprojResolveAssemblyReference.cache

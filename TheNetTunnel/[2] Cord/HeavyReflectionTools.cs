@@ -22,16 +22,16 @@ namespace TheTunnel.Cords
 			    case 2:	 t = typeof(ActionCallConverterSubFactory<,>); break;
 				case 3:	 t = typeof(ActionCallConverterSubFactory<,,>); break;
 				case 4:	 t = typeof(ActionCallConverterSubFactory<,,,>); break;
-			default:
-				throw new ArgumentException ("Arguments number should be less or equal 4");
-//				case 5:	 t = typeof(ActionCallConverterSubFactory<,,,,>); break;
-//				case 6:	 t = typeof(ActionCallConverterSubFactory<,,,,,>); break;
-//				case 7:	 t = typeof(ActionCallConverterSubFactory<,,,,,,>); break;
-//				case 8:	 t = typeof(ActionCallConverterSubFactory<,,,,,,,>); break;
-//				case 9:	 t = typeof(ActionCallConverterSubFactory<,,,,,,,,>); break;
-//				case 10: t = typeof(ActionCallConverterSubFactory<,,,,,,,,,>); break;
-//				case 11: t = typeof(ActionCallConverterSubFactory<,,,,,,,,,,>); break;
-//				case 12: t = typeof(ActionCallConverterSubFactory<,,,,,,,,,,,>); break;
+				case 5:	 t = typeof(ActionCallConverterSubFactory<,,,,>); break;
+				case 6:	 t = typeof(ActionCallConverterSubFactory<,,,,,>); break;
+				case 7:	 t = typeof(ActionCallConverterSubFactory<,,,,,,>); break;
+				case 8:	 t = typeof(ActionCallConverterSubFactory<,,,,,,,>); break;
+				case 9:	 t = typeof(ActionCallConverterSubFactory<,,,,,,,,>); break;
+				case 10: t = typeof(ActionCallConverterSubFactory<,,,,,,,,,>); break;
+				case 11: t = typeof(ActionCallConverterSubFactory<,,,,,,,,,,>); break;
+				case 12: t = typeof(ActionCallConverterSubFactory<,,,,,,,,,,,>); break;
+                default:
+                    throw new ArgumentException("Method arguments number should be less or equal 12");
 //				case 13: t = typeof(ActionCallConverterSubFactory<,,,,,,,,,,,,>); break;
 //				case 14: t = typeof(ActionCallConverterSubFactory<,,,,,,,,,,,,,>); break;
 //				case 15: t = typeof(ActionCallConverterSubFactory<,,,,,,,,,,,,,,>); break;
@@ -58,16 +58,16 @@ namespace TheTunnel.Cords
 				case 2:	 t = typeof(FuncCallConverterSubFactory<,,>); break;
 				case 3:	 t = typeof(FuncCallConverterSubFactory<,,,>); break;
 				case 4:	 t = typeof(FuncCallConverterSubFactory<,,,,>); break;
-			default:
-				throw new ArgumentException ("Arguments number should be less or equal 4");
-//				case 5:	 t = typeof(FuncCallConverterSubFactory<,,,,,>); break;
-//				case 6:	 t = typeof(FuncCallConverterSubFactory<,,,,,,>); break;
-//				case 7:	 t = typeof(FuncCallConverterSubFactory<,,,,,,,>); break;
-//				case 8:	 t = typeof(FuncCallConverterSubFactory<,,,,,,,,>); break;
-//				case 9:	 t = typeof(FuncCallConverterSubFactory<,,,,,,,,,>); break;
-//				case 10: t = typeof(FuncCallConverterSubFactory<,,,,,,,,,,>); break;
-//				case 11: t = typeof(FuncCallConverterSubFactory<,,,,,,,,,,,>); break;
-//				case 12: t = typeof(FuncCallConverterSubFactory<,,,,,,,,,,,,>); break;
+				case 5:	 t = typeof(FuncCallConverterSubFactory<,,,,,>); break;
+				case 6:	 t = typeof(FuncCallConverterSubFactory<,,,,,,>); break;
+				case 7:	 t = typeof(FuncCallConverterSubFactory<,,,,,,,>); break;
+				case 8:	 t = typeof(FuncCallConverterSubFactory<,,,,,,,,>); break;
+				case 9:	 t = typeof(FuncCallConverterSubFactory<,,,,,,,,,>); break;
+				case 10: t = typeof(FuncCallConverterSubFactory<,,,,,,,,,,>); break;
+				case 11: t = typeof(FuncCallConverterSubFactory<,,,,,,,,,,,>); break;
+				case 12: t = typeof(FuncCallConverterSubFactory<,,,,,,,,,,,,>); break;
+                default:
+                    throw new ArgumentException("Arguments number should be less or equal 12");
 //				case 13: t = typeof(FuncCallConverterSubFactory<,,,,,,,,,,,,,>); break;
 //				case 14: t = typeof(FuncCallConverterSubFactory<,,,,,,,,,,,,,,>); break;
 //				case 15: t = typeof(FuncCallConverterSubFactory<,,,,,,,,,,,,,,,>); break;
