@@ -44,6 +44,7 @@
     <Compile Include="[1] Light\QuantumReceiver.cs" />
     <Compile Include="[1] Light\QuantumSender.cs" />
     <Compile Include="[2] Cord\ContractTypeReflector.cs" />
+    <Compile Include="[2] Cord\_TNTGenericDelegateTypes.cs" />
     <Compile Include="[3] Deserializers\IDeserializer.cs" />
     <Compile Include="[3] Deserializers\PrimitiveDeserializer.cs" />
     <Compile Include="[3] Deserializers\DeserializerBase.cs" />
@@ -83,5 +84,4 @@
     <Compile Include="[0] TCP\DisconnectReason.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup />
 </Project>
