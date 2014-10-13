@@ -6,7 +6,8 @@ namespace TheTunnel.Deserialization
 	{
 		public readonly Type[] Types;
 		IDeserializer[] deserializers;
-		public SequenceDeserializer (Type[] types){
+		
+        public SequenceDeserializer (Type[] types){
 			this.Types = types;
 			deserializers = new IDeserializer[types.Length];
 			for (int i = 0; i < types.Length; i++)

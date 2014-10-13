@@ -44,9 +44,9 @@ namespace TheTunnel.Cords
 			return ans;
 		}
 
-		public static IOutCord OutCordFactory(PropertyInfo del, OutAttribute attr, object Contract)
+		public static IOutCord OutCordFactory(OutDelegateDefenition delegateInfo, object Contract)
 		{
-			var adel = del.PropertyType;
+            var adel = delegateInfo.DelegateProperty.PropertyType;
 			var ainvk = adel.GetMethod ("Invoke");
 			var parameters = ainvk.GetParameters ().Select(p=>p.ParameterType).ToArray();
 			Delegate call= null;
@@ -54,9 +54,9 @@ namespace TheTunnel.Cords
 
 			if(ainvk.ReturnType== typeof(void))	{
 				// Call
-				var oCord = JustOutCordFactory (parameters, attr);
-				if (parameters.Length == 1) 
-					call = Delegate.CreateDelegate (del.PropertyType, oCord, "Send");
+                var oCord = JustOutCordFactory(parameters, delegateInfo.Attribute);
+				if (parameters.Length == 1)
+                    call = Delegate.CreateDelegate(delegateInfo.DelegateProperty.PropertyType, oCord, "Send");
 				else
 				{
 					var delegateHandler 
@@ -68,9 +68,9 @@ namespace TheTunnel.Cords
 			}
 			else{
 				// Question
-				var aCord = AskCordFactory (parameters, ainvk.ReturnType, attr);
+                var aCord = AskCordFactory(parameters, ainvk.ReturnType, delegateInfo.Attribute);
 				if(parameters.Length==1)
-					call = Delegate.CreateDelegate (del.PropertyType, aCord, "AskT");
+                    call = Delegate.CreateDelegate(delegateInfo.DelegateProperty.PropertyType, aCord, "AskT");
 				else
 				{
 					var delegateHandler 
@@ -78,41 +78,41 @@ namespace TheTunnel.Cords
 							.CreateConverterToArgsArrayFunc((aCord as IAskCord).Ask, ainvk.ReturnType, parameters);
 					call = Delegate.CreateDelegate (adel, delegateHandler, "Invoke");
 				}
-				aCord.MaxAwaitMs = (int)attr.MaxAnswerAwaitInterval;
+                aCord.MaxAwaitMs = (int)delegateInfo.Attribute.MaxAnswerAwaitInterval;
 				ans = aCord;
 			}
-			del.SetValue (Contract, call, null);
+			delegateInfo.DelegateProperty.SetValue (Contract, call, null);
 			return ans;
 		}
 
-		public static IInCord InCordByMethodFactory(MethodInfo meth, InAttribute attr, object Contract)
+		public static IInCord InCordByMethodFactory(InMethodDefenition methodInfo, object Contract)
 		{
-			var parameters = meth.GetParameters ().Select(p=>p.ParameterType).ToArray();
-			var returnType = meth.ReturnType;
+            var parameters = methodInfo.MethodDefenition.GetParameters().Select(p => p.ParameterType).ToArray();
+            var returnType = methodInfo.MethodDefenition.ReturnType;
 
 			if (parameters.Length == 1) { //Usual monoparameter cord
 				if (returnType == typeof(void)) {
-					var ccord = JustInCordFactory (parameters, attr);
-					ccord.OnReceive += (sender, msg) => meth.Invoke (Contract, new object[]{ msg });
+                    var ccord = JustInCordFactory(parameters, methodInfo.Attribute);
+                    ccord.OnReceive += (sender, msg) => methodInfo.MethodDefenition.Invoke(Contract, new object[] { msg });
 					return ccord;
 				} else {
-					var acord = AnswerCordFactory (parameters, returnType, attr);
+                    var acord = AnswerCordFactory(parameters, returnType, methodInfo.Attribute);
 					acord.OnAsk += (sender, id, msg) => {
-						var res = meth.Invoke (Contract, new object[]{ msg });
+                        var res = methodInfo.MethodDefenition.Invoke(Contract, new object[] { msg });
 						acord.SendAnswer (res, id);
 					};
 					return acord;
 				}
 			} else { //Sequence deserialization
 				if (returnType == typeof(void)) {// no-answer cord
-					var icord = new InCord<object[]> (attr.CordId, new SequenceDeserializer (parameters));
-					icord.OnReceiveT += (sender, msg) => meth.Invoke (Contract, msg);
+                    var icord = new InCord<object[]>(methodInfo.Attribute.CordId, new SequenceDeserializer(parameters));
+                    icord.OnReceiveT += (sender, msg) => methodInfo.MethodDefenition.Invoke(Contract, msg);
 					return icord;
 				} else {// answering cord
 					var ser = SerializersFactory.Create (returnType);
-					var acord = new AnsweringCord (attr.CordId, new SequenceDeserializer (parameters), ser);
+                    var acord = new AnsweringCord(methodInfo.Attribute.CordId, new SequenceDeserializer(parameters), ser);
 					acord.OnAsk += (sender, id, msg) => {
-						var res = meth.Invoke (Contract, msg as object[]);
+                        var res = methodInfo.MethodDefenition.Invoke(Contract, msg as object[]);
 						acord.SendAnswer (res, id);
 					};
 					return acord;
@@ -120,19 +120,19 @@ namespace TheTunnel.Cords
 			}
 		}
 
-		public static IInCord InCordByEventFactory(FieldInfo fieldOfEvent, InAttribute attr, object Contract)
+		public static IInCord InCordByEventFactory(InEventDefenition raiseEventInfo, object Contract)
 		{
-			var meth = fieldOfEvent.FieldType.GetMethod ("Invoke");
+            var meth = raiseEventInfo.RaiseField.FieldType.GetMethod("Invoke");
 
 			var parameters = meth.GetParameters ().Select(p=>p.ParameterType).ToArray();
 			var returnType = meth.ReturnType;
 
 			if (parameters.Length == 1) { //Usual monoparameter cord
 				if (returnType == typeof(void)) {
-					var ccord = JustInCordFactory (parameters, attr);
+                    var ccord = JustInCordFactory(parameters, raiseEventInfo.Attribute);
 					ccord.OnReceive += (sender, msg) => 
 					{
-						var eventDelegate = fieldOfEvent.GetValue (Contract) as MulticastDelegate;
+                        var eventDelegate = raiseEventInfo.RaiseField.GetValue(Contract) as MulticastDelegate;
 
 						if (eventDelegate != null)
 							foreach (var handler in eventDelegate.GetInvocationList()) 
@@ -140,9 +140,9 @@ namespace TheTunnel.Cords
 					};
 					return ccord;
 				} else {
-					var acord = AnswerCordFactory (parameters, returnType, attr);
+					var acord = AnswerCordFactory (parameters, returnType, raiseEventInfo.Attribute);
 					acord.OnAsk += (sender, id, msg) => {
-						var eventDelegate = fieldOfEvent.GetValue (Contract) as MulticastDelegate;
+                        var eventDelegate = raiseEventInfo.RaiseField.GetValue(Contract) as MulticastDelegate;
 						object ans = null;
 						if (eventDelegate != null)
 						{
@@ -155,9 +155,9 @@ namespace TheTunnel.Cords
 				}
 			} else { //Sequence deserialization
 				if (returnType == typeof(void)) {// no-answer cord
-					var icord = new InCord<object[]> (attr.CordId, new SequenceDeserializer (parameters));
+                    var icord = new InCord<object[]>(raiseEventInfo.Attribute.CordId, new SequenceDeserializer(parameters));
 					icord.OnReceiveT += (sender, msg) => {
-						var eventDelegate = fieldOfEvent.GetValue (Contract) as MulticastDelegate;
+                        var eventDelegate = raiseEventInfo.RaiseField.GetValue(Contract) as MulticastDelegate;
 						if (eventDelegate != null)
 							foreach (var handler in eventDelegate.GetInvocationList()) 
 								handler.Method.Invoke (handler.Target, msg);
@@ -165,10 +165,10 @@ namespace TheTunnel.Cords
 					return icord;
 				} else {// answering cord
 					var ser = SerializersFactory.Create (returnType);
-					var acord = new AnsweringCord (attr.CordId, new SequenceDeserializer (parameters), ser);
+                    var acord = new AnsweringCord(raiseEventInfo.Attribute.CordId, new SequenceDeserializer(parameters), ser);
 					acord.OnAsk += (sender, id, msg) => {
 						object ans = null;
-						var eventDelegate = fieldOfEvent.GetValue (Contract) as MulticastDelegate;
+                        var eventDelegate = raiseEventInfo.RaiseField.GetValue(Contract) as MulticastDelegate;
 						if (eventDelegate != null)
 						{
 							foreach (var handler in eventDelegate.GetInvocationList()) 

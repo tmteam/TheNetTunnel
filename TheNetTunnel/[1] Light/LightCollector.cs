@@ -4,6 +4,9 @@ using System.Runtime.InteropServices;
 
 namespace TheTunnel.Light
 {
+    /// <summary>
+    /// Collect single light message from quants
+    /// </summary>
 	public class LightCollector
 	{
 		static int DefaultHeadSize = Marshal.SizeOf(typeof(QuantumHead));
@@ -16,8 +19,6 @@ namespace TheTunnel.Light
 
 		public bool Collect(QuantumHead head, byte[] packetFromAStream, int headStart)
 		{
-			if (head.length == 11) {
-			}
 			lastTS = DateTime.Now;
 			int bodyStart = headStart + DefaultHeadSize;
 			int bodyLen = head.length - DefaultHeadSize;

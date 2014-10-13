@@ -13,15 +13,15 @@ namespace ChatClient
 				return true;
 			};
 
-			TheTunnel.LightTunnelClient client = null;
+			TheTunnel.LightTunnelClient<ClientContract> client = null;
 
 			while (true) {
 				Console.WriteLine ("Enter an ip:");
 				var ip = Console.ReadLine ();
 				var port = "4242";
 
-				client = new TheTunnel.LightTunnelClient ();
-				client.OnDisconnect += (TheTunnel.LightTunnelClient sender, TheTunnel.DisconnectReason reason) => {
+				client = new TheTunnel.LightTunnelClient<ClientContract> ();
+				client.OnDisconnect += (object sender, TheTunnel.DisconnectReason reason) => {
 					Console.WriteLine ("Server Connection is closed. Reason: " + reason);
 				};
 

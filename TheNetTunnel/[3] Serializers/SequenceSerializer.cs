@@ -9,6 +9,7 @@ namespace TheTunnel.Serialization
 		public readonly Type[] Types;
 		ISerializer[] serializers;
 		bool singleMember = false;
+
 		public SequenceSerializer (Type[] types)
 		{
 			this.Types = types;

@@ -43,6 +43,7 @@
     <Compile Include="[1] Light\LightCollector.cs" />
     <Compile Include="[1] Light\QuantumReceiver.cs" />
     <Compile Include="[1] Light\QuantumSender.cs" />
+    <Compile Include="[2] Cord\ContractTypeReflector.cs" />
     <Compile Include="[3] Deserializers\IDeserializer.cs" />
     <Compile Include="[3] Deserializers\PrimitiveDeserializer.cs" />
     <Compile Include="[3] Deserializers\DeserializerBase.cs" />

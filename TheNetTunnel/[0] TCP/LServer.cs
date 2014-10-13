@@ -47,7 +47,7 @@ namespace TheTunnel
 					EndListen ();
 				var cl = Clients;
 				foreach (var c in cl)
-					c.Stop ();
+					c.Close ();
 			}
 		}
 
@@ -95,7 +95,7 @@ namespace TheTunnel
 				OnConnect (this, client, info);
 
 			if (!info.AllowConnection)	
-				client.Stop ();
+				client.Close ();
 		}
 
 		void client_OnDisconnect (LClient obj)

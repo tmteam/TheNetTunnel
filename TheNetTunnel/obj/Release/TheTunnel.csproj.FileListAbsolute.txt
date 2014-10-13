@@ -1,0 +1,6 @@
+C:\code\TNT\TheTunnel\TheNetTunnel\bin\Release\TNT.dll
+C:\code\TNT\TheTunnel\TheNetTunnel\bin\Release\TNT.pdb
+C:\code\TNT\TheTunnel\TheNetTunnel\bin\Release\protobuf-net.dll
+C:\code\TNT\TheTunnel\TheNetTunnel\obj\Release\TheTunnel.csprojResolveAssemblyReference.cache
+C:\code\TNT\TheTunnel\TheNetTunnel\obj\Release\TNT.dll
+C:\code\TNT\TheTunnel\TheNetTunnel\obj\Release\TNT.pdb

@@ -35,7 +35,7 @@ namespace Testing
 
 				return new ProtoPoint{ X = x, Y = y};
 			}; 
-			var client = new LightTunnelClient();
+			var client = new LightTunnelClient<PingPongContract>();
 
 			////////////CONNECTION/////////////////////
 			client.Connect(IPAddress.Parse("127.0.0.1"),6995,ClientContract);
@@ -90,7 +90,7 @@ namespace Testing
 			server.OpenServer(IPAddress.Any, 6996);
 
 			////////////CLIENTS/////////////////////
-			List<LightTunnelClient> clients = new List<LightTunnelClient> ();
+            List < LightTunnelClient < PingPongContract >> clients = new List<LightTunnelClient<PingPongContract>>();
 
 			IPAddress ip = IPAddress.Parse ("127.0.0.1");
 			int port = 6996;
@@ -102,7 +102,7 @@ namespace Testing
 					var ClientContract = new PingPongContract ();
 					ClientContract.ReceivePong += (x, y) =>	new ProtoPoint{ X = x, Y = y };
 
-					var client = new LightTunnelClient ();
+					var client = new LightTunnelClient<PingPongContract> ();
 					client.Connect (ip, port, ClientContract);
 					clients.Add (client);
 
@@ -116,7 +116,7 @@ namespace Testing
 
 				#region send some flud
 				foreach (var cl in clients) {
-					var ppc = (cl.CordDispatcher.Contract as PingPongContract);
+					var ppc = cl.CordDispatcher.Contract;
 					var rnd = Tools.rnd.Next ();
 
 					var res = ppc.SendPing (rnd, rnd + 1);
@@ -168,7 +168,7 @@ namespace Testing
 			ClientContract.ReceivePong+= (x, y) =>  {
 				return new ProtoPoint{ X = x+1, Y = y+1};
 			}; 
-			var client = new LightTunnelClient();
+			var client = new LightTunnelClient<PingPongContract>();
 
 			////////////CONNECTION/////////////////////
 			client.Connect(IPAddress.Parse("127.0.0.1"),6997,ClientContract);
@@ -202,7 +202,7 @@ namespace Testing
 							ClientContract.ReceivePong += (x, y) => {
 								return new ProtoPoint{ X = x + 1, Y = y + 1 };
 							}; 
-							var client = new LightTunnelClient ();
+							var client = new LightTunnelClient<PingPongContract> ();
 
 							////////////CONNECTION/////////////////////
 							client.Connect (IPAddress.Parse ("127.0.0.1"), 6999, ClientContract);

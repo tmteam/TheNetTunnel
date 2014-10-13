@@ -8,35 +8,52 @@ using TheTunnel.Light;
 namespace TheTunnel
 {
 	//based on http://robjdavey.wordpress.com/2011/02/11/asynchronous-tcp-client-example/ example
-	public class LClient
-	{	public static LClient Connect(IPAddress ip, int port)
-		{	
-			TcpClient client = new TcpClient ();
-
-			client.Connect (new IPEndPoint (ip, port));
+	
+    /// <summary>
+    /// Light transport client
+    /// </summary>
+    public class LClient
+	{	
+        /// <summary>
+        /// Create Light client connected to specified ip:port
+        /// </summary>
+        /// <param name="ip"></param>
+        /// <param name="port"></param>
+        /// <returns></returns>
+        public static LClient Connect(IPAddress ip, int port){	
+			var client = new TcpClient ();
+        	client.Connect (new IPEndPoint (ip, port));
 
 			if (client.Connected)
 				return new LClient (client);
 			else
 				throw new System.Net.Sockets.SocketException();
 		}
-
+        /// <summary>
+        /// Create Light client with specified TcpClient
+        /// </summary>
+        /// <param name="client"></param>
 		public LClient (TcpClient client)
 		{
 			this.Client = client;
-			sender = new QuantumSender ();
-			receiver = new QuantumReceiver ();
-			receiver.OnLightMessage += (QuantumReceiver arg1, QuantumHead arg2, System.IO.MemoryStream arg3) => {
+			qSender = new QuantumSender ();
+			qReceiver = new QuantumReceiver ();
+			qReceiver.OnLightMessage += (QuantumReceiver arg1, QuantumHead arg2, System.IO.MemoryStream arg3) => {
 				if(OnReceive!=null)
 					OnReceive(this, arg3);
 			};
 		}
-
+        /// <summary>
+        /// Indicates connection status of downlayer TcpClient
+        /// </summary>
 		public bool IsConnected{ get { return Client == null ? false : Client.Connected; } }
-
+        /// <summary>
+        /// Downlayer Tcp -connectionn
+        /// </summary>
 		public TcpClient Client{ get; protected set; }
-
-		bool allowReceive = false;
+		/// <summary>
+        /// Can LClient-user can handle messages now?.
+        /// </summary>
 		public bool AllowReceive{
 			get{ return allowReceive; }
 			set { 
@@ -56,87 +73,84 @@ namespace TheTunnel
 				}
 			}
 		}
-
+        bool allowReceive = false;
+        /// <summary>
+        /// Raising on new light-message received.
+        /// It is blocking operation (LClient cannot handle other messages, while OnReceive handling)
+        /// </summary>
 		public event delQuantReceive OnReceive;
-
+        /// <summary>
+        /// Raising if tcp connection is lost
+        /// </summary>
 		public event Action<LClient> OnDisconnect;
-
-		public void Stop(){
+        /// <summary>
+        /// Close tcp connection
+        /// </summary>
+		public void Close(){
 			if (Client.Connected)
 				disconnect ();
 		}
-
+        /// <summary>
+        /// Send data that begins from stream position
+        /// </summary>
+        /// <param name="streamOfLight"></param>
 		public void SendMessage(MemoryStream streamOfLight)	{
-			if (streamOfLight.Length == 20) {
-			}
-			lock(sender)
+			lock(qSender)
 			{
-				sender.Set (streamOfLight);
+				qSender.Set (streamOfLight);
 				byte[] buff;
 				int id;
-				while (sender.TryNext(maxQSize, out buff, out id)){
+				while (qSender.TryNext(maxQSize, out buff, out id))
 					write(buff);
-				}
 			}
 		}
 
 		#region private 
+
 		int maxQSize = 900;
-
-		QuantumSender sender;
-		QuantumReceiver receiver;
-
+		QuantumSender qSender;
+		QuantumReceiver qReceiver;
 		bool disconnectMsgWasSended = false;
 		bool readWasStarted = false;
-
-		void readCallback(IAsyncResult result)
-		{
+        
+		void readCallback(IAsyncResult result){
 			int read;
 			NetworkStream networkStream;
-			try
-			{
+			try{
 				networkStream = Client.GetStream();
 				read = networkStream.EndRead(result);
-			}
-			catch
-			{
+			}catch{
 				//An error has occured when reading
 				disconnect ();
 				return;
 			}
 
-			if (read == 0)
-			{
+			if (read == 0){
 				//The connection has been closed.
 				disconnect ();
 				return;
 			}
 
 			byte[] buffer = result.AsyncState as byte[];
+            //mb marshal??
 			byte[] readed = new byte[read];
 			Array.Copy (buffer, readed, read);
-
 
 			if (!Client.Connected)
 				return;
 
-			receiver.Set (readed);
+			qReceiver.Set (readed);
 
-            
+            if (!Client.Connected || !networkStream.CanRead)
+                return;
 			//Start reading from the network again.
-            try
-            {
+
+            try{
                 networkStream.BeginRead(buffer, 0, buffer.Length, readCallback, buffer);
-            }
-            catch { return; }
+            } catch {/*Do nothing*/}
 		}
 
-		/// <summary>
-		/// Writes an array of bytes to the network.
-		/// </summary>
-		/// <param name="bytes">The array to write</param>
-		/// <returns>A WaitHandle that can be used to detect
-		/// when the write operation has completed.</returns>
+		// Writes an array of bytes to the network.
 		void write(byte[] bytes)
 		{
 			if (!Client.Connected)
@@ -148,24 +162,16 @@ namespace TheTunnel
 			networkStream.BeginWrite(bytes, 0, bytes.Length, writeCallback, null);
 		}
 
-		/// <summary>
-		/// Callback for Write operation
-		/// </summary>
-		/// <param name="result">The AsyncResult object</param>
-		void writeCallback(IAsyncResult result)
-		{
-			try
-			{
+		void writeCallback(IAsyncResult result){
+			try{
 				NetworkStream networkStream = Client.GetStream();
 				networkStream.EndWrite(result);
-			}
-			catch {
+			}catch {
 				disconnect ();
 			}
 		}
 
-		void disconnect()
-		{
+		void disconnect(){
 			if (Client.Connected)
 				Client.Close ();
 			if (!disconnectMsgWasSended) {

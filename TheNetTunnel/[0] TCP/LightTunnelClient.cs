@@ -12,10 +12,11 @@ namespace TheTunnel
 //	People make noises when they're sick
 //	Nothing to do except hold on to NOTHING
 
-	public class LightTunnelClient{
+
+	public class LightTunnelClient<T> where T: class, new() {
 		public LightTunnelClient(){}
-		public LightTunnelClient(LClient client, object contract){
-			CordDispatcher = new CordDispatcher (contract);
+		public LightTunnelClient(LClient client, T contract){
+			CordDispatcher = new CordDispatcher<T> (contract);
 			this.Client = client;
 		}
 
@@ -26,20 +27,30 @@ namespace TheTunnel
 		LClient client;
 		public LClient Client{ 
 			get{return client; }
-			protected set{client = value; 
+			protected set{
+                if (client != null){
+                    Client.OnDisconnect -= onTcpDisconnect;
+                    Client.OnReceive -= client_OnReceive;
+                }
+                client = value; 
 				if (client != null) {
 					Client.OnDisconnect+= onTcpDisconnect;
 					Client.OnReceive+= client_OnReceive;
 				}
 			} }
 
-		CordDispatcher cordDispatcher;
-		public CordDispatcher CordDispatcher{
+		CordDispatcher<T> cordDispatcher;
+		public CordDispatcher<T> CordDispatcher{
 			get{return cordDispatcher; } 
 			protected set{
+                if(cordDispatcher!=null){
+                    cordDispatcher.NeedSend -= cordDispather_NeedSend;
+                    var dscnctable = CordDispatcher.Contract as IDisconnectable;
+					if(dscnctable!=null)
+						dscnctable.DisconnectMe-= handleDisconnectMe;
+                }
 				cordDispatcher = value;
-				if (cordDispatcher != null)
-				{
+				if (cordDispatcher != null){
 					cordDispatcher.NeedSend+= cordDispather_NeedSend;
 					var dscnctable = CordDispatcher.Contract as IDisconnectable;
 					if(dscnctable!=null)
@@ -49,30 +60,35 @@ namespace TheTunnel
 			
 		public event delTcpClientDisconnect OnDisconnect; 
 
-		public void Connect(IPAddress ip, int port, object contract)
+		public void Connect(IPAddress ip, int port, T contract)
 		{
-			CordDispatcher = new CordDispatcher (contract);
+			CordDispatcher = new CordDispatcher<T> (contract);
 			Client =  LClient.Connect (ip, port);
 			Client.AllowReceive = true;
 		}
+        
+        public void Connect(IPAddress ip, int port)
+        {
+            T contract = new T();
+            Connect(ip, port, contract);
+        }
 
 		public void Disconnect()
 		{
 			disconnectReason = DisconnectReason.UserWish;
-			Client.Stop ();
+			Client.Close ();
 		}
 
 		DisconnectReason disconnectReason = DisconnectReason.ConnectionIsLost;
-
 
 		#region private
 
 		void client_OnReceive (LClient client, System.IO.MemoryStream msg)
 		{
-			ThreadPool.QueueUserWorkItem(new WaitCallback((s)=>CordDispatcher.Handle (msg)));
+			ThreadPool.QueueUserWorkItem((s)=>CordDispatcher.Handle (msg));
 		}
 
-		void cordDispather_NeedSend (CordDispatcher sender, System.IO.MemoryStream streamOfLight)
+		void cordDispather_NeedSend (object sender, System.IO.MemoryStream streamOfLight)
 		{
 			Client.SendMessage (streamOfLight);
 		}
@@ -86,13 +102,13 @@ namespace TheTunnel
 		}
 
 		void handleDisconnectMe (IDisconnectable obj){
-			disconnectReason = DisconnectReason.ContractWish;
-			Client.Stop ();
+			disconnectReason = DisconnectReason.ByContract;
+			Client.Close ();
 		}
 
 		#endregion
 	}
 
-	public delegate void delTcpClientDisconnect (LightTunnelClient sender, DisconnectReason reason);
+	public delegate void delTcpClientDisconnect (object sender, DisconnectReason reason);
 }
 

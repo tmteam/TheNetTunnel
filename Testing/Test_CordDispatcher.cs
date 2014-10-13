@@ -136,16 +136,18 @@ namespace Testing
 
 		}
 
-		void ConnectContracts(object A, object B)
+		void ConnectContracts<Ta, Tb>(Ta A, Tb B) 
+            where Ta: class, new() 
+            where Tb: class, new()
 		{
-			CordDispatcher ACD = new CordDispatcher (A);
-			CordDispatcher BCD = new CordDispatcher (B);
+			CordDispatcher<Ta> ACD = new CordDispatcher<Ta> (A);
+			CordDispatcher<Tb> BCD = new CordDispatcher<Tb> (B);
 
-			ACD.NeedSend += (CordDispatcher arg1, System.IO.MemoryStream arg2) => {
+			ACD.NeedSend += (object arg1, System.IO.MemoryStream arg2) => {
 				arg2.Position = 0;
 				BCD.Handle (arg2);
 			};
-			BCD.NeedSend += (CordDispatcher arg1, System.IO.MemoryStream arg2) => {
+			BCD.NeedSend += (object arg1, System.IO.MemoryStream arg2) => {
 				arg2.Position = 0;
 				ACD.Handle(arg2);
 			};

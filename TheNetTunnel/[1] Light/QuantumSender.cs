@@ -5,8 +5,14 @@ using System.Threading;
 
 namespace TheTunnel.Light
 {
-	public class QuantumSender
-	{
+    /// <summary>
+    /// Separate Light messages into a quantum sequences
+    /// </summary>
+	public class QuantumSender{
+        /// <summary>
+        /// Add a message for sending
+        /// </summary>
+        /// <param name="lightMessage"></param>
 		public void Set(MemoryStream lightMessage)
 		{
 			var id = Interlocked.Increment (ref msgId);
@@ -21,10 +27,14 @@ namespace TheTunnel.Light
 			queue.Add (newSep);
 
 		}
-
-		public bool TryNext( int maxQuantumSize, out byte[] quantum, out int msgId)
-		{
-
+        /// <summary>
+        /// Generate next quantum
+        /// </summary>
+        /// <param name="maxQuantumSize"></param>
+        /// <param name="quantum"></param>
+        /// <param name="msgId"></param>
+        /// <returns>true if quantum generated.</returns>
+		public bool TryNext( int maxQuantumSize, out byte[] quantum, out int msgId){
 			if (queue.Count == 0) {
 				msgId = 0;
 				quantum = null;
@@ -44,17 +54,21 @@ namespace TheTunnel.Light
 			}
 			else
 				qPos++;
-
 			return true;
 		}
-
+        /// <summary>
+        /// Clear 
+        /// </summary>
 		public void Clear()	{
 			queue.Clear ();
 		}
 
 		int msgId;
+        //last taken queue item
 		int qPos = 0;
+        //Separation queue
 		List<LightSeparator> queue = new List<LightSeparator>();
+		// unused separators
 		List<LightSeparator> used = new List<LightSeparator>();
 	
 	}

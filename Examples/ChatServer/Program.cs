@@ -15,7 +15,7 @@ namespace ChatServer
 			server = new TheTunnel.LightTunnelServer<ServerContract> ();
 
 			server.BeforeConnect+= (sender, contract, info) => {
-					contract.ReceiveMessage+= HandleReceiveMessage;
+				contract.ReceiveMessage+= HandleReceiveMessage;
 				Console.WriteLine("Client connected  ("+info.Client.Client.Client.RemoteEndPoint.ToString()+")"); 
 			};
 

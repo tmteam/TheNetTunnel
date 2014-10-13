@@ -6,6 +6,9 @@ using System.Collections.Generic;
 
 namespace TheTunnel.Light
 {
+    /// <summary>
+    /// Collect quants and parse it into light messages
+    /// </summary>
 	public class QuantumReceiver
 	{
 		static int DefaultHeadSize = Marshal.SizeOf(typeof(QuantumHead));
@@ -59,8 +62,6 @@ namespace TheTunnel.Light
 
 		public event Action<QuantumReceiver, QuantumHead, byte[]> OnCollectingError;
 
-
-
 		byte[] saveUndone(byte[] arr, int offset)
 		{
 			if (offset == 0)
@@ -71,7 +72,7 @@ namespace TheTunnel.Light
 			return res;
 		}
 
-		void handle(QuantumHead head, byte[] msg, int quantBeginOffset){
+		void handle(QuantumHead head, byte[] msgFromStream, int quantBeginOffset){
 
 			LightCollector c = null;
 			if (collectors.ContainsKey (head.msgId))
@@ -81,7 +82,7 @@ namespace TheTunnel.Light
 				collectors.Add (head.msgId, c);
 			}
 
-			if (c.Collect (head, msg, quantBeginOffset)) {
+			if (c.Collect (head, msgFromStream, quantBeginOffset)) {
 				// we have got a new light message!
 				var stream = c.GetLightMessageStream ();
 
@@ -94,8 +95,8 @@ namespace TheTunnel.Light
 				} else {
 					//Oops. An Error has occured during message collecting. 
 					if (OnCollectingError != null) {
-						byte[] badArray = new byte[msg.Length - quantBeginOffset];
-						Array.Copy (msg, quantBeginOffset, badArray, 0, badArray.Length);
+						byte[] badArray = new byte[msgFromStream.Length - quantBeginOffset];
+						Array.Copy (msgFromStream, quantBeginOffset, badArray, 0, badArray.Length);
 						OnCollectingError (this, head, badArray);
 					}
 				}

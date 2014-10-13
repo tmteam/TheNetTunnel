@@ -8,29 +8,40 @@ using System.IO;
 
 namespace TheTunnel.Cords
 {
-	public class CordDispatcher
+	public class CordDispatcher<T> where T: class, new()
 	{
-		public object Contract { get; protected set;}
+        public T Contract { get; protected set;}
 
-		public CordDispatcher(object contract)
-		{
+		public CordDispatcher(T contract){
 			Senders = new Dictionary<short, IOutCord> ();
 			Receivers = new Dictionary<short, IInCord> ();
-			parseContract(contract);
+
+            IOutCord[] oCords = null;
+            IInCord[] iCords = null;
+
+            ContractTypeReflector<T>.ParseAndBindContract(contract, out iCords, out oCords);
+            
+            foreach (var o in oCords)
+                AddOutputCord(o);
+            foreach (var i in iCords)
+                AddInputCord(i);
+
+            this.Contract = contract;
+
 		}
 
 		Dictionary<Int16,IOutCord> Senders;
 		Dictionary<Int16, IInCord> Receivers;
 
 		byte[] idBuff = new byte[2];
-
-		public void Handle(MemoryStream stream)
+        
+        public void Handle(MemoryStream streamOfLight)
 		{
-			stream.Read (idBuff, 0, 2);
+			streamOfLight.Read (idBuff, 0, 2);
 
 			short INCid = BitConverter.ToInt16 (idBuff, 0);
 			if (Receivers.ContainsKey (INCid))
-				Receivers [INCid].Parse (stream);
+				Receivers [INCid].Parse (streamOfLight);
 		}
 
 		public void OnDisconnect(DisconnectReason reason)
@@ -40,14 +51,14 @@ namespace TheTunnel.Cords
 				dscn.OnDisconnect (reason);
 		}
 
-		public void AddInCord(IInCord cord)
+		public void AddInputCord(IInCord cord)
 		{
 			if (Receivers.ContainsKey (cord.INCid))
 				throw new ArgumentException ();
 			Receivers.Add (cord.INCid, cord);
 		}
 
-		public void AddOutCord(IOutCord cord)
+		public void AddOutputCord(IOutCord cord)
 		{
 			if (Senders.ContainsKey (cord.OUTCid))
 				throw new ArgumentException ();
@@ -55,7 +66,7 @@ namespace TheTunnel.Cords
 			cord.NeedSend+= outCord_needSend;
 		}
 
-		public event Action<CordDispatcher, MemoryStream> NeedSend;
+		public event Action<object, MemoryStream> NeedSend;
 
 		void outCord_needSend (IOutCord sender, MemoryStream stream, int length)
 			{
@@ -63,9 +74,12 @@ namespace TheTunnel.Cords
 				NeedSend (this, stream);
 			}
 		}
+           /*
+        void parseContract(T contract)
+        {
 
-		void parseContract(object contract)
-		{
+          
+         
 			this.Contract = contract;
 			var type = Contract.GetType ();
 
@@ -83,9 +97,9 @@ namespace TheTunnel.Cords
 
 			foreach (var oc in outCords) {
 				var oCord = CordFacroty.OutCordFactory (oc.property, oc.attr, contract);
-				AddOutCord (oCord);
+				AddOutputCord (oCord);
 				var iCord =  oCord as IInCord;
-				if (iCord != null)	AddInCord (iCord);
+				if (iCord != null)	AddInputCord (iCord);
 			}
 			#endregion
 
@@ -104,9 +118,9 @@ namespace TheTunnel.Cords
 
 			foreach (var r in inCordsMethods) {
 				var iCord = CordFacroty.InCordByMethodFactory (r.method, r.attr, contract);
-				AddInCord (iCord);
+				AddInputCord (iCord);
 				var oCord = iCord as IOutCord;
-				if (oCord != null)	AddOutCord (oCord);
+				if (oCord != null)	AddOutputCord (oCord);
 			}
 			#endregion
 
@@ -125,13 +139,14 @@ namespace TheTunnel.Cords
 
 			foreach (var r in inCordsEvents) {
 				var iCord = CordFacroty.InCordByEventFactory (r.field, r.attr, contract);
-				AddInCord (iCord);
+				AddInputCord (iCord);
 				var oCord = iCord as IOutCord;
-				if (oCord != null)	AddOutCord (oCord);
+				if (oCord != null)	AddOutputCord (oCord);
 			}
 			#endregion
-		}
-			
-	}
+		
+        }
+        */
+    }
 }
 

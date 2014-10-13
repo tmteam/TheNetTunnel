@@ -8,7 +8,7 @@ namespace TheTunnel
 {
 	public class LightTunnelServer<TContract> where TContract: class, new()
 	{
-		Dictionary<TContract, LightTunnelClient> contracts;
+		Dictionary<TContract, LightTunnelClient<TContract>> contracts;
 		public TContract[] Contracts{ 
 			get {
 				lock (contracts) {
@@ -25,7 +25,7 @@ namespace TheTunnel
 		{
 			if (Server != null)
 				throw new InvalidOperationException ("Server is already open");
-			contracts = new Dictionary<TContract, LightTunnelClient> ();
+			contracts = new Dictionary<TContract, LightTunnelClient<TContract>> ();
 			Server = new LServer ();
 			Server.OnConnect+= server_onClientConnect;
 			Server.OnDisconnect+= server_onClientDisconnect;
@@ -40,7 +40,7 @@ namespace TheTunnel
 			Server = null;
 		}
 
-		public LightTunnelClient GetTunnel(TContract contract)
+		public LightTunnelClient<TContract> GetTunnel(TContract contract)
 		{
 			lock(contracts)
 			{
@@ -63,7 +63,7 @@ namespace TheTunnel
 		void server_onClientConnect (LServer sender, LClient newClient, ConnectInfo info)
 		{
 			var contract = new TContract ();
-			var tunnel = new LightTunnelClient (newClient, contract);
+			var tunnel = new LightTunnelClient<TContract> (newClient, contract);
 
 			lock (contracts) {
 				contracts.Add (contract, tunnel);

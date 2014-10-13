@@ -7,6 +7,9 @@
 
 	namespace TheTunnel.Light
 	{
+        /// <summary>
+        /// Separate lightMessage into sequence of quants
+        /// </summary>
 		public class LightSeparator 
 		{
 			static int DefaultHeadSize = Marshal.SizeOf(typeof(QuantumHead));
