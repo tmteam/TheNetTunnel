@@ -11,6 +11,7 @@ namespace TheTunnel.Cords
 			short OUTCid{get;}
 			ISerializer Serializer{get;}
 			event Action<IOutCord, MemoryStream, int> NeedSend;
+            void Stop();
 		}
 
 		public interface IOutCord<T>:IOutCord
@@ -41,6 +42,7 @@ namespace TheTunnel.Cords
 		{
 			int MaxAwaitMs{get;set;} 
 			object Ask(object question);
+            
 		}
 
 		public interface IAskCord<TAnswer, TQuestion>: IAskCord

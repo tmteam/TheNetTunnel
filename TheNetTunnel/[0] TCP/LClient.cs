@@ -111,45 +111,27 @@ namespace TheTunnel
 		bool readWasStarted = false;
         
 		void readCallback(IAsyncResult result){
-			int read;
-			NetworkStream networkStream;
-			try{
-				networkStream = Client.GetStream();
-				read = networkStream.EndRead(result);
-			}catch{
-				//An error has occured when reading
-				disconnect ();
-				return;
-			}
+			try {
+                var networkStream = Client.GetStream();
+			    var read = networkStream.EndRead(result);
+			    
+                if (read == 0)
+				    //The connection has been closed.
+                    throw new Exception();
+			    
+                var buffer = result.AsyncState as byte[];
+                //mb marshal??
+			    var readed = new byte[read];
+			    Array.Copy (buffer, readed, read);
 
-			if (read == 0){
-				//The connection has been closed.
-				disconnect ();
-				return;
-			}
-
-			byte[] buffer = result.AsyncState as byte[];
-            //mb marshal??
-			byte[] readed = new byte[read];
-			Array.Copy (buffer, readed, read);
-
-			if (!Client.Connected)
-				return;
-
-			qReceiver.Set (readed);
-
-            if (!Client.Connected || !networkStream.CanRead)
-                return;
-			//Start reading from the network again.
-
-            try{
+                qReceiver.Set (readed);
+			    //Start reading from the network again.
                 networkStream.BeginRead(buffer, 0, buffer.Length, readCallback, buffer);
-            } catch {/*Do nothing*/}
+             } catch { disconnect(); }
 		}
 
 		// Writes an array of bytes to the network.
-		void write(byte[] bytes)
-		{
+		void write(byte[] bytes) {
 			if (!Client.Connected)
 				return;
 
@@ -161,7 +143,7 @@ namespace TheTunnel
 
 		void writeCallback(IAsyncResult result){
 			try{
-				NetworkStream networkStream = Client.GetStream();
+                NetworkStream networkStream = Client.GetStream();
 				networkStream.EndWrite(result);
 			}catch {
 				disconnect ();

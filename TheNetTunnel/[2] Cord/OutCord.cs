@@ -35,6 +35,7 @@ namespace TheTunnel.Cords
 			if (NeedSend != null)
 				NeedSend (this, stream,sPos);
 		}
+        public void Stop() { }
 
 	}
 }

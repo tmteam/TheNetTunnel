@@ -18,6 +18,7 @@ namespace TheTunnel.Cords
 
 		public IDeserializer<T> DeserializerT {	get; protected set; }
 
+       
 		#endregion
 
 		#region IInCord implementation

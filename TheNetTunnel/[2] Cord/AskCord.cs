@@ -37,9 +37,11 @@ namespace TheTunnel.Cords
 		public event Action<IOutCord, MemoryStream, int> NeedSend;
 		public event Action<IInCord, object> OnReceive;
 
-
 		public Tanswer AskT (Tquestion question)
 		{
+            if (!isStarted)
+                return default(Tanswer);
+
 			Tanswer answer;
 
 			MemoryStream str = new MemoryStream ();
@@ -64,12 +66,11 @@ namespace TheTunnel.Cords
 			if (NeedSend != null)
 				NeedSend (this, str, (int)str.Length);
 
-			var hasAns = aa.mre.WaitOne (MaxAwaitMs);
+			var hasAns = aa.mre.WaitOne (MaxAwaitMs,false);
 			if (hasAns)
 				answer= aa.ans;
 			else {
 				answer = default(Tanswer);
-			
 				lock(awaitingQueue) {
 					awaitingQueue.Remove (id);
 				}
@@ -77,36 +78,45 @@ namespace TheTunnel.Cords
 			return answer;
 		}
 			
-		public object Ask (object question)
-		{
+		public object Ask (object question){
 			return AskT ((Tquestion)question);
 		}
 
-		public void Parse (System.IO.MemoryStream stream)
-		{
+		public void Parse (System.IO.MemoryStream stream){
 			stream.Read (idBuff, 0, 2);
 			var id = BitConverter.ToUInt16 (idBuff, 0);
 			var obj = DeserializerT.DeserializeT (stream, (int)(stream.Length - stream.Position));
 			if (OnReceive != null)
 				OnReceive (this, obj);
 			answerCord_OnAnswer (id, obj);
-
 		}
+
+
+        bool isStarted = true;
+        public void Stop() 
+        {
+            isStarted = false;
+            lock (awaitingQueue)
+            {
+                foreach (var a in awaitingQueue)
+                    a.Value.mre.Set();
+                awaitingQueue.Clear();
+            }
+        }
+
 
 		int id = 0;
 		byte[] idBuff = new byte[2];
 			
 		Dictionary<int, answerAwaiter<Tanswer>> awaitingQueue; 
 
-		void answerCord_OnAnswer (ushort id, Tanswer answer)
-		{
+		void answerCord_OnAnswer (ushort id, Tanswer answer){
 			answerAwaiter<Tanswer> aa = null;
 
 			lock(awaitingQueue) {
 				if (awaitingQueue.TryGetValue (id, out aa))
 					awaitingQueue.Remove (id);
 			}
-
 			if (aa != null) {
 				aa.ans = answer;
 				aa.mre.Set ();
@@ -114,11 +124,10 @@ namespace TheTunnel.Cords
 		}
 	}
 
-	class answerAwaiter <Tanswer>
-	{
-		public answerAwaiter()
-		{
+	class answerAwaiter <Tanswer>{
+		public answerAwaiter(){
 			mre = new ManualResetEvent (false);
+            ans = default(Tanswer);
 		}
 		public ManualResetEvent mre;
 		public Tanswer ans;

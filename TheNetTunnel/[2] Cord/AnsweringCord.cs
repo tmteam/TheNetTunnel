@@ -29,10 +29,12 @@ namespace TheTunnel.Cords
 
 		public event Action<IInCord, object> OnReceive;
 
-		byte[] bHeadBuff = new byte[4]; 
-		short[] sHeadBuff = new short[2];
+		
 		public void SendAnswer (object answer, short questionId)
 		{
+            byte[] bHeadBuff = new byte[4];
+            short[] sHeadBuff = new short[2];
+
 			MemoryStream str = new MemoryStream ();
 
 			sHeadBuff[0] = OUTCid;
@@ -48,9 +50,11 @@ namespace TheTunnel.Cords
 				NeedSend (this, str, (int)str.Length);
 		}
 
-		byte[] buffId = new byte[2];
+		
 		public void Parse (MemoryStream stream)
-		{
+        {
+            byte[] buffId = new byte[2];
+
 			stream.Read (buffId, 0, 2);
 			var id = BitConverter.ToInt16 (buffId, 0);
 			var askObj = Deserializer.Deserialize (stream, (int)(stream.Length - stream.Position));
@@ -61,8 +65,10 @@ namespace TheTunnel.Cords
 		}
 
 		public void Send (object obj){
-			throw new NotImplementedException ();
+			throw new NotSupportedException ();
 		}
+        public void Stop() { }
+
 	}
 }
 

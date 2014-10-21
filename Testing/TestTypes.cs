@@ -82,7 +82,8 @@ namespace Testing
 			return true;
 		}
 	}
-	[ProtoBuf.ProtoContract]
+	
+    [ProtoBuf.ProtoContract]
 	public class ProtoPoint{ 
 		[ProtoBuf.ProtoMember(1)] public int X;
 		[ProtoBuf.ProtoMember(2)] public int Y;
