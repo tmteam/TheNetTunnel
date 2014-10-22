@@ -21,7 +21,7 @@ namespace TheTunnel
 		public event delConnecter<TContract> AfterConnect;
 		public event delConnecter<TContract> OnDisconnect;
 
-		public void OpenServer(System.Net.IPAddress ip, int port)
+		public void Open(System.Net.IPAddress ip, int port)
 		{
 			if (Server != null)
 				throw new InvalidOperationException ("Server is already open");
@@ -33,7 +33,7 @@ namespace TheTunnel
 
 		}
 
-		public void CloseServer(){
+		public void Close(){
 			if (Server == null)
 				throw new InvalidOperationException ("Server is already closed");
 			Server.StopServer ();
@@ -42,8 +42,7 @@ namespace TheTunnel
 
 		public LightTunnelClient<TContract> GetTunnel(TContract contract)
 		{
-			lock(contracts)
-			{
+			lock(contracts){
 				if(!contracts.ContainsKey(contract))
 					return null;
 				else
@@ -51,8 +50,7 @@ namespace TheTunnel
 			}
 		}
 
-		public void Kick(TContract contract)
-		{
+		public void Kick(TContract contract){
 			var tunnel = GetTunnel (contract);
 			tunnel.Disconnect();
 		}
@@ -80,8 +78,7 @@ namespace TheTunnel
 				AfterConnect(this, contract);
 		}
 	
-		void server_onClientDisconnect (LServer server, LClient oldClient)
-		{
+		void server_onClientDisconnect (LServer server, LClient oldClient){
 			TContract client = null;
 			lock (contracts) {
 				client = contracts.FirstOrDefault (c => c.Value.Client == oldClient).Key;

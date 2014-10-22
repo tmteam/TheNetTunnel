@@ -28,7 +28,7 @@ namespace Testing
 			server.OnDisconnect += (sender, contract) => {
 				onDisconnect.Set();
 			};
-			server.OpenServer(IPAddress.Any, 6995);
+			server.Open(IPAddress.Any, 6995);
 			////////////CLIENT/////////////////////
 			var ClientContract =new PingPongContract();
 			ClientContract.ReceivePong+= (x, y) =>  {
@@ -61,7 +61,7 @@ namespace Testing
 			if(!onDisconnect.WaitOne(1000))
 				throw new Exception("Client not disconnected");
 
-			server.CloseServer ();
+			server.Close ();
 
 		}
 
@@ -87,7 +87,7 @@ namespace Testing
 			server.OnDisconnect += (sender, contract) => {
 				connectedCount--;
 			};
-			server.OpenServer(IPAddress.Any, 6996);
+			server.Open(IPAddress.Any, 6996);
 
 			////////////CLIENTS/////////////////////
             List < LightTunnelClient < PingPongContract >> clients = new List<LightTunnelClient<PingPongContract>>();
@@ -134,7 +134,7 @@ namespace Testing
 				#endregion
 			
 			}
-			server.CloseServer ();
+			server.Close ();
 			int waitC = 0;
 			while (server.Contracts.Length > 0 || connectedCount>0) {
 				Thread.Sleep (10);
@@ -142,7 +142,6 @@ namespace Testing
 				if(waitC>100)
 					throw new Exception("clients are not disconnected");
 			}
-
 		}
 
 		public void RecursionCall()
@@ -160,7 +159,7 @@ namespace Testing
 				};
 			};
 
-			server.OpenServer(IPAddress.Any, 6997);
+			server.Open(IPAddress.Any, 6997);
 
 
 			///////////////CLIENT/////////////////////
@@ -177,6 +176,7 @@ namespace Testing
 			if (servAns.X != 4 || servAns.Y != 104)
 				throw new Exception ("recursion check failed");
 			client.Disconnect ();
+            server.Close();
 		}
 
 		public void CuteDDDOS()
@@ -188,7 +188,7 @@ namespace Testing
 					return new ProtoPoint{ X = x+100, Y=y+100};
 				};
 			};
-			server.OpenServer (IPAddress.Any, 6999);
+			server.Open (IPAddress.Any, 6999);
 
 			AutoResetEvent hundredDone = new AutoResetEvent (false);
 			int doneCount = 0;
@@ -218,7 +218,86 @@ namespace Testing
 			}
 			if(!hundredDone.WaitOne (60000))
 				throw new Exception ("ddos was done succesfully ;(");
+            server.Close();
 		}
+
+        public void ClientDisconnectHandling()
+        {
+            var server = new LightTunnelServer<ServPauseContract>();
+            server.Open(IPAddress.Any, 6999);
+
+            var client = new LightTunnelClient<ClntPauseContract>();
+            var clContract = client.Contract;
+            client.Connect(IPAddress.Parse("127.0.0.1"), 6999);
+
+            ManualResetEvent msgReceived = new ManualResetEvent(false);
+            ManualResetEvent threadStarted = new ManualResetEvent(false);
+            Stopwatch AwaitTime = new Stopwatch();
+            string returned = null;
+            ThreadPool.QueueUserWorkItem((s) =>
+            {
+                AwaitTime.Start();
+                threadStarted.Set();
+                returned = clContract.AskWithSleeping("NeoSignalPodcast", 5000);
+                AwaitTime.Stop();
+                msgReceived.Set();
+            });
+
+            threadStarted.WaitOne();
+            Thread.Sleep(100);
+            client.Disconnect();
+
+            
+            if (!msgReceived.WaitOne(10000))
+                throw new Exception("no message return for 10 sec");
+
+            if (returned != null)
+                throw new Exception("result should be null");
+
+            if (AwaitTime.Elapsed.TotalSeconds > 2)
+                throw new Exception("Method return in "+ AwaitTime.ElapsedMilliseconds+"ms");
+            server.Close();
+        }
+
+        public void ServerDisconnectHandling()
+        {
+            var server = new LightTunnelServer<ServPauseContract>();
+            server.Open(IPAddress.Any, 7000);
+
+            var client = new LightTunnelClient<ClntPauseContract>();
+            var clContract = client.Contract;
+            client.Connect(IPAddress.Parse("127.0.0.1"), 7000);
+
+            ManualResetEvent msgReceived = new ManualResetEvent(false);
+            ManualResetEvent threadStarted = new ManualResetEvent(false);
+            Stopwatch AwaitTime = new Stopwatch();
+            string returned = null;
+            ThreadPool.QueueUserWorkItem((s) =>
+            {
+                AwaitTime.Start();
+                threadStarted.Set();
+                returned = clContract.AskWithSleeping("PHACE", 5000);
+                AwaitTime.Stop();
+                msgReceived.Set();
+            });
+
+            threadStarted.WaitOne();
+            Thread.Sleep(100);
+            server.Close();
+
+        
+            if (!msgReceived.WaitOne(10000))
+                throw new Exception("no message return for 10 sec");
+
+            if (returned != null)
+                throw new Exception("result should be null");
+
+            if (AwaitTime.Elapsed.TotalSeconds > 2)
+                throw new Exception("Method return in " + AwaitTime.ElapsedMilliseconds + "ms");
+            
+            if (client.IsConnected)
+                throw new Exception("Client should be disconnected");
+        }
 	}
 }
 

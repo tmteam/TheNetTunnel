@@ -9,17 +9,17 @@ namespace Testing
 	{
         public static void Main(string[] args)
         {
-            try
-            {
+            var test = new Test_FinalLightTunnel();
+            
+            try {
                 SendReceiveTest();
                 De_SerializationTest();
                 CordDispatcherTest();
                 FinalLightTunnelTest();
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 Console.WriteLine("Tests failed: " + ex.ToString());
             }
+
             Console.WriteLine("PAK2C..");
             Console.ReadKey();
         }
@@ -79,6 +79,9 @@ namespace Testing
 			test.PingPong ();
 			test.RecursionCall ();
 			test.CuteDDDOS ();
+            test.ClientDisconnectHandling();
+            test.ServerDisconnectHandling();
+           
 			Console.WriteLine("Succesfully");
 		}
 	}

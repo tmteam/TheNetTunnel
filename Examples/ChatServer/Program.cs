@@ -27,7 +27,7 @@ namespace ChatServer
 			};
 
 			Console.WriteLine ("Opening the server");
-			server.OpenServer (IPAddress.Any, 4242);
+			server.Open (IPAddress.Any, 4242);
 			Console.WriteLine ("Waiting of clients");
 
 			while (true) {

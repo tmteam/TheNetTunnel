@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using TheTunnel;
+using System.Threading;
 
 namespace Testing
 {
@@ -102,5 +103,16 @@ namespace Testing
 		[Out(1, MaxAnswerAwaitInterval:10000)]  public Func<int,int, ProtoPoint> SendPing { get; set; }
 		[In (1)]  public event Func<int, int, ProtoPoint> ReceivePong;
 	}
+
+    public class ServPauseContract{
+        [In(1)] public string AnswerWithSleeping(string info, int pause){
+            Thread.Sleep(pause);
+            return new string(info.Reverse().ToArray());
+        }
+    }
+
+    public class ClntPauseContract{
+        [Out(1, MaxAnswerAwaitInterval: 10000)] public Func<string, int, string> AskWithSleeping { get; set; }
+    }
 }
 

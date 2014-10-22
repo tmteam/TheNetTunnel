@@ -8,8 +8,7 @@ using System.Diagnostics;
 
 namespace TheTunnel
 {
-	public class LServer
-	{
+	public class LServer{
 		public System.Net.Sockets.TcpListener Listener{ get; protected set; }
 	
 		List<LClient> clients = new List<LClient>();
@@ -20,10 +19,8 @@ namespace TheTunnel
 		public event delLightInitConnect OnConnect;
 		public event delLightConnect OnDisconnect;
 
-		public void BeginListen(IPAddress address, int port)
-		{
-			lock(listenLocker)
-			{
+		public void BeginListen(IPAddress address, int port){
+			lock(listenLocker){
 				IsListening = true;
 				Listener = new TcpListener (address, port);
 				Listener.Start ();
@@ -31,18 +28,15 @@ namespace TheTunnel
 			}
 		}
 
-		public void EndListen()
-		{
+		public void EndListen(){
 			lock (listenLocker) {
 				IsListening = false;
 				Listener.Stop ();
 			}
 		}
 
-		public void StopServer()
-		{
-			lock(listenLocker)
-			{
+		public void StopServer(){
+			lock(listenLocker){
 				if (IsListening)
 					EndListen ();
 				var cl = Clients;
@@ -55,37 +49,35 @@ namespace TheTunnel
 		#region private
 
 		bool IsListening = false;
-
 		object listenLocker = new object();
-
-		/// <summary>
+        /// <summary>
 		/// Process the client connection.
 		/// </summary>
 		/// <param name="ar">Ar.</param>
-		void DoAcceptSocketCallback(IAsyncResult ar) 
-		{
+		void DoAcceptSocketCallback(IAsyncResult ar){
 			lock (listenLocker) {
 				if (!IsListening)
 					return;
-
 				// Get the listener that handles the client request.
 				TcpListener listener = (TcpListener)ar.AsyncState;
+				// End the operation and...
+                TcpClient client = null;
+                
+                try {
+                    client = listener.EndAcceptTcpClient(ar);
+                } catch { }
 
-				// End the operation and
-				TcpClient client = listener.EndAcceptTcpClient (ar);
-				if (client != null) {
-
-					//Registrating the client
-					var qClient = new LClient (client);
-					addClient (qClient);
-					//Connetining acception
-					listener.BeginAcceptTcpClient (new AsyncCallback (DoAcceptSocketCallback), Listener);
-				}
+                if (client != null){
+                    //...Registrating the client
+                    var qClient = new LClient(client);
+                    addClient(qClient);
+                    //Connetion acception
+                    listener.BeginAcceptTcpClient(new AsyncCallback(DoAcceptSocketCallback), Listener);
+                }
 			}
 		}
 
-		void addClient(LClient client)
-		{
+		void addClient(LClient client){
 			lock (clients) {
 				clients.Add (client);
 			}
@@ -98,8 +90,7 @@ namespace TheTunnel
 				client.Close ();
 		}
 
-		void client_OnDisconnect (LClient obj)
-		{
+		void client_OnDisconnect (LClient obj){
 			lock (clients) {
 				clients.Remove (obj);
 			}
@@ -113,8 +104,7 @@ namespace TheTunnel
 
 	public delegate void delLightInitConnect(LServer sender, LClient client, ConnectInfo info);
 
-	public class ConnectInfo
-	{
+	public class ConnectInfo{
 		public ConnectInfo(LClient client)
 		{
 			this.Client = client;

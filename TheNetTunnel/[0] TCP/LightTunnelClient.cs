@@ -14,12 +14,22 @@ namespace TheTunnel
 
 
 	public class LightTunnelClient<T> where T: class, new() {
-		public LightTunnelClient(){}
-		public LightTunnelClient(LClient client, T contract){
-			CordDispatcher = new CordDispatcher<T> (contract);
-			this.Client = client;
-		}
+		
+        public LightTunnelClient(){
+            this.Contract = new T();
+        }
 
+        public LightTunnelClient(T Contract){
+            this.Contract = Contract;
+        }
+
+        public LightTunnelClient(LClient client, T contract){
+            this.Contract = contract;
+            CordDispatcher = new CordDispatcher<T> (contract);
+			this.Client = client;
+
+		}
+        public T Contract { get; protected set; }
 		public bool IsConnected{
 			get{return client == null ? false : client.Client == null ? false : client.Client.Connected; }
 		}
@@ -62,15 +72,16 @@ namespace TheTunnel
 
 		public void Connect(IPAddress ip, int port, T contract)
 		{
+            this.Contract = contract;
 			CordDispatcher = new CordDispatcher<T> (contract);
 			Client =  LClient.Connect (ip, port);
 			Client.AllowReceive = true;
 		}
         
-        public void Connect(IPAddress ip, int port)
-        {
-            T contract = new T();
-            Connect(ip, port, contract);
+        public void Connect(IPAddress ip, int port){
+            if (Contract == default(T))
+                Contract = new T();
+            Connect(ip, port, Contract);
         }
 
 		public void Disconnect()

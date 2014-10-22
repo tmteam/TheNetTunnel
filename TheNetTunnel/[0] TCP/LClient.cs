@@ -8,7 +8,6 @@ using TheTunnel.Light;
 namespace TheTunnel
 {
 	//based on http://robjdavey.wordpress.com/2011/02/11/asynchronous-tcp-client-example/ example
-	
     /// <summary>
     /// Light transport client
     /// </summary>
@@ -117,7 +116,7 @@ namespace TheTunnel
 			    
                 if (read == 0)
 				    //The connection has been closed.
-                    throw new Exception();
+                    throw new Exception("Read of 0. Connection was closed");
 			    
                 var buffer = result.AsyncState as byte[];
                 //mb marshal??
@@ -134,9 +133,7 @@ namespace TheTunnel
 		void write(byte[] bytes) {
 			if (!Client.Connected)
 				return;
-
 			NetworkStream networkStream = Client.GetStream();
-
 			//Start async write operation
 			networkStream.BeginWrite(bytes, 0, bytes.Length, writeCallback, null);
 		}
@@ -152,7 +149,10 @@ namespace TheTunnel
 
 		void disconnect(){
 			if (Client.Connected)
-				Client.Close ();
+                try {
+                    Client.Close();
+                } catch { }
+
 			if (!disconnectMsgWasSended) {
 				disconnectMsgWasSended = true;
 				if (OnDisconnect != null)
