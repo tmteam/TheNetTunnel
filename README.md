@@ -5,15 +5,16 @@
 
 It is a .Net implementation of lightweight data presentation/transmition protocol.
 
-This protocol is designed for a using over TCP tranport.
+This protocol is designed for a using over TCP tranportю
 
-  TheTunnel Provides:
-*  Intuitive interface 
-*  Large(or HUGE) data - packets delivery (more than 10 mb).
+  TNT Provides:
+  
+*  Intuitive interface. 
+*  Large packets guaranteed delivery (already tested on 20mb packets).
 *  Simultaneous delivery of multiple data-packets
-  	 (you can send a several files and whrite short message to client simultaneous, via one tcp/port for example)
-*  Immitation for Remote method call. You can call method on other side and wait for its returns
-*  Work with protobuf at serializing/desirializing data.
+  	 (For example: you can send a several files and whrite short message to client simultaneous, via one tcp-port)
+*  Immitation for Remote method call. You can call method on other side and wait for its returns in classical programm flow style)
+*  in-box protobuff serialization.
 *  Functionality for easy definding your own message type, with Protobuf or build-in data types
 
 ## .net example ##
@@ -25,7 +26,9 @@ Client code:
 
 public class ClientContract{
 	[Out(1)] public Func<string,string,bool> SendMessage{get;set;}
-
+	
+	//You can use event like Action<DateTime,string,string>(or any other delegateType with same signature)
+	//instead of direct method implementation here:
 	[In(2)]  public void ReceiveMessage(DateTime time, string nick, string msg){
 			Console.WriteLine ("["+time+"]" + nick + ": " + msg);
 	}
@@ -95,5 +98,7 @@ In case of this primitive chat, protocol implementation is also very clear:
 
 
 ## also ##
-     
-  Currently i'm testing convenience of .Net implementation and specifying serialization and deserialization format in some complex cases. If someone is interested in this kind of protocol, or wanna participate in its development - please let me know.
+  
+  This code already worked in production sience 21.10.14
+  Currently i'm working on speed improvments in case of large number of messages per second.  
+  If someone wanna to participate on its development - please let me know.
