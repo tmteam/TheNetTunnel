@@ -17,9 +17,10 @@ namespace TheTunnel.Deserialization
 			else
 				Size = deserializers.Sum (d => d.Size.Value);
 		}
-		byte[] buffMemSize = new byte[4];
 		public override object[] DeserializeT (System.IO.Stream stream, int size)
 		{
+            byte[] buffMemSize = new byte[4];
+
 			if (Types.Length == 1) 
 				return new object[]{ deserializers [0].Deserialize (stream, size) };
 

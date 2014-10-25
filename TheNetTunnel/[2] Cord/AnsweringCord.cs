@@ -28,8 +28,7 @@ namespace TheTunnel.Cords
 		public event Action<IAnsweringCord, short, object> OnAsk;
 
 		public event Action<IInCord, object> OnReceive;
-
-		
+        
 		public void SendAnswer (object answer, short questionId)
 		{
             byte[] bHeadBuff = new byte[4];

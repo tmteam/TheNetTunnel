@@ -18,6 +18,7 @@ namespace TheTunnel
 
 		public event delLightInitConnect OnConnect;
 		public event delLightConnect OnDisconnect;
+        public event Action<LServer, Exception> OnEnd;
 
 		public void BeginListen(IPAddress address, int port){
 			lock(listenLocker){
@@ -45,17 +46,16 @@ namespace TheTunnel
 			}
 		}
 
-
 		#region private
 
-		bool IsListening = false;
+        public bool IsListening { get; protected set; }
 		object listenLocker = new object();
         /// <summary>
 		/// Process the client connection.
 		/// </summary>
 		/// <param name="ar">Ar.</param>
 		void DoAcceptSocketCallback(IAsyncResult ar){
-			lock (listenLocker) {
+           lock (listenLocker) {
 				if (!IsListening)
 					return;
 				// Get the listener that handles the client request.
@@ -65,15 +65,24 @@ namespace TheTunnel
                 
                 try {
                     client = listener.EndAcceptTcpClient(ar);
-                } catch { }
+                } catch(Exception sex) {
+                    if (OnEnd != null)
+                        OnEnd(this, sex);
+                    IsListening = false;
+                }
 
                 if (client != null){
                     //...Registrating the client
                     var qClient = new LClient(client);
                     addClient(qClient);
-                    //Connetion acception
                     listener.BeginAcceptTcpClient(new AsyncCallback(DoAcceptSocketCallback), Listener);
                 }
+                else{
+                    IsListening = false;
+                    if (OnEnd != null)
+                        OnEnd(this, null);
+                }
+
 			}
 		}
 

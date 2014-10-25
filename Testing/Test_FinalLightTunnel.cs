@@ -212,7 +212,7 @@ namespace Testing
 							client.Disconnect();
 						}
 						doneCount++;
-						if(doneCount==2)
+						if(doneCount==3)
 							hundredDone.Set();
 					});
 			}

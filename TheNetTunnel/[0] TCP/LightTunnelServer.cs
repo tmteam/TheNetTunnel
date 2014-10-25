@@ -20,6 +20,7 @@ namespace TheTunnel
 		public event delConnecterInfo<TContract> BeforeConnect;
 		public event delConnecter<TContract> AfterConnect;
 		public event delConnecter<TContract> OnDisconnect;
+        public event delListenStoppped    OnListenStopped;
 
 		public void Open(System.Net.IPAddress ip, int port)
 		{
@@ -29,6 +30,7 @@ namespace TheTunnel
 			Server = new LServer ();
 			Server.OnConnect+= server_onClientConnect;
 			Server.OnDisconnect+= server_onClientDisconnect;
+            Server.OnEnd += server_onEnd;
 			Server.BeginListen(ip, port);
 
 		}
@@ -54,7 +56,6 @@ namespace TheTunnel
 			var tunnel = GetTunnel (contract);
 			tunnel.Disconnect();
 		}
-
 
 		#region private 
 
@@ -90,8 +91,15 @@ namespace TheTunnel
 			if (OnDisconnect != null)
 				OnDisconnect (this, client);
 		}
+
+        void server_onEnd(LServer arg1, Exception arg2)
+        {
+            if (OnListenStopped != null)
+                OnListenStopped(this, arg2);
+        }
 		#endregion
 	}
+    public delegate void delListenStoppped(object sender, Exception sex);
 	public delegate void delConnecterInfo<TContract>(LightTunnelServer<TContract> sender, TContract contract, ConnectInfo info) where TContract: class, new();
 	public delegate void delConnecter<TContract>(LightTunnelServer<TContract> sender, TContract contract) where TContract: class, new();
 }
