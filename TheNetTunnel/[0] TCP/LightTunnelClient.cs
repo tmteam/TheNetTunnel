@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using TheTunnel.Cords;
+using System.IO;
 
 
 namespace TheTunnel
@@ -96,11 +97,26 @@ namespace TheTunnel
 
 		void client_OnReceive (LClient client, System.IO.MemoryStream msg)
 		{
-			ThreadPool.QueueUserWorkItem((s)=>CordDispatcher.Handle (msg));
+            if(IsConnected)
+			    ThreadPool.QueueUserWorkItem((s)=>
+                    {
+                        try{
+                            CordDispatcher.Handle(msg);
+                        } catch(Exception ex) {
+                            if (IsConnected)
+                            {
+                                disconnectReason = DisconnectReason.ConnectionIsLost;
+                                Client.Close();
+                            }
+                        }
+                    }
+            );
 		}
 
 		void cordDispather_NeedSend (object sender, System.IO.MemoryStream streamOfLight)
 		{
+            if (!IsConnected)
+                throw new IOException("Light tunnel is not connected");
 			Client.SendMessage (streamOfLight);
 		}
 

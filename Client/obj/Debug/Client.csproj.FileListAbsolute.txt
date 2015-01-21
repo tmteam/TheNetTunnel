@@ -1,0 +1,9 @@
+C:\code\TNT\TheTunnel\Client\bin\Debug\Client.exe.config
+C:\code\TNT\TheTunnel\Client\bin\Debug\Client.exe
+C:\code\TNT\TheTunnel\Client\bin\Debug\Client.pdb
+C:\code\TNT\TheTunnel\Client\bin\Debug\TNT.dll
+C:\code\TNT\TheTunnel\Client\bin\Debug\protobuf-net.dll
+C:\code\TNT\TheTunnel\Client\bin\Debug\TNT.pdb
+C:\code\TNT\TheTunnel\Client\obj\Debug\Client.exe
+C:\code\TNT\TheTunnel\Client\obj\Debug\Client.pdb
+C:\code\TNT\TheTunnel\Client\obj\Debug\Client.csprojResolveAssemblyReference.cache

@@ -28,9 +28,13 @@ namespace TheTunnel.Cords
 		public event Action<IAnsweringCord, short, object> OnAsk;
 
 		public event Action<IInCord, object> OnReceive;
-        
-		public void SendAnswer (object answer, short questionId)
+
+        bool isStopped = false;
+		
+        public void SendAnswer (object answer, short questionId)
 		{
+            if (isStopped)
+                return;
             byte[] bHeadBuff = new byte[4];
             short[] sHeadBuff = new short[2];
 
@@ -45,28 +49,32 @@ namespace TheTunnel.Cords
 
 			Serializer.Serialize (answer, str);
 			str.Position = 0;
-			if (NeedSend != null)
+			if (NeedSend != null && ! isStopped)
 				NeedSend (this, str, (int)str.Length);
 		}
 
 		
 		public void Parse (MemoryStream stream)
         {
+            if (isStopped)
+                return;
             byte[] buffId = new byte[2];
-
 			stream.Read (buffId, 0, 2);
 			var id = BitConverter.ToInt16 (buffId, 0);
 			var askObj = Deserializer.Deserialize (stream, (int)(stream.Length - stream.Position));
-			if (OnReceive != null)
+			if (OnReceive != null && ! isStopped)
 				OnReceive (this, askObj);
-			if (OnAsk != null)
+			if (OnAsk != null && !isStopped)
 				OnAsk (this, id, askObj);
 		}
 
 		public void Send (object obj){
 			throw new NotSupportedException ();
 		}
-        public void Stop() { }
+        public void Stop() 
+        {
+            isStopped = true;
+        }
 
 	}
 }

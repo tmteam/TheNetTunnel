@@ -103,7 +103,14 @@ namespace TheTunnel
 
 		#region private 
 
-		int maxQSize = 900;
+        public int MaxQSize { get { return maxQSize; } set {
+            if (value > 32) 
+                maxQSize = value;
+            else 
+                maxQSize = 32;
+        } }
+
+		int maxQSize = 9000;
 		QuantumSender qSender;
 		QuantumReceiver qReceiver;
 		bool disconnectMsgWasSended = false;

@@ -103,6 +103,7 @@ namespace TheTunnel
 			lock (clients) {
 				clients.Remove (obj);
 			}
+            obj.OnDisconnect -= client_OnDisconnect;
 			if (OnDisconnect != null)
 				OnDisconnect (this, obj);
 		}
