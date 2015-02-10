@@ -1,9 +1,0 @@
-C:\code\TNT\TheTunnel\Examples\ChatClient\obj\x86\Debug\ChatClient.csprojResolveAssemblyReference.cache
-C:\code\TNT\TheTunnel\Examples\ChatClient\bin\Debug\ChatClient.exe.config
-C:\code\TNT\TheTunnel\Examples\ChatClient\bin\Debug\ChatClient.exe
-C:\code\TNT\TheTunnel\Examples\ChatClient\bin\Debug\ChatClient.pdb
-C:\code\TNT\TheTunnel\Examples\ChatClient\bin\Debug\TNT.dll
-C:\code\TNT\TheTunnel\Examples\ChatClient\bin\Debug\protobuf-net.dll
-C:\code\TNT\TheTunnel\Examples\ChatClient\bin\Debug\TNT.pdb
-C:\code\TNT\TheTunnel\Examples\ChatClient\obj\x86\Debug\ChatClient.exe
-C:\code\TNT\TheTunnel\Examples\ChatClient\obj\x86\Debug\ChatClient.pdb
