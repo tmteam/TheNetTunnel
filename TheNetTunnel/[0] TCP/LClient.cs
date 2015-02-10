@@ -101,8 +101,10 @@ namespace TheTunnel
 					write(buff);
 		}
 
-		#region private 
-
+		
+        /// <summary>
+        /// Maximum packet size that transmits through TCP
+        /// </summary>
         public int MaxQSize { get { return maxQSize; } set {
             if (value > 32) 
                 maxQSize = value;
@@ -111,7 +113,9 @@ namespace TheTunnel
         } }
 
 		int maxQSize = 9000;
-		QuantumSender qSender;
+
+        #region private
+        QuantumSender qSender;
 		QuantumReceiver qReceiver;
 		bool disconnectMsgWasSended = false;
 		bool readWasStarted = false;

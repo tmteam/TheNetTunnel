@@ -30,12 +30,21 @@ namespace TheTunnel
 			this.Client = client;
 
 		}
+        /// <summary>
+        /// Contract, associated with current client
+        /// </summary>
         public T Contract { get; protected set; }
+        /// <summary>
+        /// Is client connected?
+        /// </summary>
 		public bool IsConnected{
 			get{return client == null ? false : client.Client == null ? false : client.Client.Connected; }
 		}
 
 		LClient client;
+        /// <summary>
+        /// Object of light - transport level client
+        /// </summary>
 		public LClient Client{ 
 			get{return client; }
 			protected set{
@@ -51,7 +60,7 @@ namespace TheTunnel
 			} }
 
 		CordDispatcher<T> cordDispatcher;
-		public CordDispatcher<T> CordDispatcher{
+        public CordDispatcher<T> CordDispatcher{
 			get{return cordDispatcher; } 
 			protected set{
                 if(cordDispatcher!=null){
@@ -70,21 +79,27 @@ namespace TheTunnel
 		}
 			
 		public event delTcpClientDisconnect OnDisconnect; 
-
-		public void Connect(IPAddress ip, int port, T contract)
+        /// <summary>
+        /// Connect to remote server at ip: port with specified contract
+        /// </summary>
+    	public void Connect(IPAddress ip, int port, T contract)
 		{
             this.Contract = contract;
 			CordDispatcher = new CordDispatcher<T> (contract);
 			Client =  LClient.Connect (ip, port);
 			Client.AllowReceive = true;
 		}
-        
+        /// <summary>
+        /// Connect to remote server at ip: port with default contract
+        /// </summary>
         public void Connect(IPAddress ip, int port){
             if (Contract == default(T))
                 Contract = new T();
             Connect(ip, port, Contract);
         }
-
+        /// <summary>
+        /// Disconnect from remote Light server
+        /// </summary>
 		public void Disconnect()
 		{
 			disconnectReason = DisconnectReason.UserWish;

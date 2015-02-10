@@ -17,15 +17,15 @@ namespace TheTunnel.Serialization
 			for (int i = 0; i < types.Length; i++) 
 				serializers [i] = SerializersFactory.Create (types [i]);
 			if (serializers.Any (s => s.Size == null))
-				Size = null;
+				Size = null;//variable size
 			else
-				Size = serializers.Sum (s => s.Size.Value);
+				Size = serializers.Sum (s => s.Size.Value); //fixed size
 			singleMember = types.Length==1;
 		}
 
 		public void SerializeT (object[] obj, System.IO.MemoryStream stream)
 		{
-			for(int i = 0; i< obj.Length; i++)
+			for(int i = 0; i< obj.Length; i++)//Serializing one by one
 			{
 				if (serializers [i].Size.HasValue || singleMember)
 					serializers [i].Serialize (obj [i], stream);
@@ -42,8 +42,7 @@ namespace TheTunnel.Serialization
 			}
 		}
 
-		public void Serialize (object obj, System.IO.MemoryStream stream)
-		{
+		public void Serialize (object obj, System.IO.MemoryStream stream){
 			SerializeT (obj as object[], stream);
 		}
 	

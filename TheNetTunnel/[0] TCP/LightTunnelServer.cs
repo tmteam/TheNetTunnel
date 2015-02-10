@@ -9,20 +9,40 @@ namespace TheTunnel
 	public class LightTunnelServer<TContract> where TContract: class, new()
 	{
 		Dictionary<TContract, LightTunnelClient<TContract>> contracts;
-		public TContract[] Contracts{ 
+		/// <summary>
+		/// Contracts that associated with current connected clients 
+		/// </summary>
+        public TContract[] Contracts{ 
 			get {
 				lock (contracts) {
 					return contracts.Keys.ToArray ();
 				}}}
 
+        /// <summary>
+        /// Light server object
+        /// </summary>
 		public LServer Server{ get; protected set; }
-
+        /// <summary>
+        /// Raising before client connection done
+        /// </summary>
 		public event delConnecterInfo<TContract> BeforeConnect;
+        /// <summary>
+        /// Raising after client connection was succesfully done
+        /// </summary>
 		public event delConnecter<TContract> AfterConnect;
+        /// <summary>
+        /// Raising after client was disconnected
+        /// </summary>
 		public event delConnecter<TContract> OnDisconnect;
+        /// <summary>
+        /// Raising on server stop listening
+        /// </summary>
         public event delListenStoppped    OnListenStopped;
 
-		public void Open(System.Net.IPAddress ip, int port)
+        /// <summary>
+        /// Open server at specified ip port. Use ip = Any for opening at all known Network interfaces
+        /// </summary>
+        public void Open(System.Net.IPAddress ip, int port)
 		{
 			if (Server != null)
 				throw new InvalidOperationException ("Server is already open");
@@ -34,14 +54,20 @@ namespace TheTunnel
 			Server.BeginListen(ip, port);
 
 		}
-
+        /// <summary>
+        /// Close server, stop listening and disconnect all connected clients
+        /// </summary>
 		public void Close(){
 			if (Server == null)
 				throw new InvalidOperationException ("Server is already closed");
 			Server.StopServer ();
 			Server = null;
 		}
-
+        /// <summary>
+        /// Return LightTunnelClient, associated with specified contract
+        /// </summary>
+        /// <param name="contract"></param>
+        /// <returns></returns>
 		public LightTunnelClient<TContract> GetTunnel(TContract contract)
 		{
 			lock(contracts){
@@ -51,7 +77,10 @@ namespace TheTunnel
 					return contracts[contract];
 			}
 		}
-
+        /// <summary>
+        /// Disconnect client associated with specified contract
+        /// </summary>
+        /// <param name="contract"></param>
 		public void Kick(TContract contract){
 			var tunnel = GetTunnel (contract);
 			tunnel.Disconnect();

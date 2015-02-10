@@ -22,7 +22,11 @@
 
 			Stream currentStream;
 			bool got1Sended = false;
-
+            /// <summary>
+            /// Initialize separator with new stream
+            /// </summary>
+            /// <param name="stream"></param>
+            /// <param name="msgId"></param>
 			public void Initialize(Stream stream,  int msgId)
 			{
 				dataLeft = (int)(stream.Length - stream.Position);
@@ -30,8 +34,10 @@
 				got1Sended = false;
 				currentStream = stream;
 			}
-
-			public byte[] Next(int maxQuantSize)
+            /// <summary>
+            /// Get next quant
+            /// </summary>
+            public byte[] Next(int maxQuantSize)
 			{
 				dataLeft = (int)(currentStream.Length - currentStream.Position);
 				var actualHeadSize = got1Sended ? DefaultHeadSize : (DefaultHeadSize + 4);

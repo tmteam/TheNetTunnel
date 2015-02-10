@@ -14,7 +14,6 @@ namespace TheTunnel.Serialization
 			sw.Write (obj);
 			sw.Flush ();	
 		}
-
 	}
 }
 

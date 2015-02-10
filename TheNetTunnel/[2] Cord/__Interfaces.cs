@@ -42,7 +42,6 @@ namespace TheTunnel.Cords
 		{
 			int MaxAwaitMs{get;set;} 
 			object Ask(object question);
-            
 		}
 
 		public interface IAskCord<TAnswer, TQuestion>: IAskCord

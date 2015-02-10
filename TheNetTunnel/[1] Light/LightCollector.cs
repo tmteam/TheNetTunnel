@@ -16,7 +16,14 @@ namespace TheTunnel.Light
 		MemoryStream stream = null;
 
 		int lenght = 0;
-
+        
+        /// <summary>
+        /// Handles new portion of data from a transport
+        /// </summary>
+        /// <param name="head">Quant head object</param>
+        /// <param name="packetFromAStream">bytes from a transport stream</param>
+        /// <param name="headStart">position, where head starts</param>
+        /// <returns>true if light-message is fully collected</returns>
 		public bool Collect(QuantumHead head, byte[] packetFromAStream, int headStart)
 		{
 			lastTS = DateTime.Now;
@@ -45,12 +52,17 @@ namespace TheTunnel.Light
 			stream = null;
 			return true;
 		}
-
+        /// <summary>
+        /// reset collector
+        /// </summary>
 		public void Clear(){
 			stream = null;
 			lenght = 0;
 		}
-
+        /// <summary>
+        /// Get collected message stream
+        /// </summary>
+        /// <returns></returns>
 		public MemoryStream GetLightMessageStream(){
 			return stream;
 		}

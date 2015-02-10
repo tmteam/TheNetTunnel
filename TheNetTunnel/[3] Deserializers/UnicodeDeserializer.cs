@@ -19,7 +19,5 @@ namespace TheTunnel.Deserialization
 			return sr.ReadToEnd ();
 		}
 	}
-
-
 }
 

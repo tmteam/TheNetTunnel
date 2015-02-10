@@ -32,9 +32,11 @@ namespace TheTunnel.Cords
 
 		Dictionary<Int16,IOutCord> Senders;
 		Dictionary<Int16, IInCord> Receivers;
-
-		
-        
+        		
+        /// <summary>
+        /// Handling input stream of light
+        /// </summary>
+        /// <param name="streamOfLight"></param>
         public void Handle(MemoryStream streamOfLight)
 		{
             byte[] idBuff = new byte[2];

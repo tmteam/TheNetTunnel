@@ -4,7 +4,6 @@ using System.Runtime.InteropServices;
 namespace TheTunnel.Deserialization
 {
 	public class PrimitiveDeserializer<T>: DeserializerBase<T> {
-
 		public PrimitiveDeserializer(){ 
 			Size = Marshal.SizeOf (typeof(T));
 		}
