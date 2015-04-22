@@ -39,7 +39,7 @@ static void Main(string[] args)
 	var client = new TcpClientTunnel ();
 	var contract = new ClientContract ();
 		
-	Console.WriteLine ("Connecting to 172.16.31.34..");
+	Console.WriteLine ("Connecting to 172.16.31.34:1234...");
 	client.Connect (new IPAddress (new byte[]{ 172, 16, 31, 34 }), 1234, contract);
 	
 	Console.WriteLine ("Succesfully to connected!");
@@ -84,21 +84,6 @@ static void Main(string[] args)
 	
 ~~~
 
-Clear, isn't it?
-
-In case of this primitive chat, protocol implementation is also very clear:
-
-~~~
-
-   1 VOID SendMessageToServer  UTC:timestamp  STRING:nick    STRING:message
- 
- <-2 BYTE SendMessageToClient  STRING:nick    STRING:message  #will not lie to yourself - bool is always byte
-
-~~~
-
-
 ## also ##
   
   This code already worked in production sience 21.10.14
-  Currently i'm working on speed improvments in case of large number of messages per second.  
-  If someone wanna to participate on its development - please let me know.
