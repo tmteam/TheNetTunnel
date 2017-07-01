@@ -1,0 +1,136 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.IO;
+using TheTunnel.Serialization;
+using TheTunnel.Deserialization;
+
+namespace TheTunnel.Cords
+{
+	public class AskCord<Tanswer,Tquestion>: IAskCord<Tanswer,Tquestion>
+	{
+		public AskCord(int OUTCid, ISerializer serializer, IDeserializer<Tanswer> deserializer)
+		{
+			awaitingQueue = new Dictionary<int, answerAwaiter<Tanswer>> ();
+			this.OUTCid = (short)OUTCid;
+			this.Serializer = serializer;
+			this.SerializerT = serializer as ISerializer<Tquestion>;
+			this.Deserializer = deserializer;
+			this.DeserializerT = deserializer;
+			MaxAwaitMs = 10000;
+		}
+
+		public int MaxAwaitMs { get; set; }
+
+		public short INCid {
+			get { return (short)-OUTCid; }
+		}
+
+		public short OUTCid { get;	protected set; }
+
+		public ISerializer Serializer {	get; protected set; }
+		ISerializer<Tquestion> SerializerT;
+	
+		public IDeserializer Deserializer {get; protected set; }
+		IDeserializer<Tanswer> DeserializerT;
+
+		public event Action<IOutCord, MemoryStream, int> NeedSend;
+		public event Action<IInCord, object> OnReceive;
+
+		public Tanswer AskT (Tquestion question)
+		{
+            if (!isStarted)
+                return default(Tanswer);
+
+			Tanswer answer;
+
+			MemoryStream str = new MemoryStream ();
+
+			str.WriteByte((byte)(OUTCid & 255));
+			str.WriteByte((byte)(OUTCid >> 8));
+
+			var i = Interlocked.Increment (ref id);
+
+			str.WriteByte((byte)(i & 255));
+			str.WriteByte ((byte)(i >> 8));
+
+			SerializerT.SerializeT (question, str);
+
+			var aa = new answerAwaiter<Tanswer> (); 
+
+			lock(awaitingQueue) {
+				awaitingQueue.Add (id,aa);
+			}
+
+			str.Position = 0;
+			if (NeedSend != null)
+				NeedSend (this, str, (int)str.Length);
+
+			var hasAns = aa.mre.WaitOne (MaxAwaitMs,false);
+			if (hasAns)
+				answer= aa.ans;
+			else {
+				answer = default(Tanswer);
+				lock(awaitingQueue) {
+					awaitingQueue.Remove (id);
+				}
+			}
+			return answer;
+		}
+			
+		public object Ask (object question){
+			return AskT ((Tquestion)question);
+		}
+
+		public void Parse (System.IO.MemoryStream stream){
+			stream.Read (idBuff, 0, 2);
+			var id = BitConverter.ToUInt16 (idBuff, 0);
+			var obj = DeserializerT.DeserializeT (stream, (int)(stream.Length - stream.Position));
+			if (OnReceive != null)
+				OnReceive (this, obj);
+			answerCord_OnAnswer (id, obj);
+		}
+
+
+        bool isStarted = true;
+        public void Stop() 
+        {
+            isStarted = false;
+            lock (awaitingQueue)
+            {
+                foreach (var a in awaitingQueue)
+                    a.Value.mre.Set();
+                awaitingQueue.Clear();
+            }
+        }
+
+
+		int id = 0;
+		byte[] idBuff = new byte[2];
+			
+		Dictionary<int, answerAwaiter<Tanswer>> awaitingQueue; 
+
+		void answerCord_OnAnswer (ushort id, Tanswer answer){
+			answerAwaiter<Tanswer> aa = null;
+
+			lock(awaitingQueue) {
+				if (awaitingQueue.TryGetValue (id, out aa))
+					awaitingQueue.Remove (id);
+			}
+			if (aa != null) {
+				aa.ans = answer;
+				aa.mre.Set ();
+			}
+		}
+	}
+
+	class answerAwaiter <Tanswer>{
+		public answerAwaiter(){
+			mre = new ManualResetEvent (false);
+            ans = default(Tanswer);
+		}
+		public ManualResetEvent mre;
+		public Tanswer ans;
+	}
+}
+

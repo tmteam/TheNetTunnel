@@ -1,10 +1,9 @@
 ﻿using System;
 using System.IO;
-using System.Reflection;
-using TheTunnel.Serialization;
-using TheTunnel.Deserialization;
+using TNT.Serialization;
+using TNT.Deserialization;
 
-namespace TheTunnel.Cords
+namespace TNT.Cords
 {
 		public interface IOutCord
 		{
@@ -42,7 +41,6 @@ namespace TheTunnel.Cords
 		{
 			int MaxAwaitMs{get;set;} 
 			object Ask(object question);
-            
 		}
 
 		public interface IAskCord<TAnswer, TQuestion>: IAskCord

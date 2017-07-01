@@ -2,10 +2,9 @@
 using System.Net.Sockets;
 using System.Net;
 using System.IO;
-using System.Diagnostics;
-using TheTunnel.Light;
+using TNT.Light;
 
-namespace TheTunnel
+namespace TNT
 {
 	//based on http://robjdavey.wordpress.com/2011/02/11/asynchronous-tcp-client-example/ example
     /// <summary>
@@ -42,6 +41,14 @@ namespace TheTunnel
 					OnReceive(this, arg3);
 			};
 		}
+        public int Sended {
+            get { return sended; }
+        }
+        int sended;
+        public int Received {
+            get { return received; }
+        }
+        int received;
         /// <summary>
         /// Indicates connection status of downlayer TcpClient
         /// </summary>
@@ -97,12 +104,15 @@ namespace TheTunnel
 				qSender.Set (streamOfLight);
 				byte[] buff;
 				int id;
-				while (qSender.TryNext(maxQSize, out buff, out id))
-					write(buff);
+            while (qSender.TryNext(maxQSize, out buff, out id)) {
+                write(buff);
+            }
 		}
 
-		#region private 
-
+		
+        /// <summary>
+        /// Maximum packet size that transmits through TCP
+        /// </summary>
         public int MaxQSize { get { return maxQSize; } set {
             if (value > 32) 
                 maxQSize = value;
@@ -111,43 +121,60 @@ namespace TheTunnel
         } }
 
 		int maxQSize = 9000;
-		QuantumSender qSender;
+
+        #region private
+        QuantumSender qSender;
 		QuantumReceiver qReceiver;
 		bool disconnectMsgWasSended = false;
 		bool readWasStarted = false;
         
 		void readCallback(IAsyncResult result){
-			try {
-                var networkStream = Client.GetStream();
-			    var read = networkStream.EndRead(result);
-			    
-                if (read == 0)
-				    //The connection has been closed.
-                    throw new Exception("Read of 0. Connection was closed");
-			    
-                var buffer = result.AsyncState as byte[];
-                //mb marshal??
-			    var readed = new byte[read];
-			    Array.Copy (buffer, readed, read);
+		    try {
+		        var networkStream = Client.GetStream();
+		        var read = networkStream.EndRead(result);
 
-                qReceiver.Set (readed);
-			    //Start reading from the network again.
+		        if (read == 0)
+		            //The connection has been closed.
+		            throw new Exception("Read of 0. Connection was closed");
+
+		        received = unchecked(received + read);
+
+		        var buffer = result.AsyncState as byte[];
+		        //mb marshal??
+		        var readed = new byte[read];
+		        Array.Copy(buffer, readed, read);
+
+
+                qReceiver.Set(readed);
+                //Start reading from the network again.
                 networkStream.BeginRead(buffer, 0, buffer.Length, readCallback, buffer);
-             } catch { disconnect(); }
+
+            }
+            catch {
+		        disconnect();
+		    }
 		}
 
 		// Writes an array of bytes to the network.
-		void write(byte[] bytes) {
-			if (!Client.Connected)
-				return;
-			NetworkStream networkStream = Client.GetStream();
-			//Start async write operation
-			networkStream.BeginWrite(bytes, 0, bytes.Length, writeCallback, null);
-		}
+        private void write(byte[] bytes)
+        {
+            try
+            {
+                var networkStream = Client.GetStream();
+                //Start async write operation
+                networkStream.BeginWrite(bytes, 0, bytes.Length, writeCallback, null);
 
-		void writeCallback(IAsyncResult result){
+                sended = unchecked(sended + bytes.Length);
+            }
+            catch
+            {
+                disconnect();
+            }
+        }
+
+        void writeCallback(IAsyncResult result){
 			try{
-                NetworkStream networkStream = Client.GetStream();
+                var networkStream = Client.GetStream();
 				networkStream.EndWrite(result);
 			}catch {
 				disconnect ();

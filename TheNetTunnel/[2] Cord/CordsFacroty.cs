@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Reflection;
 using System.Linq;
-using TheTunnel.Deserialization;
-using TheTunnel.Serialization;
+using TNT.Deserialization;
+using TNT.Serialization;
 
-namespace TheTunnel.Cords
+namespace TNT.Cords
 {
 	public static class CordFacroty
 	{

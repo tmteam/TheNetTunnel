@@ -1,43 +1,67 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
-using System.Diagnostics;
 
 
-namespace TheTunnel
+namespace TNT
 {
 	public class LServer{
 		public System.Net.Sockets.TcpListener Listener{ get; protected set; }
 	
 		List<LClient> clients = new List<LClient>();
-		public LClient[] Clients{get { lock (clients) {
+		/// <summary>
+		/// List of all currently connected clients
+		/// </summary>
+        public LClient[] Clients{get { lock (clients) {
 					return clients.ToArray ();
 				}}}
-
+        /// <summary>
+        /// Raising on new client connection
+        /// </summary>
 		public event delLightInitConnect OnConnect;
+        /// <summary>
+        /// Raising on client disconnection
+        /// </summary>
 		public event delLightConnect OnDisconnect;
+        /// <summary>
+        /// Raising on server falls. Actualy it informs that you should resstart server.
+        /// </summary>
         public event Action<LServer, Exception> OnEnd;
 
-		public void BeginListen(IPAddress address, int port){
-			lock(listenLocker){
+        /// <summary>
+        /// Open server and start listen at address:port
+        /// </summary>
+        /// <param name="address">Server ip (use ANY for all avaliable device)</param>
+        /// <param name="port">Server listen-port</param>
+		public void BeginListen(IPAddress address, int port)
+        {
+			lock(listenLocker)
+            {
 				IsListening = true;
-				Listener = new TcpListener (address, port);
-				Listener.Start ();
+				Listener = new TcpListener(address, port);
+				Listener.Start();
 				Listener.BeginAcceptTcpClient(new AsyncCallback(DoAcceptSocketCallback), Listener);
 			}
 		}
-
-		public void EndListen(){
-			lock (listenLocker) {
+        /// <summary>
+        /// Stop listening
+        /// </summary>
+		public void EndListen()
+        {
+			lock (listenLocker) 
+            {
 				IsListening = false;
 				Listener.Stop ();
 			}
 		}
-
-		public void StopServer(){
-			lock(listenLocker){
+        /// <summary>
+        /// Stop listening and disconnect all connected clients
+        /// </summary>
+		public void StopServer()
+        {
+			lock(listenLocker)
+            {
 				if (IsListening)
 					EndListen ();
 				var cl = Clients;
@@ -85,7 +109,10 @@ namespace TheTunnel
 
 			}
 		}
-
+        /// <summary>
+        /// Registarte new client
+        /// </summary>
+        /// <param name="client"></param>
 		void addClient(LClient client){
 			lock (clients) {
 				clients.Add (client);
@@ -98,7 +125,10 @@ namespace TheTunnel
 			if (!info.AllowConnection)	
 				client.Close ();
 		}
-
+        /// <summary>
+        /// Client disconnection handler
+        /// </summary>
+        /// <param name="obj"></param>
 		void client_OnDisconnect (LClient obj){
 			lock (clients) {
 				clients.Remove (obj);
@@ -110,6 +140,7 @@ namespace TheTunnel
 
 		#endregion
 	}
+
 	public delegate void delLightConnect(LServer sender, LClient client);
 
 	public delegate void delLightInitConnect(LServer sender, LClient client, ConnectInfo info);

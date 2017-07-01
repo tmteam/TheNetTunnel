@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace TheTunnel.Deserialization
+﻿namespace TNT.Deserialization
 {
 	public class PrimitiveConverterDeserializer<OriginT, ResultT>:DeserializerBase<OriginT>
 	{

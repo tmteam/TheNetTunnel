@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Reflection;
-using TheTunnel.Cords;
 
-namespace TheTunnel.Cords
+namespace TNT.Cords
 {
     /// <summary>
     /// Reflection info about contract's type
@@ -22,36 +20,28 @@ namespace TheTunnel.Cords
             try
             {
                 var type = typeof(T);
-                List<InMethodDefenition> meths = new List<InMethodDefenition>();
-                List<InEventDefenition> events = new List<InEventDefenition>();
-                List<OutDelegateDefenition> delegates = new List<OutDelegateDefenition>();
+                var meths = new List<InMethodDefenition>();
+                var events = new List<InEventDefenition>();
+                var delegates = new List<OutDelegateDefenition>();
                 foreach (var m in type.GetMembers())
                 {
                     var p = m as PropertyInfo;
-                    if (p != null)
-                    {
+                    if (p != null) {
                         var outAttr = p.GetCustomAttributes(typeof(OutAttribute), true).FirstOrDefault() as OutAttribute;
-                        if (outAttr != null)
-                        {
+                        if (outAttr != null) {
                             delegates.Add(new OutDelegateDefenition(p, outAttr));
                             continue;
                         }
                     }
 
                     var inAttr = m.GetCustomAttributes(typeof(InAttribute), true).FirstOrDefault() as InAttribute;
-                    if (inAttr != null)
-                    {
+                    if (inAttr != null) {
                         var meth = m as MethodInfo;
                         if (meth != null)
-                        {
                             meths.Add(new InMethodDefenition(meth, inAttr));
-                            continue;
-                        }
-                        else
-                        {
+                        else {
                             var ev = m as EventInfo;
-                            if (ev != null)
-                            {
+                            if (ev != null) {
                                 var raiseField = type.GetField(ev.Name, BindingFlags.Instance | BindingFlags.NonPublic);
                                 if (raiseField != null)
                                     events.Add(new InEventDefenition(raiseField, inAttr));
@@ -63,9 +53,7 @@ namespace TheTunnel.Cords
                 InEvents = events.ToArray();
                 OutDeleagates = delegates.ToArray();
             }
-            catch (Exception ex)
-            {
-            }
+            catch (Exception ex) { }
 
         }
 
@@ -73,8 +61,8 @@ namespace TheTunnel.Cords
         
         public static void ParseAndBindContract<T>(T contract, out IInCord[] inputCords, out IOutCord[] outputCords)
         {
-            List<IInCord>  ansInputCords = new List<IInCord>();
-            List<IOutCord> ansOutputCords = new List<IOutCord>();
+            var  ansInputCords = new List<IInCord>();
+            var ansOutputCords = new List<IOutCord>();
 
             foreach(var o in Reflector.OutDeleagates){
                  var oCord = CordFacroty.OutCordFactory(o, contract);

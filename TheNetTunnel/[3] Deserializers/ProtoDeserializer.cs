@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-
-namespace TheTunnel.Deserialization
+﻿namespace TNT.Deserialization
 {
 	public class ProtoDeserializer<T>: DeserializerBase<T>{
 		public ProtoDeserializer()

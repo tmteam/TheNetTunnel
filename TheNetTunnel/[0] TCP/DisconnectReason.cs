@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace TheTunnel
+﻿namespace TNT
 {
 	public enum DisconnectReason:byte
 	{

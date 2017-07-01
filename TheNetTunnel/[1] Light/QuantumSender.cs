@@ -1,9 +1,8 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace TheTunnel.Light
+namespace TNT.Light
 {
     /// <summary>
     /// Separate Light messages into a quantum sequences

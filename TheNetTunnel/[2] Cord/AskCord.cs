@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.IO;
-using TheTunnel.Serialization;
-using TheTunnel.Deserialization;
+using TNT.Serialization;
+using TNT.Deserialization;
 
-namespace TheTunnel.Cords
+namespace TNT.Cords
 {
 	public class AskCord<Tanswer,Tquestion>: IAskCord<Tanswer,Tquestion>
 	{
@@ -59,7 +59,7 @@ namespace TheTunnel.Cords
 			var aa = new answerAwaiter<Tanswer> (); 
 
 			lock(awaitingQueue) {
-				awaitingQueue.Add (id,aa);
+				awaitingQueue.Add (i,aa);
 			}
 
 			str.Position = 0;
@@ -72,7 +72,7 @@ namespace TheTunnel.Cords
 			else {
 				answer = default(Tanswer);
 				lock(awaitingQueue) {
-					awaitingQueue.Remove (id);
+					awaitingQueue.Remove (i);
 				}
 			}
 			return answer;

@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
-using TheTunnel.Deserialization;
+using TNT.Deserialization;
 
-namespace TheTunnel.Cords
+namespace TNT.Cords
 {
 	public class InCord<T> : IInCord<T>
 	{
@@ -27,7 +28,20 @@ namespace TheTunnel.Cords
 
 		public void Parse (MemoryStream stream)
 		{
-			var res = DeserializerT.DeserializeT (stream, (int)(stream.Length - stream.Position));
+		    T res = default(T);
+		    try
+		    {
+                //В случае подозрений на ошибки разпарса - оберните эту строку в трайкеч и ждите эксепшена
+                res = DeserializerT.DeserializeT(stream, (int)(stream.Length - stream.Position));
+            }
+		    catch (Exception e)
+		    {
+                Trace.Write("Incord parde exception: "+ e.ToString());
+		        throw e;
+		    }
+           
+         
+            
 			if(OnReceiveT!=null)
 				OnReceiveT(this,res);
 			if(OnReceive!=null)

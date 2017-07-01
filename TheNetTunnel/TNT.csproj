@@ -1,0 +1,106 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{9FFEC001-2177-4EA1-A2B5-6D50A7436AE5}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>TNT</RootNamespace>
+    <AssemblyName>TNT</AssemblyName>
+    <ReleaseVersion>0.2</ReleaseVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'JustAShell|AnyCPU'">
+    <OutputPath>bin\JustAShell\</OutputPath>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="protobuf-net, Version=2.1.0.0, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\protobuf-net.2.1.0\lib\net45\protobuf-net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SmartThreadPool, Version=2.2.4.0, Culture=neutral, PublicKeyToken=1126fe8b671e8a79, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\SmartThreadPool.dll.2.2.4\lib\net45\SmartThreadPool.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StaticTools.cs" />
+    <Compile Include="TNTThreadPool.cs" />
+    <Compile Include="[1] Light\LightSeparator.cs" />
+    <Compile Include="[1] Light\QuantumHead.cs" />
+    <Compile Include="[1] Light\LightCollector.cs" />
+    <Compile Include="[1] Light\QuantumReceiver.cs" />
+    <Compile Include="[1] Light\QuantumSender.cs" />
+    <Compile Include="[2] Cord\ContractTypeReflector.cs" />
+    <Compile Include="[2] Cord\_TNTGenericDelegateTypes.cs" />
+    <Compile Include="[3] Deserializers\ByteEnumerableDeserializer.cs" />
+    <Compile Include="[3] Deserializers\IDeserializer.cs" />
+    <Compile Include="[3] Deserializers\PrimitiveDeserializer.cs" />
+    <Compile Include="[3] Deserializers\DeserializerBase.cs" />
+    <Compile Include="[3] Deserializers\UTCFileTimeDeserializer.cs" />
+    <Compile Include="[3] Deserializers\UnicodeDeserializer.cs" />
+    <Compile Include="[3] Deserializers\DeserializersFactory.cs" />
+    <Compile Include="[3] Deserializers\ArrayDeserializer.cs" />
+    <Compile Include="[3] Deserializers\PrimitiveConverterDeserializer.cs" />
+    <Compile Include="[3] Deserializers\SequenceDeserializer.cs" />
+    <Compile Include="[3] Deserializers\ProtoDeserializer.cs" />
+    <Compile Include="[3] Serializers\ByteEnumerableSerializer.cs" />
+    <Compile Include="[3] Serializers\ISerializer.cs" />
+    <Compile Include="[3] Serializers\PrimitiveSerializer.cs" />
+    <Compile Include="[3] Serializers\SerializerBase.cs" />
+    <Compile Include="[3] Serializers\UTCFileTimeSerializer.cs" />
+    <Compile Include="[3] Serializers\UnicodeSerializer.cs" />
+    <Compile Include="[3] Serializers\SerializersFactory.cs" />
+    <Compile Include="[3] Serializers\ArraySerializer.cs" />
+    <Compile Include="[3] Serializers\ProtoSerializer.cs" />
+    <Compile Include="[3] Serializers\PrimitiveConvertSerializer.cs" />
+    <Compile Include="[3] Serializers\SequenceSerializer.cs" />
+    <Compile Include="[2] Cord\__Interfaces.cs" />
+    <Compile Include="[2] Cord\_FuncCallConverterSubFactories.cs" />
+    <Compile Include="[2] Cord\HeavyReflectionTools.cs" />
+    <Compile Include="[2] Cord\OutCord.cs" />
+    <Compile Include="[2] Cord\_ActionCallConverterSubFactories.cs" />
+    <Compile Include="[2] Cord\CordsFacroty.cs" />
+    <Compile Include="[2] Cord\InCord.cs" />
+    <Compile Include="[2] Cord\AnsweringCord.cs" />
+    <Compile Include="[2] Cord\AskCord.cs" />
+    <Compile Include="[2] Cord\CordDispatcher.cs" />
+    <Compile Include="[0] TCP\LClient.cs" />
+    <Compile Include="[0] TCP\LServer.cs" />
+    <Compile Include="[0] TCP\LightTunnelClient.cs" />
+    <Compile Include="[0] TCP\LightTunnelServer.cs" />
+    <Compile Include="[2] Cord\Attributes.cs" />
+    <Compile Include="[2] Cord\ContractInterfaces.cs" />
+    <Compile Include="[0] TCP\DisconnectReason.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+</Project>

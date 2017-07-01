@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using ProtoBuf;
 
-namespace TheTunnel.Deserialization
+namespace TNT.Deserialization
 {
 	public static class DeserializersFactory
 	{
@@ -14,8 +16,11 @@ namespace TheTunnel.Deserialization
 		
 		if (t == typeof(DateTime))
 			return new UTCFileTimeDeserializer ();
-		
-		if (t.GetCustomAttributes (true).Any (a => a is ProtoBuf.ProtoContractAttribute)) {
+
+		if (t == typeof (IEnumerable<byte>))
+		    return new ByteEnumerableDeserializer();
+
+		if (t.GetCustomAttributes (true).Any (a => a is ProtoContractAttribute)) {
 			var gt =typeof(ProtoDeserializer<>).MakeGenericType (t);
 			return Activator.CreateInstance (gt) as IDeserializer;
 		}

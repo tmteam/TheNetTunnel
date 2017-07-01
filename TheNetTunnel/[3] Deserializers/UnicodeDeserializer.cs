@@ -1,9 +1,7 @@
-﻿
-using System;
-using System.Text;
+﻿using System.Text;
 using System.IO;
 
-namespace TheTunnel.Deserialization
+namespace TNT.Deserialization
 {
 	public class UnicodeDeserializer: DeserializerBase<string>
 	{
@@ -19,7 +17,5 @@ namespace TheTunnel.Deserialization
 			return sr.ReadToEnd ();
 		}
 	}
-
-
 }
 

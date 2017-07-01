@@ -1,20 +1,15 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Linq;
 using System.Collections.Generic;
 
-namespace TheTunnel.Light
+namespace TNT.Light
 {
     /// <summary>
     /// Collect quants and parse it into light messages
     /// </summary>
 	public class QuantumReceiver
 	{
-		static int DefaultHeadSize = Marshal.SizeOf(typeof(QuantumHead));
-
-		byte[] qBuff = new byte[0];
-
 		/// <summary>
 		/// Set the specified stream of bytes.
 		/// </summary>
@@ -58,9 +53,19 @@ namespace TheTunnel.Light
 			}
 		}
 
+        /// <summary>
+        /// Raising when new LightMessage was completely received
+        /// </summary>
 		public event Action<QuantumReceiver, QuantumHead,MemoryStream> OnLightMessage;
 
+        /// <summary>
+        /// Raising when some troubles occurs during light-message collecting
+        /// </summary>
 		public event Action<QuantumReceiver, QuantumHead, byte[]> OnCollectingError;
+
+        static int DefaultHeadSize = Marshal.SizeOf(typeof(QuantumHead));
+
+        byte[] qBuff = new byte[0];
 
 		byte[] saveUndone(byte[] arr, int offset)
 		{

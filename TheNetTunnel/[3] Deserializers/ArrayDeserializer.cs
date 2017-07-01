@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 
-namespace TheTunnel.Deserialization
+namespace TNT.Deserialization
 {
 	public class ArrayDeserializer<T>: DeserializerBase<T> where T: class, IEnumerable
 	{

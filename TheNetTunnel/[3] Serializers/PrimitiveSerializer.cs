@@ -1,10 +1,7 @@
-﻿using System;
-using System.Runtime.Serialization;
-using System.Runtime.InteropServices;
-using System.Text;
+﻿using System.Runtime.InteropServices;
 using System.IO;
 
-namespace TheTunnel.Serialization
+namespace TNT.Serialization
 {
 	public class PrimitiveSerializer<T>:SerializerBase<T>
 	{
@@ -12,7 +9,7 @@ namespace TheTunnel.Serialization
 			Size = Marshal.SizeOf(typeof(T));
 		}
 
-		public override void SerializeT (T obj, MemoryStream stream){
+		public override void SerializeT (T obj, Stream stream){
 			obj.WriteToStream (stream, Size.Value);
 		}
 	}		

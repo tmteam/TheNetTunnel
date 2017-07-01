@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace TheTunnel.Light
+namespace TNT.Light
 {
 	[StructLayout(LayoutKind.Explicit, Size= 7)]
 	public struct QuantumHead

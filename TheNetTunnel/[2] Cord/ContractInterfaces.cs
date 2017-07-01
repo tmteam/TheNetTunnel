@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TheTunnel
+namespace TNT
 {
 	public interface IDisconnectListener
 	{	void OnDisconnect(DisconnectReason reason);

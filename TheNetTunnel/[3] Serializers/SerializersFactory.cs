@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using ProtoBuf;
 
-namespace TheTunnel.Serialization
+namespace TNT.Serialization
 {
 	public static class SerializersFactory
 	{
@@ -13,7 +15,10 @@ namespace TheTunnel.Serialization
 			if (t == typeof(DateTime))
 				return new UTCFileTimeSerializer ();
 
-			if (t.GetCustomAttributes (true).Any (a => a is ProtoBuf.ProtoContractAttribute)) {
+		    if (t == typeof (IEnumerable<byte>))
+		        return new ByteEnumerableSerializer();
+
+			if (t.GetCustomAttributes (true).Any (a => a is ProtoContractAttribute)) {
 				var gt = typeof(ProtoSerializer<>).MakeGenericType (t);
 				return Activator.CreateInstance (gt) as ISerializer;
 			}

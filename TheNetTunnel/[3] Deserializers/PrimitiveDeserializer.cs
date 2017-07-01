@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace TheTunnel.Deserialization
+namespace TNT.Deserialization
 {
 	public class PrimitiveDeserializer<T>: DeserializerBase<T> {
-
 		public PrimitiveDeserializer(){ 
 			Size = Marshal.SizeOf (typeof(T));
 		}
@@ -16,7 +15,7 @@ namespace TheTunnel.Deserialization
 			
 			var arr = new byte[Size.Value];
 			stream.Read (arr, 0, Size.Value);
-			return Tools.ToStruct<T> (arr, 0, Size.Value);
+			return StaticTools.ToStruct<T> (arr, 0, Size.Value);
 		}
 	}
 }

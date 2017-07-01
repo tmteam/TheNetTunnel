@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Reflection.Emit;
 using System.IO;
 
 
-namespace TheTunnel.Cords
+namespace TNT.Cords
 {
 	public class CordDispatcher<T> where T: class, new()
 	{
@@ -32,16 +29,18 @@ namespace TheTunnel.Cords
 
 		Dictionary<Int16,IOutCord> Senders;
 		Dictionary<Int16, IInCord> Receivers;
-
-		
-        
+        		
+        /// <summary>
+        /// Handling input stream of light
+        /// </summary>
+        /// <param name="streamOfLight"></param>
         public void Handle(MemoryStream streamOfLight)
 		{
-            byte[] idBuff = new byte[2];
+            var idBuff = new byte[2];
 
 			streamOfLight.Read (idBuff, 0, 2);
 
-			short INCid = BitConverter.ToInt16 (idBuff, 0);
+			var INCid = BitConverter.ToInt16 (idBuff, 0);
 			if (Receivers.ContainsKey (INCid))
 				Receivers [INCid].Parse (streamOfLight);
 		}

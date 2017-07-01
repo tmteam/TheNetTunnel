@@ -1,7 +1,6 @@
 ﻿using System;
-using ProtoBuf;
 
-namespace TheTunnel
+namespace TNT
 {
 	public class InAttribute: Attribute{
 		public InAttribute(Int16 Id){

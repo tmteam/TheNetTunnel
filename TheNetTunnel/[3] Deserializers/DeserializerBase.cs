@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace TheTunnel.Deserialization
+﻿namespace TNT.Deserialization
 {
 	public abstract class DeserializerBase<T>: IDeserializer<T>
 	{

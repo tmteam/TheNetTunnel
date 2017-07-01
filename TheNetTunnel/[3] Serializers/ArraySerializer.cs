@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Collections;
-using System.Collections.Generic;
 
-namespace TheTunnel.Serialization
+namespace TNT.Serialization
 {
 	public class ArraySerializer<T>: SerializerBase<T>
 	{
@@ -22,7 +18,7 @@ namespace TheTunnel.Serialization
 		bool isFix= false;
 		Type memberType;
 
-		public override void SerializeT (T obj, System.IO.MemoryStream stream)
+		public override void SerializeT (T obj, System.IO.Stream stream)
 		{
 			if (isFix)
 				SerializeFix (obj, stream);
@@ -30,14 +26,14 @@ namespace TheTunnel.Serialization
 				SerializeDyn (obj, stream);
 		}
 
-		public void SerializeFix (T obj, System.IO.MemoryStream stream){
+		public void SerializeFix (T obj, System.IO.Stream stream){
 			var TArray = (obj as Array);
 
 			for (int i = 0; i < TArray.Length; i++)
 				memberSerializer.Serialize (TArray.GetValue (i), stream);
 		}
 
-		public void SerializeDyn (T obj, System.IO.MemoryStream stream)
+		public void SerializeDyn (T obj, System.IO.Stream stream)
 		{
 			var TArray = (obj as Array);
 
