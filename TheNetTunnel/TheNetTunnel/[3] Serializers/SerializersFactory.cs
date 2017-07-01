@@ -37,8 +37,6 @@ namespace TheTunnel.Serialization
 		}
 		public static ISerializer Create(Type[] t)
 		{
-			//if(t.Length==0)
-			//	return new PrimitiveSerializer<void>();
 			if (t.Length == 1)
 				return Create (t [0]);
 			else
