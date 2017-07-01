@@ -1,0 +1,9 @@
+E:\Code\TheNetTunnel\TheNetTunnel\EmitExperiments\bin\Debug\EmitExperiments.exe.config
+E:\Code\TheNetTunnel\TheNetTunnel\EmitExperiments\bin\Debug\EmitExperiments.exe
+E:\Code\TheNetTunnel\TheNetTunnel\EmitExperiments\bin\Debug\EmitExperiments.pdb
+E:\Code\TheNetTunnel\TheNetTunnel\EmitExperiments\bin\Debug\TNT.dll
+E:\Code\TheNetTunnel\TheNetTunnel\EmitExperiments\bin\Debug\protobuf-net.dll
+E:\Code\TheNetTunnel\TheNetTunnel\EmitExperiments\bin\Debug\TNT.pdb
+E:\Code\TheNetTunnel\TheNetTunnel\EmitExperiments\obj\Debug\EmitExperiments.csprojResolveAssemblyReference.cache
+E:\Code\TheNetTunnel\TheNetTunnel\EmitExperiments\obj\Debug\EmitExperiments.exe
+E:\Code\TheNetTunnel\TheNetTunnel\EmitExperiments\obj\Debug\EmitExperiments.pdb

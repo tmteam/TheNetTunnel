@@ -70,7 +70,6 @@ namespace EmitExperiments
                 new[] { typeof(IOutputCordApi) });
             var il = constructorInfo.GetILGenerator();
             il.Emit(OpCodes.Ldarg_0);
-            //il.Emit(OpCodes.Call, typeof(object).GetConstructor(new Type[0]));
             il.Emit(OpCodes.Ldarg_1);
             il.Emit(OpCodes.Stfld, outputApiFieldInfo);
             il.Emit(OpCodes.Ret);
@@ -93,30 +92,33 @@ namespace EmitExperiments
             ilGen.Emit(OpCodes.Ldarg_0);
             //ставим на стек ссылку на поле _outputApi
             ilGen.Emit(OpCodes.Ldfld, outputApiFieldInfo);
+
             //готовимся к вызову _outputApi.Say(id, object[])
             // ставим на стек id:
             ilGen.Emit(OpCodes.Ldc_I4, id);
+
             // ставим на стек размер массива:
             ilGen.Emit(OpCodes.Ldc_I4, callParameters.Length);
-            //создаём массив на стеке
-            ilGen.Emit(OpCodes.Newarr);
-
+            ////создаём массив на стеке
+            ilGen.Emit(OpCodes.Newarr, typeof(object));
             //заполняем массив:
             for (int j = 0; j < callParameters.Length; j++)
             {
-                ilGen.Emit(OpCodes.Ldc_I4_0, j);//ставим индекс массива
-                ilGen.Emit(OpCodes.Ldarg, j+1);//грузим аргумент вызова
-                if(callParameters[j].ParameterType.IsValueType)//если это вэлу тайп то боксим
-                    ilGen.Emit(OpCodes.Box);
+                ilGen.Emit(OpCodes.Dup); // т.к. Stelem_Ref удалит ссылку на массив - нужно её продублировать
+
+                ilGen.Emit(OpCodes.Ldc_I4, j);//ставим индекс массива
+                ilGen.Emit(OpCodes.Ldarg, j + 1);//грузим аргумент вызова
+                if (callParameters[j].ParameterType.IsValueType)//если это вэлу тайп то боксим
+                    ilGen.Emit(OpCodes.Box, callParameters[j].ParameterType);
                 //значения стека сейчас:
                 // 0 - значение
                 // 1 - индекс массива
                 // 2 - массив
-               ilGen.Emit(OpCodes.Stelem_Ref);//грузим в массив 
+                ilGen.Emit(OpCodes.Stelem_Ref);//грузим в массив 
             }
 
-            //в стеке остался _outputApi
-            //вызываем Say:
+
+            ////вызываем Say:
             ilGen.Emit(OpCodes.Callvirt, outputApiSayMethodInfo);
             ilGen.Emit(OpCodes.Ret);
         }

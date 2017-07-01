@@ -28,8 +28,11 @@ namespace EmitExperiments
             var contract =  ProxyContractFactory.CreateProxyContract<ISayingContract>(apiMock);
 
             contract.SaySomething(42);
-            //Console.WriteLine(answer);
+            contract.SaySomething2(39,  12.5);
+            contract.SaySomething3(39, "123", 12.5);
+            contract.SaySomething4(39, "123", 12.5, DateTime.Now, new object[] {1,DateTime.Now, "asd"});
 
+            Console.ReadLine();
         }
     }
 }
