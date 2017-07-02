@@ -31,6 +31,13 @@ namespace EmitExperiments
             contract.SaySomething2(39,  12.5);
             contract.SaySomething3(39, "123", 12.5);
             contract.SaySomething4(39, "123", 12.5, DateTime.Now, new object[] {1,DateTime.Now, "asd"});
+            var res = contract.AskSomething(38, 55);
+            Console.WriteLine("Result is: "+ res);
+
+            var res2 = contract.GiveMe42();
+            Console.WriteLine("Result2 is: " + res2);
+
+            contract.TheProcedure();
 
             Console.ReadLine();
         }

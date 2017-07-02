@@ -36,9 +36,22 @@ namespace EmitExperiments
 
                 var methodBuilder = ImplementMethod(methodInfo, typeBuilder);
 
-                GenerateSayingMethod(
+                var returnType = methodInfo.ReturnType;
+                MethodInfo askOrSayMethodInfo = null;
+                if (returnType == typeof(void))
+                {
+                    askOrSayMethodInfo = sayMehodInfo;
+                }
+                else
+                {
+                    askOrSayMethodInfo 
+                        = rawOutput.GetType().GetMethod("Ask", new[] { typeof(int), typeof(object[]) })
+                        .MakeGenericMethod(returnType);
+
+                }
+                GenerateSayOrAskMethodBody(
                     id: attribute.Id,
-                    outputApiSayMethodInfo: sayMehodInfo,
+                    outputApiSayOrAskMethodInfo: askOrSayMethodInfo,
                     outputApiFieldInfo: outputApiFieldInfo,
                     interfaceMethodInfo: methodInfo,
                     proxyMethodBuilder: methodBuilder);
@@ -75,16 +88,23 @@ namespace EmitExperiments
             il.Emit(OpCodes.Ret);
         }
 
-        private static void GenerateSayingMethod(
+        private static void GenerateSayOrAskMethodBody(
             int id, 
             FieldInfo outputApiFieldInfo, 
-            MethodInfo outputApiSayMethodInfo,
+            MethodInfo outputApiSayOrAskMethodInfo,
             MethodInfo interfaceMethodInfo, 
             MethodBuilder proxyMethodBuilder
             )
         {
 
             var callParameters = interfaceMethodInfo.GetParameters();
+
+            /*
+             *  public void ContractMessage(int intParameter, /.../ double doubleParameter)
+             *  {
+             *      _rawContract.Say({CordId} , new object []{ intParameter,/.../ doubleParameter });
+             *  }
+             */
 
 
             ILGenerator ilGen = proxyMethodBuilder.GetILGenerator();
@@ -118,8 +138,9 @@ namespace EmitExperiments
             }
 
 
-            ////вызываем Say:
-            ilGen.Emit(OpCodes.Callvirt, outputApiSayMethodInfo);
+            ////вызываем Say или Ask:
+            ilGen.Emit(OpCodes.Callvirt, outputApiSayOrAskMethodInfo);
+            //Если это был Ask метод то он положин на верхушку стека свой результат
             ilGen.Emit(OpCodes.Ret);
         }
 
@@ -137,6 +158,83 @@ namespace EmitExperiments
 
             typeBuilder.DefineMethodOverride(metbuilder, interfaceMethodInfo);
             return metbuilder;
+        }
+
+        static MethodBuilder ImplementAndGenerateHandleMethod(
+            TypeBuilder typeBuilder, 
+            MethodInfo handleDelegateGetMethodInfo, 
+            MethodInfo delegateInvokeMethod,
+            Type[] parameterTypes,
+            Type returnType
+            )
+        {
+            /*
+             * private string HandleOnMessage(object[] arguments)
+             * {
+             * var originDelegate = originDelegateProperty;
+		        if(originDelegate == null)
+			        return default(string);
+		
+			        return tick((int)  arguments[0], 
+					        (DateTime) arguments[1], 
+					        (object)   arguments[2],
+					        (string)   arguments[3]);
+                }
+             */
+
+            var id = Interlocked.Increment(ref _exemmplarCounter);
+
+            var handleMethodBuilder = typeBuilder.DefineMethod(
+                name: "Handle" + handleDelegateGetMethodInfo.Name + id, 
+                attributes: MethodAttributes.Private,
+                returnType: returnType,
+                parameterTypes: new [] {typeof(object[])});
+
+
+            ILGenerator ilGen = handleMethodBuilder.GetILGenerator();
+            var hasReturnType = returnType != typeof(void);
+            //Ставим в  переменную null
+            if (hasReturnType)
+            {
+                ilGen.Emit(OpCodes.Ldnull);
+                ilGen.Emit(OpCodes.Stloc_1);
+            }
+            ilGen.Emit(OpCodes.Ldarg_0);
+            //check delegate == null
+            ilGen.Emit(OpCodes.Call, handleDelegateGetMethodInfo);
+            ilGen.Emit(OpCodes.Dup);
+            ilGen.Emit(OpCodes.Ldnull);
+            ilGen.Emit(OpCodes.Ceq);
+
+            var finishLabel = new Label();
+            //если поле == null то сразу выходим
+            ilGen.Emit(OpCodes.Brtrue_S, finishLabel);
+
+            int i = 0;
+            //иначе 
+            foreach (var parameterType in parameterTypes)
+            {
+                ilGen.Emit(OpCodes.Ldarg_1);
+                ilGen.Emit(OpCodes.Ldc_I4, i);
+                ilGen.Emit(OpCodes.Ldelem_Ref);
+                if (parameterType.IsValueType)
+                    ilGen.Emit(OpCodes.Unbox_Any, parameterType);
+                else if (parameterType!= typeof(object))
+                    ilGen.Emit(OpCodes.Castclass, parameterType);
+                i++;
+            }
+
+            ilGen.EmitCall(OpCodes.Callvirt, delegateInvokeMethod, null);
+            if (hasReturnType)
+                ilGen.Emit(OpCodes.Stloc_1);
+
+            ilGen.MarkLabel(finishLabel);
+
+            if (hasReturnType)
+                ilGen.Emit(OpCodes.Ldloc_1);
+            ilGen.Emit(OpCodes.Ret);
+
+            return handleMethodBuilder;
         }
     }
 }
