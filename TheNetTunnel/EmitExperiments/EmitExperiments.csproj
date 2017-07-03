@@ -43,7 +43,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ContractExamplar.cs" />
     <Compile Include="ContractMessageAttribute.cs" />
+    <Compile Include="DelegatePropertyInfo.cs" />
+    <Compile Include="EmitHelper.cs" />
     <Compile Include="ISayingContract.cs" />
     <Compile Include="Master.cs" />
     <Compile Include="Program.cs" />

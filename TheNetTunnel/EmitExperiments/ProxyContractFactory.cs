@@ -26,6 +26,8 @@ namespace EmitExperiments
 
             var sayMehodInfo = rawOutput.GetType().GetMethod("Say", new[] {typeof(int), typeof(object[]) });
 
+
+            #region реализуем методы интерфейса
             foreach (var methodInfo in interfaceType.GetMethods())
             {
                 if(methodInfo.IsSpecialName)
@@ -34,7 +36,7 @@ namespace EmitExperiments
                 if (attribute == null)
                     throw new InvalidOperationException("no ContractMessageAttribute");
 
-                var methodBuilder = ImplementMethod(methodInfo, typeBuilder);
+                var methodBuilder = EmitHelper.ImplementInterfaceMethod(methodInfo, typeBuilder);
 
                 var returnType = methodInfo.ReturnType;
                 MethodInfo askOrSayMethodInfo = null;
@@ -57,7 +59,22 @@ namespace EmitExperiments
                     proxyMethodBuilder: methodBuilder);
 
             }
-            var finalType = typeBuilder.CreateType();
+            #endregion
+
+            #region реализуем делегат свойства интерфейса
+
+            foreach (var propertyInfo in interfaceType.GetProperties())
+            {
+                var attribute = Attribute.GetCustomAttribute(propertyInfo, typeof(ContractMessageAttribute)) as ContractMessageAttribute;
+                if (attribute == null)
+                    throw new InvalidOperationException("no ContractMessageAttribute");
+
+                var propertyBuilder = EmitHelper.ImplementInterfaceProperty(typeBuilder, propertyInfo);
+            }
+
+            #endregion
+
+                var finalType = typeBuilder.CreateType();
             return (T)Activator.CreateInstance(finalType, rawOutput);
 
         }
@@ -144,28 +161,11 @@ namespace EmitExperiments
             ilGen.Emit(OpCodes.Ret);
         }
 
-        static MethodBuilder ImplementMethod(MethodInfo interfaceMethodInfo, TypeBuilder typeBuilder)
-        {
-            Type[] inputParams = interfaceMethodInfo.GetParameters().Select(p => p.ParameterType).ToArray();
-            Type outputParams = interfaceMethodInfo.ReturnType;
-
-
-            MethodBuilder metbuilder;
-            if (!inputParams.Any() && outputParams == typeof(void))
-                metbuilder = typeBuilder.DefineMethod(interfaceMethodInfo.Name, MethodAttributes.Public | MethodAttributes.Virtual);
-            else
-                metbuilder = typeBuilder.DefineMethod(interfaceMethodInfo.Name, MethodAttributes.Public | MethodAttributes.Virtual, outputParams, inputParams);
-
-            typeBuilder.DefineMethodOverride(metbuilder, interfaceMethodInfo);
-            return metbuilder;
-        }
+       
 
         static MethodBuilder ImplementAndGenerateHandleMethod(
             TypeBuilder typeBuilder, 
-            MethodInfo handleDelegateGetMethodInfo, 
-            MethodInfo delegateInvokeMethod,
-            Type[] parameterTypes,
-            Type returnType
+            DelegatePropertyInfo delegatePropertyInfo
             )
         {
             /*
@@ -175,7 +175,7 @@ namespace EmitExperiments
 		        if(originDelegate == null)
 			        return default(string);
 		
-			        return tick((int)  arguments[0], 
+			        return originDelegate((int)  arguments[0], 
 					        (DateTime) arguments[1], 
 					        (object)   arguments[2],
 					        (string)   arguments[3]);
@@ -185,14 +185,14 @@ namespace EmitExperiments
             var id = Interlocked.Increment(ref _exemmplarCounter);
 
             var handleMethodBuilder = typeBuilder.DefineMethod(
-                name: "Handle" + handleDelegateGetMethodInfo.Name + id, 
+                name: "Handle" + delegatePropertyInfo.HandleDelegateGetMethodInfo.Name + id, 
                 attributes: MethodAttributes.Private,
-                returnType: returnType,
+                returnType: delegatePropertyInfo.ReturnType,
                 parameterTypes: new [] {typeof(object[])});
 
 
             ILGenerator ilGen = handleMethodBuilder.GetILGenerator();
-            var hasReturnType = returnType != typeof(void);
+            var hasReturnType = delegatePropertyInfo.ReturnType != typeof(void);
             //Ставим в  переменную null
             if (hasReturnType)
             {
@@ -201,7 +201,7 @@ namespace EmitExperiments
             }
             ilGen.Emit(OpCodes.Ldarg_0);
             //check delegate == null
-            ilGen.Emit(OpCodes.Call, handleDelegateGetMethodInfo);
+            ilGen.Emit(OpCodes.Call, delegatePropertyInfo.HandleDelegateGetMethodInfo);
             ilGen.Emit(OpCodes.Dup);
             ilGen.Emit(OpCodes.Ldnull);
             ilGen.Emit(OpCodes.Ceq);
@@ -212,7 +212,7 @@ namespace EmitExperiments
 
             int i = 0;
             //иначе 
-            foreach (var parameterType in parameterTypes)
+            foreach (var parameterType in delegatePropertyInfo.ParameterTypes)
             {
                 ilGen.Emit(OpCodes.Ldarg_1);
                 ilGen.Emit(OpCodes.Ldc_I4, i);
@@ -224,7 +224,7 @@ namespace EmitExperiments
                 i++;
             }
 
-            ilGen.EmitCall(OpCodes.Callvirt, delegateInvokeMethod, null);
+            ilGen.EmitCall(OpCodes.Callvirt, delegatePropertyInfo.DelegateInvokeMethodInfo, null);
             if (hasReturnType)
                 ilGen.Emit(OpCodes.Stloc_1);
 
