@@ -49,6 +49,13 @@ namespace EmitExperiments
 
             apiMock.SaySubScribed[51](new object[] { 123, DateTime.Now });
 
+
+            var result =  apiMock.AskSubScribed[53](new object[0]);
+            Console.WriteLine("53 call result: "+ result);
+            contract.GiveMe42Ask += () => 42;
+            result = apiMock.AskSubScribed[53](new object[0]);
+            Console.WriteLine("53 call result: " + result);
+
             Console.ReadLine();
         }
     }

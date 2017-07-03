@@ -71,10 +71,12 @@ namespace EmitExperiments
 
         public void Subscribe(int cordId, Delegate callback)
         {
-            
-
         }
+
+        public Dictionary<int, Func<object[],object> > AskSubScribed =  new Dictionary<int, Func<object[], object>>();
+    
         public Dictionary<int, Action<object[]> > SaySubScribed = new Dictionary<int, Action<object[]>>();
+
         public void SaySubscribe(int cordId, Action<object[]> callback)
         {
             SaySubScribed.Add(cordId, callback);
@@ -82,6 +84,7 @@ namespace EmitExperiments
 
         public void AskSubscribe<T>(int cordId, Func<object[], T> callback)
         {
+            AskSubScribed.Add(cordId, (o)=> callback(o));
         }
 
         public void Unsubscribe(int cordId)
@@ -92,5 +95,6 @@ namespace EmitExperiments
         //{
         //    Func<object[], T> callbackT = callBack.;
         //}
+
     }
 }

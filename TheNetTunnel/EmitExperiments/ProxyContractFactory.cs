@@ -209,14 +209,18 @@ namespace EmitExperiments
 
 
             ILGenerator ilGen = handleMethodBuilder.GetILGenerator();
-            //var hasReturnType = delegatePropertyInfo.ReturnType != typeof(void);
-            ////Ставим в  переменную null
-            //if (hasReturnType)
-            //{
-            //    ilGen.Emit(OpCodes.Ldnull);
-            //    ilGen.Emit(OpCodes.Stloc_0);
-            //}
-            
+            var hasReturnType = delegatePropertyInfo.ReturnType != typeof(void);
+            LocalBuilder returnValue = null;
+           
+
+            //Ставим в  переменную null
+            if (hasReturnType)
+            {
+                returnValue = ilGen.DeclareLocal(delegatePropertyInfo.ReturnType);
+                ilGen.Emit(OpCodes.Ldnull);
+                ilGen.Emit(OpCodes.Stloc, returnValue);
+            }
+
             ilGen.Emit(OpCodes.Ldarg_0);
 
             //check delegate == null
@@ -236,14 +240,12 @@ namespace EmitExperiments
            // ilGen.EmitWriteLine("IsDelegateNull:");
            // ilGen.EmitWriteLine(isDelegateNull);
 
-            //ilGen.Emit(OpCodes.Pop);
-            
+           
             var finishLabel = ilGen.DefineLabel();
             //если поле == null то сразу выходим
             ilGen.Emit(OpCodes.Brtrue_S, finishLabel);
 
            // ilGen.EmitWriteLine("Delegate is not null");
-
             ilGen.Emit(OpCodes.Ldloc, delegateFieldValue);
 
             int i = 0;
@@ -251,10 +253,7 @@ namespace EmitExperiments
             foreach (var parameterType in delegatePropertyInfo.ParameterTypes)
             {
                 ilGen.Emit(OpCodes.Ldarg_1);
-
                 ilGen.Emit(OpCodes.Ldc_I4, i);
-
-
                 ilGen.Emit(OpCodes.Ldelem_Ref);
 
                 var arrayValue = ilGen.DeclareLocal(typeof(object));
@@ -262,7 +261,6 @@ namespace EmitExperiments
                 ilGen.Emit(OpCodes.Stloc, arrayValue);
                  ilGen.Emit(OpCodes.Ldloc, arrayValue);
                 //ilGen.EmitWriteLine(arrayValue);
-
 
                 if (parameterType.IsValueType)
                     ilGen.Emit(OpCodes.Unbox_Any, parameterType);
@@ -275,15 +273,13 @@ namespace EmitExperiments
          
             ilGen.Emit(OpCodes.Callvirt, delegatePropertyInfo.DelegateInvokeMethodInfo);
 
-            //if (hasReturnType)
-            //    ilGen.Emit(OpCodes.Stloc_1);
-
-
+            if (hasReturnType)
+                ilGen.Emit(OpCodes.Stloc, returnValue);
 
             ilGen.MarkLabel(finishLabel);
              
-           //  if (hasReturnType)
-           //      ilGen.Emit(OpCodes.Ldloc_0);
+             if (hasReturnType)
+                 ilGen.Emit(OpCodes.Ldloc, returnValue);
             ilGen.Emit(OpCodes.Ret);
 
             return handleMethodBuilder;
