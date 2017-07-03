@@ -10,6 +10,27 @@ namespace EmitExperiments
 {
     public static class EmitHelper
     {
+        public static void ImplementPublicConstructor(TypeBuilder tb, FieldBuilder[] filedsNeedToBeSetted, IEnumerable<Action<ILGenerator>> additionalCodeGenerators)
+        {
+            var constructorInfo = tb.DefineConstructor(
+                MethodAttributes.Public,
+                CallingConventions.Standard,
+                new[] { typeof(IOutputCordApi) });
+            var il = constructorInfo.GetILGenerator();
+            int fieldNumber = 1;
+            foreach (var fieldBuilder in filedsNeedToBeSetted)
+            {
+                il.Emit(OpCodes.Ldarg_0);
+                il.Emit(OpCodes.Ldarg,fieldNumber);
+                il.Emit(OpCodes.Stfld, fieldBuilder);
+                fieldNumber++;
+            }
+            foreach (var additionalCodeGenerator in additionalCodeGenerators)
+            {
+                additionalCodeGenerator(il);
+            }
+            il.Emit(OpCodes.Ret);
+        }
         public static DelegatePropertyInfo GetDelegateInfoOrNull(Type delegateType)
         {
             var ainvk = delegateType.GetMethod("Invoke");
@@ -33,16 +54,18 @@ namespace EmitExperiments
 
             MethodBuilder metbuilder;
             if (!inputParams.Any() && outputParams == typeof(void))
-                metbuilder = typeBuilder.DefineMethod(interfaceMethodInfo.Name, MethodAttributes.Public | MethodAttributes.Virtual);
+                metbuilder = typeBuilder.DefineMethod(interfaceMethodInfo.Name, 
+                    MethodAttributes.Public | MethodAttributes.Virtual);
             else
-                metbuilder = typeBuilder.DefineMethod(interfaceMethodInfo.Name, MethodAttributes.Public | MethodAttributes.Virtual, outputParams, inputParams);
+                metbuilder = typeBuilder.DefineMethod(interfaceMethodInfo.Name,
+                    MethodAttributes.Public | MethodAttributes.Virtual, outputParams, inputParams);
 
             typeBuilder.DefineMethodOverride(metbuilder, interfaceMethodInfo);
             return metbuilder;
         }
 
-
-        public static PropertyBuilder ImplementInterfaceProperty(TypeBuilder typeBuilder, PropertyInfo interfacePropertyInfo)
+      
+        public static ImplementInterfacePropertyResults ImplementInterfaceProperty(TypeBuilder typeBuilder, PropertyInfo interfacePropertyInfo)
         {
             var fieldBuilder = typeBuilder.DefineField("_" +
                interfacePropertyInfo.Name,
@@ -93,8 +116,17 @@ namespace EmitExperiments
             propertyBuilder.SetSetMethod(setPropMthdBldr);
             typeBuilder.DefineMethodOverride(getPropMthdBldr, interfacePropertyInfo.GetMethod);
             typeBuilder.DefineMethodOverride(setPropMthdBldr, interfacePropertyInfo.SetMethod);
-            
-            return propertyBuilder;
+
+            return new ImplementInterfacePropertyResults
+            {
+                FieldBuilder = fieldBuilder,
+                PropertyBuilder = propertyBuilder
+            };
+        }
+        public class ImplementInterfacePropertyResults
+        {
+            public PropertyBuilder PropertyBuilder { get; set; }
+            public FieldBuilder FieldBuilder { get; set; }
         }
     }
 }

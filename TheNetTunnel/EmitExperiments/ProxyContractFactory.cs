@@ -12,6 +12,7 @@ namespace EmitExperiments
     public static class ProxyContractFactory
     {
         private static int _exemmplarCounter = 0;
+
         public static T CreateProxyContract<T>(IOutputCordApi rawOutput)
         {
             var interfaceType = typeof(T);
@@ -20,18 +21,22 @@ namespace EmitExperiments
             typeBuilder.AddInterfaceImplementation(interfaceType);
 
             const string outputApiFieldName = "_outputApi";
-            var outputApiFieldInfo = typeBuilder.DefineField(outputApiFieldName, typeof(IOutputCordApi), FieldAttributes.Private);
+            var outputApiFieldInfo = typeBuilder.DefineField(outputApiFieldName, typeof(IOutputCordApi),
+                FieldAttributes.Private);
 
 
-            var sayMehodInfo = rawOutput.GetType().GetMethod("Say", new[] {typeof(int), typeof(object[]) });
+            var sayMehodInfo = rawOutput.GetType().GetMethod("Say", new[] {typeof(int), typeof(object[])});
 
 
             #region реализуем методы интерфейса
+
             foreach (var methodInfo in interfaceType.GetMethods())
             {
-                if(methodInfo.IsSpecialName)
+                if (methodInfo.IsSpecialName)
                     continue;
-                var attribute = Attribute.GetCustomAttribute(methodInfo, typeof(ContractMessageAttribute)) as ContractMessageAttribute;
+                var attribute =
+                    Attribute.GetCustomAttribute(methodInfo, typeof(ContractMessageAttribute)) as
+                        ContractMessageAttribute;
                 if (attribute == null)
                     throw new InvalidOperationException("no ContractMessageAttribute");
 
@@ -45,9 +50,9 @@ namespace EmitExperiments
                 }
                 else
                 {
-                    askOrSayMethodInfo 
-                        = rawOutput.GetType().GetMethod("Ask", new[] { typeof(int), typeof(object[]) })
-                        .MakeGenericMethod(returnType);
+                    askOrSayMethodInfo
+                        = rawOutput.GetType().GetMethod("Ask", new[] {typeof(int), typeof(object[])})
+                            .MakeGenericMethod(returnType);
 
                 }
                 GenerateSayOrAskMethodBody(
@@ -58,33 +63,40 @@ namespace EmitExperiments
                     proxyMethodBuilder: methodBuilder);
 
             }
+
             #endregion
-            List<Action<ILGenerator>> constructorSubscribers = new List<Action<ILGenerator>>();
+
+            List<Action<ILGenerator>> constructorCodeGeneration = new List<Action<ILGenerator>>();
 
             #region реализуем делегат свойства интерфейса
 
             foreach (var propertyInfo in interfaceType.GetProperties())
             {
-                var attribute = Attribute.GetCustomAttribute(propertyInfo, typeof(ContractMessageAttribute)) as ContractMessageAttribute;
+                var attribute =
+                    Attribute.GetCustomAttribute(propertyInfo, typeof(ContractMessageAttribute)) as
+                        ContractMessageAttribute;
                 if (attribute == null)
                     throw new InvalidOperationException("no ContractMessageAttribute");
 
                 var propertyBuilder = EmitHelper.ImplementInterfaceProperty(typeBuilder, propertyInfo);
 
-                var delegateInfo = EmitHelper.GetDelegateInfoOrNull(propertyBuilder.PropertyType);
+                var delegateInfo = EmitHelper.GetDelegateInfoOrNull(propertyBuilder.PropertyBuilder.PropertyType);
                 if (delegateInfo == null)
                     //свойство не является делегатом
-                    throw new InvalidOperationException("Property "+ propertyBuilder.Name+" is not a delegate");
+                    throw new InvalidOperationException("Property " + propertyBuilder.PropertyBuilder.Name + " is not a delegate");
 
                 // теперь для каждого делегат свойства нужно сделать хендлер
-                var handleMethodNuilder = ImplementAndGenerateHandleMethod(typeBuilder, delegateInfo, propertyBuilder.GetGetMethod());
-                constructorSubscribers.Add((iLGenerator)=>GenerateEventSubscribtion(iLGenerator, outputApiFieldInfo, attribute.Id, handleMethodNuilder));
+                var handleMethodNuilder = ImplementAndGenerateHandleMethod(typeBuilder, delegateInfo,
+                    propertyBuilder.FieldBuilder);
+
+                constructorCodeGeneration.Add(
+                    (iLGenerator) =>
+                        GenerateEventSubscribtion(iLGenerator, outputApiFieldInfo, attribute.Id, handleMethodNuilder));
             }
 
             #endregion
 
-
-            CreateProxyConstructor(typeBuilder, outputApiFieldInfo, constructorSubscribers);
+            EmitHelper.ImplementPublicConstructor(typeBuilder, new FieldBuilder[] {outputApiFieldInfo}, constructorCodeGeneration);
 
             var finalType = typeBuilder.CreateType();
             return (T)Activator.CreateInstance(finalType, rawOutput);
@@ -104,22 +116,7 @@ namespace EmitExperiments
             return tb;
         }
 
-        private static void CreateProxyConstructor(TypeBuilder tb, FieldBuilder outputApiFieldInfo, IEnumerable<Action<ILGenerator>> additionalCodeGenerators)
-        {
-            var constructorInfo = tb.DefineConstructor(
-                MethodAttributes.Public, 
-                CallingConventions.Standard, 
-                new[] { typeof(IOutputCordApi) });
-            var il = constructorInfo.GetILGenerator();
-            il.Emit(OpCodes.Ldarg_0);
-            il.Emit(OpCodes.Ldarg_1);
-            il.Emit(OpCodes.Stfld, outputApiFieldInfo);
-            foreach (var additionalCodeGenerator in additionalCodeGenerators)
-            {
-                additionalCodeGenerator(il);
-            }
-            il.Emit(OpCodes.Ret);
-        }
+       
 
         private static void GenerateSayOrAskMethodBody(
             int id, 
@@ -183,7 +180,8 @@ namespace EmitExperiments
         static MethodBuilder ImplementAndGenerateHandleMethod(
             TypeBuilder typeBuilder, 
             DelegatePropertyInfo delegatePropertyInfo,
-            MethodInfo getMethodInfo
+            FieldInfo delegateFieldInfo
+            
 
             )
         {
@@ -204,53 +202,62 @@ namespace EmitExperiments
             var id = Interlocked.Increment(ref _exemmplarCounter);
 
             var handleMethodBuilder = typeBuilder.DefineMethod(
-                name: "Handle" + getMethodInfo.Name + id, 
-                attributes: MethodAttributes.Private,
+                name: "Handle" + delegateFieldInfo.Name + id, 
+                attributes: MethodAttributes.Public,
                 returnType: delegatePropertyInfo.ReturnType,
                 parameterTypes: new [] {typeof(object[])});
 
 
             ILGenerator ilGen = handleMethodBuilder.GetILGenerator();
-            var hasReturnType = delegatePropertyInfo.ReturnType != typeof(void);
-            //Ставим в  переменную null
-            if (hasReturnType)
-            {
-                ilGen.Emit(OpCodes.Ldnull);
-                ilGen.Emit(OpCodes.Stloc_1);
-            }
-            ilGen.Emit(OpCodes.Ldarg_0);
-            //check delegate == null
-            ilGen.Emit(OpCodes.Call, getMethodInfo);
-            ilGen.Emit(OpCodes.Dup);
-            ilGen.Emit(OpCodes.Ldnull);
-            ilGen.Emit(OpCodes.Ceq);
+            //var hasReturnType = delegatePropertyInfo.ReturnType != typeof(void);
+            ////Ставим в  переменную null
+            //if (hasReturnType)
+            //{
+            //    ilGen.Emit(OpCodes.Ldnull);
+            //    ilGen.Emit(OpCodes.Stloc_0);
+            //}
 
-            var finishLabel = ilGen.DefineLabel();
+            ilGen.Emit(OpCodes.Ldarg_0);
+
+            //check delegate == null
+            ilGen.Emit(OpCodes.Ldfld, delegateFieldInfo);
+            var delegateFieldValue = ilGen.DeclareLocal(delegateFieldInfo.FieldType);
+                  
+            ilGen.Emit(OpCodes.Stloc, delegateFieldValue);
+            ilGen.Emit(OpCodes.Ldloc, delegateFieldValue);
+
+             ilGen.Emit(OpCodes.Ldnull);
+             ilGen.Emit(OpCodes.Ceq);
+             //ilGen.Emit(OpCodes.Pop);
+            
+               var finishLabel = ilGen.DefineLabel();
             //если поле == null то сразу выходим
-            ilGen.Emit(OpCodes.Brtrue_S, finishLabel);
+               ilGen.Emit(OpCodes.Brtrue_S, finishLabel);
 
             int i = 0;
             //иначе 
-            foreach (var parameterType in delegatePropertyInfo.ParameterTypes)
-            {
-                ilGen.Emit(OpCodes.Ldarg_1);
-                ilGen.Emit(OpCodes.Ldc_I4, i);
-                ilGen.Emit(OpCodes.Ldelem_Ref);
-                if (parameterType.IsValueType)
-                    ilGen.Emit(OpCodes.Unbox_Any, parameterType);
-                else if (parameterType!= typeof(object))
-                    ilGen.Emit(OpCodes.Castclass, parameterType);
-                i++;
-            }
+            //foreach (var parameterType in delegatePropertyInfo.ParameterTypes)
+            //{
+            //    ilGen.Emit(OpCodes.Ldarg_1);
+            //    ilGen.Emit(OpCodes.Ldc_I4, i);
+            //    ilGen.Emit(OpCodes.Ldelem_Ref);
+            //    if (parameterType.IsValueType)
+            //        ilGen.Emit(OpCodes.Unbox_Any, parameterType);
+            //    else if (parameterType!= typeof(object))
+            //        ilGen.Emit(OpCodes.Castclass, parameterType);
+            //    i++;
+            //}
 
-            ilGen.EmitCall(OpCodes.Callvirt, delegatePropertyInfo.DelegateInvokeMethodInfo, null);
-            if (hasReturnType)
-                ilGen.Emit(OpCodes.Stloc_1);
+            ilGen.Emit(OpCodes.Ldloc, delegateFieldValue);
+            ilGen.EmitCall(OpCodes.Callvirt, 
+                delegatePropertyInfo.DelegateInvokeMethodInfo, null);
+            //if (hasReturnType)
+            //    ilGen.Emit(OpCodes.Stloc_1);
 
             ilGen.MarkLabel(finishLabel);
-
-            if (hasReturnType)
-                ilGen.Emit(OpCodes.Ldloc_1);
+             
+           //  if (hasReturnType)
+           //      ilGen.Emit(OpCodes.Ldloc_0);
             ilGen.Emit(OpCodes.Ret);
 
             return handleMethodBuilder;
@@ -287,7 +294,7 @@ namespace EmitExperiments
             }
             else
             {
-                var funkType = typeof(Func<,>).MakeGenericType(typeof(object[]), handleMethod.ReturnType); //typeof(object)// handleMethod.ReturnType);
+                var funkType = typeof(Func<,>).MakeGenericType(typeof(object[]), handleMethod.ReturnType); 
                 var funcConstructor = funkType.GetConstructor(new[] { typeof(object), typeof(IntPtr) });
 
                 il.Emit(OpCodes.Newobj, funcConstructor);

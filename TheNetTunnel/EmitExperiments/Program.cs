@@ -39,6 +39,15 @@ namespace EmitExperiments
             Console.WriteLine("Result2 is: " + res2);
 
             contract.TheProcedure();
+            apiMock.SaySubScribed[50](new object[0]);
+
+            contract.OnProcedureEvent += () => { Console.WriteLine("ProcedureIsCalled"); };
+            apiMock.SaySubScribed[50](new object[0]);
+
+            apiMock.SaySubScribed[51](new object[] {123, DateTime.Now});
+            contract.OnEvent += (i, dt) => { Console.WriteLine("ActionIsCalled "+ i +" "+ dt); };
+
+            apiMock.SaySubScribed[51](new object[] { 123, DateTime.Now });
 
             Console.ReadLine();
         }

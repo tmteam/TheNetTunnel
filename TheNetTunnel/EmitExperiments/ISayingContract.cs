@@ -74,8 +74,10 @@ namespace EmitExperiments
             
 
         }
+        public Dictionary<int, Action<object[]> > SaySubScribed = new Dictionary<int, Action<object[]>>();
         public void SaySubscribe(int cordId, Action<object[]> callback)
         {
+            SaySubScribed.Add(cordId, callback);
         }
 
         public void AskSubscribe<T>(int cordId, Func<object[], T> callback)
