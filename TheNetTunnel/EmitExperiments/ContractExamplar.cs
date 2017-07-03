@@ -58,7 +58,7 @@ namespace EmitExperiments
         }
 
         public Func<int> GiveMe42Ask { get; set; }
-
+        public Func<double, double, double> SummAsk { get; set; }
 
 
         /**

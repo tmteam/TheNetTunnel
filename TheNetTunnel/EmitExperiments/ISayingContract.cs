@@ -26,9 +26,9 @@ namespace EmitExperiments
 
         [ContractMessage(51)] Action<int, DateTime> OnEvent { get; set; }
 
-        //[ContractMessage(52)] Func<int, DateTime, string> OnAsk { get; set; }
-
         [ContractMessage(53)] Func<int> GiveMe42Ask { get; set; }
+        [ContractMessage(54)] Func<double,double,double> SummAsk { get; set; }
+
     }
 
 

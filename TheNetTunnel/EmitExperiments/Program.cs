@@ -56,6 +56,12 @@ namespace EmitExperiments
             result = apiMock.AskSubScribed[53](new object[0]);
             Console.WriteLine("53 call result: " + result);
 
+             result = apiMock.AskSubScribed[54](new object[0]);
+            Console.WriteLine("54 call result: " + result);
+            contract.SummAsk += (a, b) => a + b;
+            result = apiMock.AskSubScribed[54](new object[] {20d, 100d});
+            Console.WriteLine("54 call result: " + result);
+
             Console.ReadLine();
         }
     }
