@@ -216,7 +216,7 @@ namespace EmitExperiments
             //    ilGen.Emit(OpCodes.Ldnull);
             //    ilGen.Emit(OpCodes.Stloc_0);
             //}
-
+            
             ilGen.Emit(OpCodes.Ldarg_0);
 
             //check delegate == null
@@ -225,34 +225,60 @@ namespace EmitExperiments
                   
             ilGen.Emit(OpCodes.Stloc, delegateFieldValue);
             ilGen.Emit(OpCodes.Ldloc, delegateFieldValue);
-
-             ilGen.Emit(OpCodes.Ldnull);
-             ilGen.Emit(OpCodes.Ceq);
-             //ilGen.Emit(OpCodes.Pop);
             
-               var finishLabel = ilGen.DefineLabel();
+            ilGen.Emit(OpCodes.Ldnull);
+            ilGen.Emit(OpCodes.Ceq);
+
+            var isDelegateNull = ilGen.DeclareLocal(typeof(int));
+
+            ilGen.Emit(OpCodes.Stloc, isDelegateNull);
+            ilGen.Emit(OpCodes.Ldloc, isDelegateNull);
+           // ilGen.EmitWriteLine("IsDelegateNull:");
+           // ilGen.EmitWriteLine(isDelegateNull);
+
+            //ilGen.Emit(OpCodes.Pop);
+            
+            var finishLabel = ilGen.DefineLabel();
             //если поле == null то сразу выходим
-               ilGen.Emit(OpCodes.Brtrue_S, finishLabel);
+            ilGen.Emit(OpCodes.Brtrue_S, finishLabel);
+
+           // ilGen.EmitWriteLine("Delegate is not null");
+
+            ilGen.Emit(OpCodes.Ldloc, delegateFieldValue);
 
             int i = 0;
             //иначе 
-            //foreach (var parameterType in delegatePropertyInfo.ParameterTypes)
-            //{
-            //    ilGen.Emit(OpCodes.Ldarg_1);
-            //    ilGen.Emit(OpCodes.Ldc_I4, i);
-            //    ilGen.Emit(OpCodes.Ldelem_Ref);
-            //    if (parameterType.IsValueType)
-            //        ilGen.Emit(OpCodes.Unbox_Any, parameterType);
-            //    else if (parameterType!= typeof(object))
-            //        ilGen.Emit(OpCodes.Castclass, parameterType);
-            //    i++;
-            //}
+            foreach (var parameterType in delegatePropertyInfo.ParameterTypes)
+            {
+                ilGen.Emit(OpCodes.Ldarg_1);
 
-            ilGen.Emit(OpCodes.Ldloc, delegateFieldValue);
-            ilGen.EmitCall(OpCodes.Callvirt, 
-                delegatePropertyInfo.DelegateInvokeMethodInfo, null);
+                ilGen.Emit(OpCodes.Ldc_I4, i);
+
+
+                ilGen.Emit(OpCodes.Ldelem_Ref);
+
+                var arrayValue = ilGen.DeclareLocal(typeof(object));
+
+                ilGen.Emit(OpCodes.Stloc, arrayValue);
+                 ilGen.Emit(OpCodes.Ldloc, arrayValue);
+                //ilGen.EmitWriteLine(arrayValue);
+
+
+                if (parameterType.IsValueType)
+                    ilGen.Emit(OpCodes.Unbox_Any, parameterType);
+                else /*if (parameterType!= typeof(object))*/
+                    ilGen.Emit(OpCodes.Castclass, parameterType);
+                i++;
+            }
+            
+
+         
+            ilGen.Emit(OpCodes.Callvirt, delegatePropertyInfo.DelegateInvokeMethodInfo);
+
             //if (hasReturnType)
             //    ilGen.Emit(OpCodes.Stloc_1);
+
+
 
             ilGen.MarkLabel(finishLabel);
              
