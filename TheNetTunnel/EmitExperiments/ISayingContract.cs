@@ -26,7 +26,7 @@ namespace EmitExperiments
 
         [ContractMessage(51)] Action<int, DateTime> OnEvent { get; set; }
 
-        [ContractMessage(52)] Func<int, DateTime, string> OnAsk { get; set; }
+        //[ContractMessage(52)] Func<int, DateTime, string> OnAsk { get; set; }
 
         [ContractMessage(53)] Func<int> GiveMe42Ask { get; set; }
     }
@@ -36,8 +36,8 @@ namespace EmitExperiments
     {
         void Say(int cordId, object[] values);
         T Ask<T>(int cordId, object[] values);
-        void Subscribe(int cordId, Action<object[]> callback);
-        void Subscribe<T>(int cordId, Func<object[],T> callback);
+        void SaySubscribe(int cordId, Action<object[]> callback);
+        void AskSubscribe<T>(int cordId, Func<object[], T> callback);
         void Unsubscribe(int cordId);
     }
 
@@ -74,16 +74,21 @@ namespace EmitExperiments
             
 
         }
-        public void Subscribe(int cordId, Action<object[]> callback)
+        public void SaySubscribe(int cordId, Action<object[]> callback)
         {
         }
 
-        public void Subscribe<T>(int cordId, Func<object[], T> callback)
+        public void AskSubscribe<T>(int cordId, Func<object[], T> callback)
         {
         }
 
         public void Unsubscribe(int cordId)
         {
         }
+
+        //public void AskSubscribe<T>(int cordId, Func<object[], object> callBack)
+        //{
+        //    Func<object[], T> callbackT = callBack.;
+        //}
     }
 }

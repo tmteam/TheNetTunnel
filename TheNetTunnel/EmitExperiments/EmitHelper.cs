@@ -10,6 +10,21 @@ namespace EmitExperiments
 {
     public static class EmitHelper
     {
+        public static DelegatePropertyInfo GetDelegateInfoOrNull(Type delegateType)
+        {
+            var ainvk = delegateType.GetMethod("Invoke");
+            if (ainvk == null)
+                return null;
+            var parameters = ainvk.GetParameters().Select(p => p.ParameterType).ToArray();
+            var returnType = ainvk.ReturnParameter.ParameterType;
+            return new DelegatePropertyInfo
+            {
+                DelegateInvokeMethodInfo = ainvk,
+                ParameterTypes = parameters,
+                ReturnType = returnType,
+            };
+
+        }
         public static MethodBuilder ImplementInterfaceMethod(MethodInfo interfaceMethodInfo, TypeBuilder typeBuilder)
         {
             Type[] inputParams = interfaceMethodInfo.GetParameters().Select(p => p.ParameterType).ToArray();
@@ -64,16 +79,13 @@ namespace EmitExperiments
                null, new[] { interfacePropertyInfo.PropertyType });
 
             ILGenerator setIl = setPropMthdBldr.GetILGenerator();
-            // Label modifyProperty = setIl.DefineLabel();
-            // Label exitSet = setIl.DefineLabel();
-
-            // setIl.MarkLabel(modifyProperty);
+           
             setIl.Emit(OpCodes.Ldarg_0);
             setIl.Emit(OpCodes.Ldarg_1);
             setIl.Emit(OpCodes.Stfld, fieldBuilder);
 
             setIl.Emit(OpCodes.Nop);
-            // setIl.MarkLabel(exitSet);
+
             setIl.Emit(OpCodes.Ret);
             #endregion
 

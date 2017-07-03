@@ -10,7 +10,7 @@ namespace EmitExperiments
         public ContractExamplar(IOutputCordApi transporter)
         {
             _transporter = transporter;
-            _transporter.Subscribe<string>(52, OnAsk_Callback);
+            _transporter.AskSubscribe<string>(52, OnAsk_Callback);
             
         }
         public void SaySomething(int intParameter)
