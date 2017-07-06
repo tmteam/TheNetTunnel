@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace EmitExperiments
+﻿namespace EmitExperiments
 {
 //    public class SayingContract : ISayingContract, ICordMessageHandler
 //    {

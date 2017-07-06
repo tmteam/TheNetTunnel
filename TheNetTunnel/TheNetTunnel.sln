@@ -32,6 +32,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerPong", "ServerPong\Se
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmitExperiments", "EmitExperiments\EmitExperiments.csproj", "{7018F7C0-71BA-4D28-B4F1-3B3AE714AAF0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheTunnel.Test", "TheTunnel.Test\TheTunnel.Test.csproj", "{72682753-7C32-428E-A3E3-3A3B29AF4EF4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -126,6 +128,18 @@ Global
 		{7018F7C0-71BA-4D28-B4F1-3B3AE714AAF0}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{7018F7C0-71BA-4D28-B4F1-3B3AE714AAF0}.Release|x86.ActiveCfg = Release|Any CPU
 		{7018F7C0-71BA-4D28-B4F1-3B3AE714AAF0}.Release|x86.Build.0 = Release|Any CPU
+		{72682753-7C32-428E-A3E3-3A3B29AF4EF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72682753-7C32-428E-A3E3-3A3B29AF4EF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72682753-7C32-428E-A3E3-3A3B29AF4EF4}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{72682753-7C32-428E-A3E3-3A3B29AF4EF4}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{72682753-7C32-428E-A3E3-3A3B29AF4EF4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{72682753-7C32-428E-A3E3-3A3B29AF4EF4}.Debug|x86.Build.0 = Debug|Any CPU
+		{72682753-7C32-428E-A3E3-3A3B29AF4EF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72682753-7C32-428E-A3E3-3A3B29AF4EF4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72682753-7C32-428E-A3E3-3A3B29AF4EF4}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{72682753-7C32-428E-A3E3-3A3B29AF4EF4}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{72682753-7C32-428E-A3E3-3A3B29AF4EF4}.Release|x86.ActiveCfg = Release|Any CPU
+		{72682753-7C32-428E-A3E3-3A3B29AF4EF4}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

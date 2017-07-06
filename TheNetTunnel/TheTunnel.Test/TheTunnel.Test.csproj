@@ -4,18 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{7018F7C0-71BA-4D28-B4F1-3B3AE714AAF0}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{72682753-7C32-428E-A3E3-3A3B29AF4EF4}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EmitExperiments</RootNamespace>
-    <AssemblyName>EmitExperiments</AssemblyName>
+    <RootNamespace>TheTunnel.Test</RootNamespace>
+    <AssemblyName>TheTunnel.Test</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -25,7 +22,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -34,6 +30,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="nunit.framework, Version=3.7.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\NUnit.3.7.1\lib\net45\nunit.framework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -44,30 +44,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Exceptions\ContractCordIdDuplicateException.cs" />
-    <Compile Include="ContractExamplar.cs" />
-    <Compile Include="Exceptions\ContractMemberAttributeMissingException.cs" />
-    <Compile Include="ContractMessageAttribute.cs" />
-    <Compile Include="DelegatePropertyInfo.cs" />
-    <Compile Include="EmitHelper.cs" />
-    <Compile Include="Exceptions\InvalidContractMemeberException.cs" />
-    <Compile Include="IOutputCordApi.cs" />
-    <Compile Include="ISayingContract.cs" />
-    <Compile Include="Master.cs" />
-    <Compile Include="OutputCordApi.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="ContractInterfaces\ContractsWithWrongMembers.cs" />
+    <Compile Include="ContractInterfaces\IEmptyContract.cs" />
+    <Compile Include="CordMock.cs" />
+    <Compile Include="ContractInterfaces\ICallContract.cs" />
+    <Compile Include="ProxyContractFactory_CallsTest.cs" />
+    <Compile Include="ProxyContractFactory_ContractParseTest.cs" />
+    <Compile Include="ContractInterfaces\ISayAskContract.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ProxyContractFactory.cs" />
-    <Compile Include="SayingContract.cs" />
+    <Compile Include="ProxyContractFactory_SayAskContractTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TheNetTunnel\TheTunnel.csproj">
-      <Project>{9FFEC001-2177-4EA1-A2B5-6D50A7436AE5}</Project>
-      <Name>TheTunnel</Name>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EmitExperiments\EmitExperiments.csproj">
+      <Project>{7018f7c0-71ba-4d28-b4f1-3b3ae714aaf0}</Project>
+      <Name>EmitExperiments</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

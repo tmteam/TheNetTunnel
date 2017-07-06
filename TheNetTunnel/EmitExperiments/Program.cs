@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using TheTunnel.Deserialization;
-using TheTunnel.Serialization;
 
 namespace EmitExperiments
 {
@@ -25,15 +18,15 @@ namespace EmitExperiments
             //master.Connect();
 
             OutputCordApi apiMock = new OutputCordApi();
-            var contract =  ProxyContractFactory.CreateProxyContract<ISayingContract>(apiMock);
+            var contract = ProxyContractFactory.CreateProxyContract<ISayingContract>(apiMock);
 
             contract.SaySomething(42);
-            contract.SaySomething2(39,  12.5);
+            contract.SaySomething2(39, 12.5);
             contract.SaySomething3(39, "123", 12.5);
-            contract.SaySomething4(39, "123", 12.5, DateTime.Now, new object[] {1,DateTime.Now, "asd"});
+            contract.SaySomething4(39, "123", 12.5, DateTime.Now, new object[] {1, DateTime.Now, "asd"});
 
             var res = contract.AskSomething(38, 55);
-            Console.WriteLine("Result is: "+ res);
+            Console.WriteLine("Result is: " + res);
 
             var res2 = contract.GiveMe42();
             Console.WriteLine("Result2 is: " + res2);
@@ -45,18 +38,17 @@ namespace EmitExperiments
             apiMock.SaySubScribed[50](new object[0]);
 
             apiMock.SaySubScribed[51](new object[] {123, DateTime.Now});
-            contract.OnEvent += (i, dt) => { Console.WriteLine("ActionIsCalled "+ i +" "+ dt); };
+            contract.OnEvent += (i, dt) => { Console.WriteLine("ActionIsCalled " + i + " " + dt); };
+            apiMock.SaySubScribed[51](new object[] {123, DateTime.Now});
 
-            apiMock.SaySubScribed[51](new object[] { 123, DateTime.Now });
 
-
-            var result =  apiMock.AskSubScribed[53](new object[0]);
-            Console.WriteLine("53 call result: "+ result);
+            var result = apiMock.AskSubScribed[53](new object[0]);
+            Console.WriteLine("53 call result: " + result);
             contract.GiveMe42Ask += () => 42;
             result = apiMock.AskSubScribed[53](new object[0]);
             Console.WriteLine("53 call result: " + result);
 
-             result = apiMock.AskSubScribed[54](new object[0]);
+            result = apiMock.AskSubScribed[54](new object[0]);
             Console.WriteLine("54 call result: " + result);
             contract.SummAsk += (a, b) => a + b;
             result = apiMock.AskSubScribed[54](new object[] {20d, 100d});
