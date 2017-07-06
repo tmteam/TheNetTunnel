@@ -39,7 +39,8 @@ GraphIT/TechNewLogic.GraphIT.XML
 src/*.xml
 src/_*
 src/packages/**/*
-packages/**/*
+packages/*
+
 build*/
 build/**/*.*
 *._
