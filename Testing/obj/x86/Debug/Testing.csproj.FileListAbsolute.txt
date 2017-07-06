@@ -1,9 +1,0 @@
-C:\code\TNT\TheTunnel\Testing\bin\Debug\protobuf-net.dll
-C:\code\TNT\TheTunnel\Testing\bin\Debug\TNT.dll
-C:\code\TNT\TheTunnel\Testing\bin\Debug\TNT.pdb
-C:\code\TNT\TheTunnel\Testing\obj\x86\Debug\Testing.csprojResolveAssemblyReference.cache
-C:\code\TNT\TheTunnel\Testing\bin\Debug\Testing.exe.config
-C:\code\TNT\TheTunnel\Testing\bin\Debug\Testing.exe
-C:\code\TNT\TheTunnel\Testing\bin\Debug\Testing.pdb
-C:\code\TNT\TheTunnel\Testing\obj\x86\Debug\Testing.exe
-C:\code\TNT\TheTunnel\Testing\obj\x86\Debug\Testing.pdb

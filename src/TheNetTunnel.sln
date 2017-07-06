@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TNT", "TNT\TNT.csproj", "{E1613910-06B6-4C28-8900-87F0C9793DFF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TNT.Tests", "TNT.Tests\TNT.Tests.csproj", "{72682753-7C32-428E-A3E3-3A3B29AF4EF4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheTunnel", "TheNetTunnel\TheTunnel.csproj", "{9FFEC001-2177-4EA1-A2B5-6D50A7436AE5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E1613910-06B6-4C28-8900-87F0C9793DFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1613910-06B6-4C28-8900-87F0C9793DFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1613910-06B6-4C28-8900-87F0C9793DFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1613910-06B6-4C28-8900-87F0C9793DFF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72682753-7C32-428E-A3E3-3A3B29AF4EF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72682753-7C32-428E-A3E3-3A3B29AF4EF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72682753-7C32-428E-A3E3-3A3B29AF4EF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72682753-7C32-428E-A3E3-3A3B29AF4EF4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9FFEC001-2177-4EA1-A2B5-6D50A7436AE5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9FFEC001-2177-4EA1-A2B5-6D50A7436AE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9FFEC001-2177-4EA1-A2B5-6D50A7436AE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9FFEC001-2177-4EA1-A2B5-6D50A7436AE5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

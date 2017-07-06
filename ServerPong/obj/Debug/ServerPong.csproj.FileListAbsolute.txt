@@ -1,8 +1,0 @@
-C:\code\TNT\TheTunnel\ServerPong\bin\Debug\ServerPong.exe.config
-C:\code\TNT\TheTunnel\ServerPong\bin\Debug\ServerPong.exe
-C:\code\TNT\TheTunnel\ServerPong\bin\Debug\ServerPong.pdb
-C:\code\TNT\TheTunnel\ServerPong\bin\Debug\TNT.dll
-C:\code\TNT\TheTunnel\ServerPong\bin\Debug\protobuf-net.dll
-C:\code\TNT\TheTunnel\ServerPong\bin\Debug\TNT.pdb
-C:\code\TNT\TheTunnel\ServerPong\obj\Debug\ServerPong.exe
-C:\code\TNT\TheTunnel\ServerPong\obj\Debug\ServerPong.pdb
