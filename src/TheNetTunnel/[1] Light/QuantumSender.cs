@@ -8,14 +8,16 @@ namespace TheTunnel.Light
     /// <summary>
     /// Separate Light messages into a quantum sequences
     /// </summary>
-	public class QuantumSender{
+    public class QuantumSender
+    {
         object locker = new object();
+
         /// <summary>
         /// Add a message for sending
         /// </summary>
         /// <param name="lightMessage"></param>
-		public void Set(MemoryStream lightMessage)
-		{
+        public void Set(MemoryStream lightMessage)
+        {
             lock (locker)
             {
                 var id = Interlocked.Increment(ref msgId);
@@ -30,7 +32,8 @@ namespace TheTunnel.Light
                 newSep.Initialize(lightMessage, id);
                 queue.Add(newSep);
             }
-		}
+        }
+
         /// <summary>
         /// Generate next quantum
         /// </summary>
@@ -38,7 +41,8 @@ namespace TheTunnel.Light
         /// <param name="quantum"></param>
         /// <param name="msgId"></param>
         /// <returns>true if quantum generated.</returns>
-		public bool TryNext( int maxQuantumSize, out byte[] quantum, out int msgId){
+        public bool TryNext(int maxQuantumSize, out byte[] quantum, out int msgId)
+        {
             lock (locker)
             {
                 if (queue.Count == 0)
@@ -63,23 +67,25 @@ namespace TheTunnel.Light
                 else
                     qPos++;
             }
-                return true;
-		}
+            return true;
+        }
+
         /// <summary>
         /// Clear 
         /// </summary>
-		public void Clear()	{
-            queue.Clear ();
-		}
+        public void Clear()
+        {
+            queue.Clear();
+        }
 
-		int msgId;
+        int msgId;
         //last taken queue item
-		int qPos = 0;
+        int qPos = 0;
         //Separation queue
-		List<LightSeparator> queue = new List<LightSeparator>();
-		// unused separators
-		List<LightSeparator> used = new List<LightSeparator>();
-	
-	}
+        List<LightSeparator> queue = new List<LightSeparator>();
+        // unused separators
+        List<LightSeparator> used = new List<LightSeparator>();
+
+    }
 }
 

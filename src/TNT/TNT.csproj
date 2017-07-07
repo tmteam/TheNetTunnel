@@ -44,40 +44,56 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cord\Deserializers\DeserializerFactory.cs" />
+    <Compile Include="Cord\Deserializers\EnumDeserializer.cs" />
+    <Compile Include="Cord\Deserializers\DeserializationRule.cs" />
+    <Compile Include="Cord\Deserializers\UTCFileTimeAndOffsetDeserializer.cs" />
     <Compile Include="Exceptions\ContractCordIdDuplicateException.cs" />
     <Compile Include="Exceptions\ContractMemberAttributeMissingException.cs" />
     <Compile Include="Exceptions\InvalidContractMemeberException.cs" />
+    <Compile Include="Exceptions\TypeCannotBeDeserializedException.cs" />
+    <Compile Include="Exceptions\TypeCannotBeSerializedException.cs" />
+    <Compile Include="Light\Receiving\MessageCollector.cs" />
+    <Compile Include="Light\Receiving\ReceiveMessageQueue.cs" />
+    <Compile Include="Light\Sending\MixedSendMessageSequenceBehaviour.cs" />
+    <Compile Include="Light\Sending\ISendMessageSequenceBehaviour.cs" />
+    <Compile Include="Light\Sending\FIFOSendMessageSequenceBehaviour.cs" />
+    <Compile Include="Light\Sending\MessageSeparator.cs" />
+    <Compile Include="Light\QuantumHead.cs" />
+    <Compile Include="Light\QuantumType.cs" />
     <Compile Include="Presentation\ContractMessageAttribute.cs" />
     <Compile Include="Presentation\DelegatePropertyInfo.cs" />
     <Compile Include="Presentation\EmitHelper.cs" />
     <Compile Include="Presentation\ICordInterlocutor.cs" />
     <Compile Include="Presentation\ProxyContractFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Deserializers\ArrayDeserializer.cs" />
-    <Compile Include="Deserializers\DeserializerBase.cs" />
-    <Compile Include="Deserializers\DeserializersFactory.cs" />
-    <Compile Include="Deserializers\IDeserializer.cs" />
-    <Compile Include="Deserializers\PrimitiveConverterDeserializer.cs" />
-    <Compile Include="Deserializers\PrimitiveDeserializer.cs" />
-    <Compile Include="Deserializers\ProtoDeserializer.cs" />
-    <Compile Include="Deserializers\SequenceDeserializer.cs" />
-    <Compile Include="Deserializers\UnicodeDeserializer.cs" />
-    <Compile Include="Deserializers\UTCFileTimeDeserializer.cs" />
-    <Compile Include="Serializers\ArraySerializer.cs" />
-    <Compile Include="Serializers\ISerializer.cs" />
-    <Compile Include="Serializers\PrimitiveConvertSerializer.cs" />
-    <Compile Include="Serializers\PrimitiveSerializer.cs" />
-    <Compile Include="Serializers\ProtoSerializer.cs" />
-    <Compile Include="Serializers\SequenceSerializer.cs" />
-    <Compile Include="Serializers\SerializerBase.cs" />
-    <Compile Include="Serializers\SerializersFactory.cs" />
-    <Compile Include="Serializers\UnicodeSerializer.cs" />
-    <Compile Include="Serializers\UTCFileTimeSerializer.cs" />
+    <Compile Include="Cord\Deserializers\ArrayDeserializer.cs" />
+    <Compile Include="Cord\Deserializers\DeserializerBase.cs" />
+    <Compile Include="Cord\Deserializers\IDeserializer.cs" />
+    <Compile Include="Cord\Deserializers\ValueTypeDeserializer.cs" />
+    <Compile Include="Cord\Deserializers\ProtoDeserializer.cs" />
+    <Compile Include="Cord\Deserializers\SequenceDeserializer.cs" />
+    <Compile Include="Cord\Deserializers\UnicodeDeserializer.cs" />
+    <Compile Include="Cord\Deserializers\UTCFileTimeDeserializer.cs" />
+    <Compile Include="Cord\Serializers\ArraySerializer.cs" />
+    <Compile Include="Cord\Serializers\ISerializer.cs" />
+    <Compile Include="Cord\Serializers\EnumSerializer.cs" />
+    <Compile Include="Cord\Serializers\SerializationRule.cs" />
+    <Compile Include="Cord\Serializers\SerializerFactory.cs" />
+    <Compile Include="Cord\Serializers\UTCFileTimeAndOffsetSerializer.cs" />
+    <Compile Include="Cord\Serializers\ValueTypeSerializer.cs" />
+    <Compile Include="Cord\Serializers\ProtoSerializer.cs" />
+    <Compile Include="Cord\Serializers\SequenceSerializer.cs" />
+    <Compile Include="Cord\Serializers\SerializerBase.cs" />
+    <Compile Include="Cord\Serializers\SerializersFactory.cs" />
+    <Compile Include="Cord\Serializers\UnicodeSerializer.cs" />
+    <Compile Include="Cord\Serializers\UTCFileTimeSerializer.cs" />
     <Compile Include="Tools.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

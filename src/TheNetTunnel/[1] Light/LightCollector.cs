@@ -35,7 +35,7 @@ namespace TheTunnel.Light
 					lenght= BitConverter.ToInt32 (packetFromAStream, bodyStart );
 					stream = new MemoryStream (lenght);
 					stream.Write (packetFromAStream, bodyStart + 4, bodyLen - 4); 
-				} else//Stream is null and its mean Error
+				} else//Stream is null and it means Error
 					return true;
 			}
 			else if (head.type == QuantumType.Data) {

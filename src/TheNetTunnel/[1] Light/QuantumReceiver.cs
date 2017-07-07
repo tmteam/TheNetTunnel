@@ -80,36 +80,35 @@ namespace TheTunnel.Light
 
 		void handle(QuantumHead head, byte[] msgFromStream, int quantBeginOffset){
 
-			LightCollector c = null;
-			if (collectors.ContainsKey (head.msgId))
-				c = collectors [head.msgId];
-			else {
-				c = new LightCollector ();
-				collectors.Add (head.msgId, c);
-			}
+			//LightCollector c = null;
+			//if (collectors.ContainsKey (head.msgId))
+			//	c = collectors [head.msgId];
+			//else {
+			//	c = new LightCollector ();
+			//	collectors.Add (head.msgId, c);
+			//}
 
-			if (c.Collect (head, msgFromStream, quantBeginOffset)) {
-				// we have got a new light message!
-				var stream = c.GetLightMessageStream ();
+			//if (c.Collect (head, msgFromStream, quantBeginOffset)) {
+			//	// we have got a new light message!
+			//	var stream = c.GetLightMessageStream ();
 
-				collectors.Remove (head.msgId);
+			//	collectors.Remove (head.msgId);
 
-				if (stream != null) {
-					stream.Position = 0;
-					if (OnLightMessage != null)
-						OnLightMessage (this, head, stream);
-				} else {
-					//Oops. An Error has occured during message collecting. 
-					if (OnCollectingError != null) {
-						byte[] badArray = new byte[msgFromStream.Length - quantBeginOffset];
-						Array.Copy (msgFromStream, quantBeginOffset, badArray, 0, badArray.Length);
-						OnCollectingError (this, head, badArray);
-					}
-				}
-			}
+			//	if (stream != null) {
+			//		stream.Position = 0;
+			//		if (OnLightMessage != null)
+			//			OnLightMessage (this, head, stream);
+			//	} else {
+			//		//Oops. An Error has occured during message collecting. 
+			//		if (OnCollectingError != null) {
+			//			byte[] badArray = new byte[msgFromStream.Length - quantBeginOffset];
+			//			Array.Copy (msgFromStream, quantBeginOffset, badArray, 0, badArray.Length);
+			//			OnCollectingError (this, head, badArray);
+			//		}
+			//	}
+			//}
 		}
 
-		Dictionary<int, LightCollector> collectors = new Dictionary<int, LightCollector>();
 	}
 }
 

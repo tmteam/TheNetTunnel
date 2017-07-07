@@ -6,6 +6,8 @@ namespace TNT.Light
 	[StructLayout(LayoutKind.Explicit, Size= 7)]
 	public struct QuantumHead
 	{
+        public static readonly int DefaultHeadSize = Marshal.SizeOf(typeof(QuantumHead));
+
         /// <summary>
         /// Full quantum lenght
         /// </summary>

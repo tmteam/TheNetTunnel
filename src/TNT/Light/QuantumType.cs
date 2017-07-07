@@ -1,4 +1,4 @@
-﻿namespace TheTunnel.Light
+﻿namespace TNT.Light
 {
     public enum QuantumType: byte{
         Start = 1,

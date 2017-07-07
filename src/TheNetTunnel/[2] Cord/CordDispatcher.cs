@@ -27,7 +27,6 @@ namespace TheTunnel.Cords
                 AddInputCord(i);
 
             this.Contract = contract;
-
 		}
 
 		Dictionary<Int16,IOutCord> Senders;
