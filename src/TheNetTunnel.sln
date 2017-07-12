@@ -9,6 +9,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TNT.Tests", "TNT.Tests\TNT.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheTunnel", "TheNetTunnel\TheTunnel.csproj", "{9FFEC001-2177-4EA1-A2B5-6D50A7436AE5}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{619F687B-4B17-43A7-B1BF-BDB16C4075FE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Expirements.Client", "Expirements\Expirements.Client.csproj", "{B4664836-EDDB-4AB9-82CF-AA9BE6FC7223}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Experiments.Server", "Experiments.Server\Experiments.Server.csproj", "{913B1EE5-E0FA-4220-91C9-130AF23FB578}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,8 +33,20 @@ Global
 		{9FFEC001-2177-4EA1-A2B5-6D50A7436AE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9FFEC001-2177-4EA1-A2B5-6D50A7436AE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9FFEC001-2177-4EA1-A2B5-6D50A7436AE5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4664836-EDDB-4AB9-82CF-AA9BE6FC7223}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4664836-EDDB-4AB9-82CF-AA9BE6FC7223}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4664836-EDDB-4AB9-82CF-AA9BE6FC7223}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4664836-EDDB-4AB9-82CF-AA9BE6FC7223}.Release|Any CPU.Build.0 = Release|Any CPU
+		{913B1EE5-E0FA-4220-91C9-130AF23FB578}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{913B1EE5-E0FA-4220-91C9-130AF23FB578}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{913B1EE5-E0FA-4220-91C9-130AF23FB578}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{913B1EE5-E0FA-4220-91C9-130AF23FB578}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B4664836-EDDB-4AB9-82CF-AA9BE6FC7223} = {619F687B-4B17-43A7-B1BF-BDB16C4075FE}
+		{913B1EE5-E0FA-4220-91C9-130AF23FB578} = {619F687B-4B17-43A7-B1BF-BDB16C4075FE}
 	EndGlobalSection
 EndGlobal

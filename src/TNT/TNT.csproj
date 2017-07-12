@@ -44,6 +44,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Channel\IChannel.cs" />
+    <Compile Include="Channel\Tcp\TcpChannel.cs" />
+    <Compile Include="Cord\CordMessenger.cs" />
+    <Compile Include="Cord\CordTools.cs" />
     <Compile Include="Cord\Deserializers\DeserializerFactory.cs" />
     <Compile Include="Cord\Deserializers\EnumDeserializer.cs" />
     <Compile Include="Cord\Deserializers\DeserializationRule.cs" />
@@ -53,6 +57,8 @@
     <Compile Include="Exceptions\InvalidContractMemeberException.cs" />
     <Compile Include="Exceptions\TypeCannotBeDeserializedException.cs" />
     <Compile Include="Exceptions\TypeCannotBeSerializedException.cs" />
+    <Compile Include="Light\IDispatcher.cs" />
+    <Compile Include="Light\LightChannel.cs" />
     <Compile Include="Light\Receiving\MessageCollector.cs" />
     <Compile Include="Light\Receiving\ReceiveMessageQueue.cs" />
     <Compile Include="Light\Sending\MixedSendMessageSequenceBehaviour.cs" />
@@ -65,6 +71,7 @@
     <Compile Include="Presentation\DelegatePropertyInfo.cs" />
     <Compile Include="Presentation\EmitHelper.cs" />
     <Compile Include="Presentation\ICordInterlocutor.cs" />
+    <Compile Include="Cord\ICordMessenger.cs" />
     <Compile Include="Presentation\ProxyContractFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Cord\Deserializers\ArrayDeserializer.cs" />
