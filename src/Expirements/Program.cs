@@ -44,7 +44,7 @@ namespace Expirements
             );
 
             var interlocutor = new CordInterlocutor(messenger);
-
+            var contract = ProxyContractFactory.CreateProxyContract<ITestContract>(interlocutor);
             //messenger.OnAns += Messenger_OnAns;
             channel.AllowReceive = true;
 
@@ -60,8 +60,8 @@ namespace Expirements
 
                 //messenger.Say(42, new object[]{DateTime.Now, "Client", msg});
                 // messenger.Ask(42, 115, new object[] { DateTime.Now, "Client", msg });
-                var ans = interlocutor.Ask<string>(42, new object[] {DateTime.Now, "Client", msg});
-
+                //var ans = interlocutor.Ask<string>(42, new object[] {DateTime.Now, "Client", msg});
+                var ans = contract.SendChatMessage(DateTime.Now, "Client", msg);
                 Console.WriteLine("Answer: "+ ans);
             }
 
@@ -71,7 +71,6 @@ namespace Expirements
         private static void Messenger_OnAns(ICordMessenger arg1, int msgId, int askId, object result)
         {
             Console.WriteLine($"Answer msgId={msgId} askId={askId} result = {result}");
-
         }
 
         private static void ChannelOnOnDisconnect(LightChannel lightChannel)
@@ -81,5 +80,10 @@ namespace Expirements
 
 
      
+    }
+
+    public interface ITestContract
+    {
+       [ContractMessage(42)] string SendChatMessage(DateTime time, string clientName, string message);
     }
 }
