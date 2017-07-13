@@ -11,7 +11,7 @@ namespace TNT.Presentation
         public static void ImplementPublicConstructor(
             TypeBuilder tb, 
             FieldBuilder[] filedsNeedToBeSetted,
-            IEnumerable<Action<ILGenerator>> additionalCodeGenerators)
+            IEnumerable<Action<ILGenerator>> additionalCodeGenerators = null)
         {
             var constructorInfo = tb.DefineConstructor(
                 MethodAttributes.Public,
@@ -42,27 +42,25 @@ namespace TNT.Presentation
                 il.Emit(OpCodes.Stfld, fieldBuilder);
                 fieldNumber++;
             }
-            foreach (var additionalCodeGenerator in additionalCodeGenerators)
+            if (additionalCodeGenerators != null)
             {
-                additionalCodeGenerator(il);
+                foreach (var additionalCodeGenerator in additionalCodeGenerators)
+                {
+                    additionalCodeGenerator(il);
+                }
             }
             il.Emit(OpCodes.Ret);
         }
 
-        public static DelegatePropertyInfo GetDelegateInfoOrNull(Type delegateType)
+        public static TypeBuilder CreateTypeBuilder(string typeName, string assemblyName = "AutogenAssembly", string moduleName = "AutogenAssembly.Module")
         {
-            var ainvk = delegateType.GetMethod("Invoke");
-            if (ainvk == null)
-                return null;
-            var parameters = ainvk.GetParameters().Select(p => p.ParameterType).ToArray();
-            var returnType = ainvk.ReturnParameter.ParameterType;
-            return new DelegatePropertyInfo
-            {
-                DelegateInvokeMethodInfo = ainvk,
-                ParameterTypes = parameters,
-                ReturnType = returnType,
-            };
+            var dynGeneratorHostAssembly = AppDomain.CurrentDomain.DefineDynamicAssembly(
+                new AssemblyName(assemblyName+", Version=1.0.0.1"),
+                AssemblyBuilderAccess.Run);
+            var dynModule = dynGeneratorHostAssembly.DefineDynamicModule(moduleName);
 
+            TypeBuilder tb = dynModule.DefineType(typeName, TypeAttributes.Public);
+            return tb;
         }
 
         public static MethodBuilder ImplementInterfaceMethod(MethodInfo interfaceMethodInfo, TypeBuilder typeBuilder)
@@ -146,6 +144,69 @@ namespace TNT.Presentation
                 PropertyBuilder = propertyBuilder
             };
         }
+
+
+        public static void GenerateSayOrAskMethodBody(
+            int cordId,
+            FieldInfo interlocutorFieldInfo,
+            MethodInfo interlocutorSayOrAskMethodInfo,
+            MethodBuilder methodBuilder,
+            Type[] callParameters
+        )
+        {
+            /*
+             * For non return (SAY) methods: 
+             * 
+             *  public void ContractMessage(int intParameter, /.../ double doubleParameter)
+             *  {
+             *      _interlocutor.Say({CordId} , new object []{ intParameter,/.../ doubleParameter });
+             *  }
+             *  
+             *  
+             *  For methods with return (ASK):
+             *  
+             *  public int ContractMessage(int intParameter, /.../ double doubleParameter)
+             *  {
+             *     return _interlocutor.Ask<int>({CordId} , new object []{ intParameter,/.../ doubleParameter });
+             *  }
+             *  
+             */
+
+            ILGenerator ilGen = methodBuilder.GetILGenerator();
+            // ставим на стек сам прокси объект 
+            ilGen.Emit(OpCodes.Ldarg_0);
+            // ставим на стек ссылку на поле _outputApi
+            ilGen.Emit(OpCodes.Ldfld, interlocutorFieldInfo);
+            // готовимся к вызову _interlocutor.Say(id, object[])
+            // ставим на стек id:
+            ilGen.Emit(OpCodes.Ldc_I4, cordId);
+
+            // ставим на стек размер массива:
+            ilGen.Emit(OpCodes.Ldc_I4, callParameters.Length);
+            // создаём массив на стеке
+            ilGen.Emit(OpCodes.Newarr, typeof(object));
+            // заполняем массив:
+            for (int j = 0; j < callParameters.Length; j++)
+            {
+                ilGen.Emit(OpCodes.Dup); // т.к. Stelem_Ref удалит ссылку на массив - нужно её продублировать
+
+                ilGen.Emit(OpCodes.Ldc_I4, j); //ставим индекс массива
+                ilGen.Emit(OpCodes.Ldarg, j + 1); //грузим аргумент вызова
+                if (callParameters[j].IsValueType) //если это Value Type то боксим
+                    ilGen.Emit(OpCodes.Box, callParameters[j]);
+                // значения стека сейчас:
+                // 0 - значение
+                // 1 - индекс массива
+                // 2 - массив
+                ilGen.Emit(OpCodes.Stelem_Ref); //грузим в массив 
+            }
+
+            // вызываем Say или Ask:
+            ilGen.Emit(OpCodes.Callvirt, interlocutorSayOrAskMethodInfo);
+            // Если это был Ask метод то он положин на верхушку стека свой результат
+            ilGen.Emit(OpCodes.Ret);
+        }
+
 
         public class ImplementInterfacePropertyResults
         {

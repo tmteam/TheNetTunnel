@@ -8,6 +8,5 @@ namespace TNT.Presentation
         public MethodInfo DelegateInvokeMethodInfo { get; set; }
         public Type[] ParameterTypes { get; set; }
         public Type ReturnType { get; set; }
-
     }
 }

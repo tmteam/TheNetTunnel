@@ -4,16 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B4664836-EDDB-4AB9-82CF-AA9BE6FC7223}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{BB2C4667-8CFF-4C67-9453-0B98E1132814}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Expirements</RootNamespace>
-    <AssemblyName>Expirements</AssemblyName>
+    <RootNamespace>Expirements.General</RootNamespace>
+    <AssemblyName>Expirements.General</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -23,7 +22,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -42,17 +40,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="ITestContract.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestContractImplementation.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Expirements.General\Expirements.General.csproj">
-      <Project>{BB2C4667-8CFF-4C67-9453-0B98E1132814}</Project>
-      <Name>Expirements.General</Name>
-    </ProjectReference>
     <ProjectReference Include="..\TNT\TNT.csproj">
       <Project>{E1613910-06B6-4C28-8900-87F0C9793DFF}</Project>
       <Name>TNT</Name>

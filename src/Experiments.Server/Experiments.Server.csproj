@@ -49,6 +49,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Expirements.General\Expirements.General.csproj">
+      <Project>{BB2C4667-8CFF-4C67-9453-0B98E1132814}</Project>
+      <Name>Expirements.General</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TNT\TNT.csproj">
       <Project>{E1613910-06B6-4C28-8900-87F0C9793DFF}</Project>
       <Name>TNT</Name>

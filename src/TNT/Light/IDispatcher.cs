@@ -58,10 +58,6 @@ namespace TNT.Light
         {
             add
             {
-                if (_onNewMessageDelegate == value)
-                {
-                    
-                }
                 _onNewMessageDelegate += value;
             }
             remove { _onNewMessageDelegate -= value; }
@@ -78,10 +74,6 @@ namespace TNT.Light
                     if (message == null)
                         break;
 
-                    if (message.Length == 30)
-                    {
-                        Console.WriteLine(":(");
-                    }
                     _onNewMessageDelegate?.Invoke(this, message);
                 }
                 _onNewMessage.WaitOne(4000);

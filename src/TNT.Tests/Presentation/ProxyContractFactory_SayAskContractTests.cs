@@ -2,6 +2,7 @@
 using System.Linq;
 using NUnit.Framework;
 using TNT.Presentation;
+using TNT.Presentation.Proxy;
 using TNT.Tests.Presentation.ContractInterfaces;
 
 namespace TNT.Tests.Presentation

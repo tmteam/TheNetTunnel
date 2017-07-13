@@ -86,7 +86,7 @@ namespace TNT.Presentation
             if (handler == null)
                 throw new InvalidOperationException($"ask {cordId} not implemented");
             var answer = handler.Invoke(args);
-            _messenger.Ans((short)cordId, (short)askId, answer);
+            _messenger.Ans((short)-cordId, (short)askId, answer);
         }
 
         private void _messenger_OnSay(ICordMessenger sender, int cordId, object[] args)

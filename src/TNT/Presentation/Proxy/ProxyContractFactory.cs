@@ -1,40 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading;
 using TNT.Exceptions;
 
-namespace TNT.Presentation
+namespace TNT.Presentation.Proxy
 {
     public static class ProxyContractFactory
     {
         private static int _exemmplarCounter;
 
-        public static T CreateProxyContract<T>(ICordInterlocutor rawOutput)
+        public static T CreateProxyContract<T>(ICordInterlocutor interlocutor)
         {
             var interfaceType = typeof(T);
-            TypeBuilder typeBuilder = CreateProxyTypeBuilder<T>();
+            TypeBuilder typeBuilder =  CreateProxyTypeBuilder<T>();
 
             typeBuilder.AddInterfaceImplementation(interfaceType);
 
-            const string outputApiFieldName = "_outputApi";
+            const string interlocutorFieldName = "_interlocutor";
             var outputApiFieldInfo = typeBuilder.DefineField(
-                                        outputApiFieldName, 
+                                        interlocutorFieldName, 
                                         typeof(ICordInterlocutor),
                                         FieldAttributes.Private);
             
-            var sayMehodInfo = rawOutput.GetType().GetMethod("Say", new[] {typeof(int), typeof(object[])});
+            var sayMehodInfo = interlocutor.GetType().GetMethod("Say", new[] {typeof(int), typeof(object[])});
 
-
-
-            Dictionary<int, MemberInfo> cordIdUsedNames = new Dictionary<int, MemberInfo>();
-
+            var memberInfos = new ContractsMemberInfo(typeof(T));
 
             foreach (var eventInfo in interfaceType.GetEvents())
-            {
                 throw new InvalidContractMemeberException(eventInfo, interfaceType);
-            }
 
 
             #region реализуем методы интерфейса
@@ -48,7 +44,8 @@ namespace TNT.Presentation
                 if (attribute == null)
                     throw new ContractMemberAttributeMissingException(interfaceType,methodInfo.Name);
 
-                ThrowIfDuplicateAndRememberOtherwise(interfaceType, cordIdUsedNames, methodInfo, attribute.Id);
+                memberInfos.ThrowIfAlreadyContainsId(attribute.Id, methodInfo);
+                memberInfos.AddInfo(attribute.Id, methodInfo);
 
                 var methodBuilder = EmitHelper.ImplementInterfaceMethod(methodInfo, typeBuilder);
 
@@ -60,18 +57,18 @@ namespace TNT.Presentation
                 }
                 else
                 {
-                    askOrSayMethodInfo = rawOutput
+                    askOrSayMethodInfo = interlocutor
                         .GetType()
                         .GetMethod("Ask", new[] { typeof(int), typeof(object[]) })
                         .MakeGenericMethod(returnType);
 
                 }
-                GenerateSayOrAskMethodBody(
-                    id: attribute.Id,
-                    outputApiSayOrAskMethodInfo: askOrSayMethodInfo,
-                    outputApiFieldInfo: outputApiFieldInfo,
-                    interfaceMethodInfo: methodInfo,
-                    proxyMethodBuilder: methodBuilder);
+                EmitHelper.GenerateSayOrAskMethodBody(
+                    cordId: attribute.Id,
+                    interlocutorSayOrAskMethodInfo: askOrSayMethodInfo,
+                    interlocutorFieldInfo: outputApiFieldInfo,
+                    methodBuilder: methodBuilder,
+                    callParameters: methodInfo.GetParameters().Select(p=>p.ParameterType).ToArray());
             }
 
             #endregion
@@ -89,13 +86,14 @@ namespace TNT.Presentation
                 if (attribute == null)
                     throw new ContractMemberAttributeMissingException(interfaceType, propertyInfo.Name);
 
-                ThrowIfDuplicateAndRememberOtherwise(interfaceType, cordIdUsedNames, propertyInfo, attribute.Id);
+                memberInfos.ThrowIfAlreadyContainsId(attribute.Id, propertyInfo);
+                memberInfos.AddInfo(attribute.Id, propertyInfo);
 
                 var propertyBuilder = EmitHelper.ImplementInterfaceProperty(typeBuilder, propertyInfo);
 
-                var delegateInfo = EmitHelper.GetDelegateInfoOrNull(propertyBuilder.PropertyBuilder.PropertyType);
+                var delegateInfo = ReflectionHelper.GetDelegateInfoOrNull(propertyBuilder.PropertyBuilder.PropertyType);
                 if (delegateInfo == null)
-                    //свойство не является делегатом
+                    //the property is not an delegate
                     throw new InvalidContractMemeberException(propertyInfo,interfaceType);
 
                 // теперь для каждого делегат свойства нужно сделать хендлер
@@ -115,94 +113,17 @@ namespace TNT.Presentation
                 constructorCodeGeneration);
 
             var finalType = typeBuilder.CreateType();
-            return (T) Activator.CreateInstance(finalType, rawOutput);
+            return (T) Activator.CreateInstance(finalType, interlocutor);
 
         }
 
-        private static void ThrowIfDuplicateAndRememberOtherwise(Type interfaceType, 
-            Dictionary<int, MemberInfo> cordIdUsedNames, 
-            MemberInfo methodInfo, 
-            int cordId)
+       private static TypeBuilder CreateProxyTypeBuilder<T>()
         {
-            if (cordIdUsedNames.ContainsKey(cordId))
-                throw new ContractCordIdDuplicateException(cordId, interfaceType, cordIdUsedNames[cordId].Name, methodInfo.Name);
-            cordIdUsedNames.Add(cordId, methodInfo);
-        }
-
-        private static TypeBuilder CreateProxyTypeBuilder<T>()
-        {
-            var dynGeneratorHostAssembly = AppDomain.CurrentDomain.DefineDynamicAssembly(
-                new AssemblyName("Test.Gen, Version=1.0.0.1"),
-                AssemblyBuilderAccess.Run);
-            var dynModule = dynGeneratorHostAssembly.DefineDynamicModule(
-                "Test.Gen.Mod");
             var typeCount = Interlocked.Increment(ref _exemmplarCounter);
-
-            TypeBuilder tb = dynModule.DefineType(typeof(T).Name + "_" + typeCount, TypeAttributes.Public);
-            return tb;
+            return EmitHelper.CreateTypeBuilder(typeof(T).Name + "_" + typeCount);
         }
 
-        private static void GenerateSayOrAskMethodBody(
-            int           id,
-            FieldInfo     outputApiFieldInfo,
-            MethodInfo    outputApiSayOrAskMethodInfo,
-            MethodInfo    interfaceMethodInfo,
-            MethodBuilder proxyMethodBuilder
-        )
-        {
-            var callParameters = interfaceMethodInfo.GetParameters();
-            /*
-             * For non return (SAY) methods: 
-             * 
-             *  public void ContractMessage(int intParameter, /.../ double doubleParameter)
-             *  {
-             *      _rawContract.Say({CordId} , new object []{ intParameter,/.../ doubleParameter });
-             *  }
-             *  
-             *  
-             *  For methods with return (ASK):
-             *  
-             *  public int ContractMessage(int intParameter, /.../ double doubleParameter)
-             *  {
-             *     return _rawContract.Ask<int>({CordId} , new object []{ intParameter,/.../ doubleParameter });
-             *  }
-             *  
-             */
-             
-            ILGenerator ilGen = proxyMethodBuilder.GetILGenerator();
-            // ставим на стек сам прокси объект 
-            ilGen.Emit(OpCodes.Ldarg_0);
-            // ставим на стек ссылку на поле _outputApi
-            ilGen.Emit(OpCodes.Ldfld, outputApiFieldInfo);
-            // готовимся к вызову _outputApi.Say(id, object[])
-            // ставим на стек id:
-            ilGen.Emit(OpCodes.Ldc_I4, id);
-
-            // ставим на стек размер массива:
-            ilGen.Emit(OpCodes.Ldc_I4, callParameters.Length);
-            // создаём массив на стеке
-            ilGen.Emit(OpCodes.Newarr, typeof(object));
-            // заполняем массив:
-            for (int j = 0; j < callParameters.Length; j++)
-            {
-                ilGen.Emit(OpCodes.Dup); // т.к. Stelem_Ref удалит ссылку на массив - нужно её продублировать
-
-                ilGen.Emit(OpCodes.Ldc_I4, j); //ставим индекс массива
-                ilGen.Emit(OpCodes.Ldarg, j + 1); //грузим аргумент вызова
-                if (callParameters[j].ParameterType.IsValueType) //если это Value Type то боксим
-                    ilGen.Emit(OpCodes.Box, callParameters[j].ParameterType);
-                // значения стека сейчас:
-                // 0 - значение
-                // 1 - индекс массива
-                // 2 - массив
-                ilGen.Emit(OpCodes.Stelem_Ref); //грузим в массив 
-            }
-
-            // вызываем Say или Ask:
-            ilGen.Emit(OpCodes.Callvirt, outputApiSayOrAskMethodInfo);
-            // Если это был Ask метод то он положин на верхушку стека свой результат
-            ilGen.Emit(OpCodes.Ret);
-        }
+        
 
         private static MethodBuilder ImplementAndGenerateHandleMethod(
             TypeBuilder typeBuilder,

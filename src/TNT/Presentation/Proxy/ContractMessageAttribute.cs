@@ -1,9 +1,9 @@
 ﻿using System;
 
-namespace TNT.Presentation
+namespace TNT.Presentation.Proxy
 {
     [AttributeUsage( AttributeTargets.Method
-        | AttributeTargets.Property, AllowMultiple = false, Inherited= false)]
+        | AttributeTargets.Property, AllowMultiple = false, Inherited= true)]
     public class ContractMessageAttribute: Attribute
     {
         private readonly ushort _id;
