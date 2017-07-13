@@ -21,37 +21,37 @@ namespace Expirements
         static void Main(string[] args)
         {
             Console.WriteLine("Experiments client");
-            var dispatcher =  new ConveyorDispatcher();
-            var sendSeparationBehaviour = new FIFOSendMessageSequenceBehaviour();
+            //var dispatcher =  new ConveyorDispatcher();
+            //var sendSeparationBehaviour = new FIFOSendMessageSequenceBehaviour();
             TcpClient client = new TcpClient();
-            var tcpChannel = new TcpChannel(client);
-            var channel = new LightChannel(tcpChannel, sendSeparationBehaviour, dispatcher);
-            channel.OnDisconnect+= ChannelOnOnDisconnect;
+            //var tcpChannel = new TcpChannel(client);
+            //var channel = new LightChannel(tcpChannel, sendSeparationBehaviour, dispatcher);
+            //channel.OnDisconnect+= ChannelOnOnDisconnect;
 
-            Thread.Sleep(1000);
+            //Thread.Sleep(1000);
             client.Connect("127.0.0.1", 17171);
-            
+            var contract = Factory.CreateForClient(client);
+            contract.SayCallBack += (s) => Console.WriteLine("Pong from server : " + s);
+            //var messenger = new CordMessenger(
+            //    channel,
+            //    SerializerFactory.CreateDefault(),
+            //    DeserializerFactory.CreateDefault(),
+            //    outputMessages: new[]
+            //    {
+            //        new MessageTypeInfo
+            //        {
+            //            ArgumentTypes = new[] {typeof(DateTime), typeof(string), typeof(string)},
+            //            messageId = 42,
+            //            ReturnType = typeof(string)
+            //        }
+            //    },
+            //    inputMessages: new MessageTypeInfo[0]
+            //);
 
-            var messenger = new CordMessenger(
-                channel,
-                SerializerFactory.CreateDefault(),
-                DeserializerFactory.CreateDefault(),
-                outputMessages: new[]
-                {
-                    new MessageTypeInfo
-                    {
-                        ArgumentTypes = new[] {typeof(DateTime), typeof(string), typeof(string)},
-                        messageId = 42,
-                        ReturnType = typeof(string)
-                    }
-                },
-                inputMessages: new MessageTypeInfo[0]
-            );
-
-            var interlocutor = new CordInterlocutor(messenger);
-            var contract = ProxyContractFactory.CreateProxyContract<ITestContract>(interlocutor);
-            //messenger.OnAns += Messenger_OnAns;
-            channel.AllowReceive = true;
+            //var interlocutor = new CordInterlocutor(messenger);
+            //var contract = ProxyContractFactory.CreateProxyContract<ITestContract>(interlocutor);
+            ////messenger.OnAns += Messenger_OnAns;
+            //channel.AllowReceive = true;
 
             while (true)
             {
@@ -72,8 +72,12 @@ namespace Expirements
                 sw.Start();
 
                 string ans = null;
-                for(int i = 0; i<1000; i++)
-                    ans = contract.SendChatMessage(DateTime.Now, "Client", msg);
+                for (int i = 0; i < 1000; i++)
+                {
+                    contract.Say(DateTime.Now, "mememe","ping#"+i);
+                    Thread.Sleep(1000);
+                }
+                    //ans = contract.Ask(DateTime.Now, "Client", msg);
                 sw.Stop();
                
                 Console.WriteLine("Answer: "+ ans+" with "+ sw.ElapsedMilliseconds);

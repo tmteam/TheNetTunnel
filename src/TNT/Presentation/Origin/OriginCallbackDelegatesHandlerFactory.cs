@@ -44,7 +44,7 @@ namespace TNT.Presentation.Origin
         public static void CreateFor(ContractsMemberInfo contractMembers, object contractObject,
             ICordInterlocutor interlocutor)
         {
-            Dictionary<PropertyInfo, MethodInfo> delegateToMethodsMap;
+            Dictionary<PropertyInfo, string> delegateToMethodsMap;
             Type type;
             CreateHandlerType(contractMembers, out delegateToMethodsMap, out type);
 
@@ -57,13 +57,13 @@ namespace TNT.Presentation.Origin
             }
         }
 
-        public static void CreateHandlerType(ContractsMemberInfo contractMembers, out Dictionary<PropertyInfo, MethodInfo> delegateToMethodsMap, out Type generatedType)
+        public static void CreateHandlerType(ContractsMemberInfo contractMembers, out Dictionary<PropertyInfo, string> delegateToMethodsMap, out Type generatedType)
         {
             var interlocutorType = typeof(ICordInterlocutor);
             var typeCount = Interlocked.Increment(ref _exemmplarCounter);
 
             var typeBuilder =  EmitHelper.CreateTypeBuilder(contractMembers.ContractInterfaceType.Name + "_" + typeCount);
-            delegateToMethodsMap = new Dictionary<PropertyInfo, MethodInfo>();
+            delegateToMethodsMap = new Dictionary<PropertyInfo, string>();
 
             const string interlocutorFieldName = "_interlocutor";
             var outputApiFieldInfo = typeBuilder.DefineField(
@@ -121,7 +121,7 @@ namespace TNT.Presentation.Origin
                     callParameters: parameterTypes);
                 #endregion
 
-                delegateToMethodsMap.Add(property.Value, metbuilder);
+                delegateToMethodsMap.Add(property.Value, metbuilder.Name);
             }
             generatedType = typeBuilder.CreateType();
         }

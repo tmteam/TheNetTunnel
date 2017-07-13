@@ -12,10 +12,30 @@ namespace TNT.Presentation.Origin
 {
     public static class OriginContractLinker
     {
-        public static void Link<TInterface>(TInterface contract, ICordInterlocutor interlocutor)
+        public static ContractsMemberInfo Link<TInterface>(TInterface contract, ICordInterlocutor interlocutor)
         {
             var contractType = contract.GetType();
             var interfaceType = typeof(TInterface);
+            ContractsMemberInfo contractMemebers = GetContractMemebers(contractType, interfaceType);
+            foreach (var method in contractMemebers.GetMehodInfos())
+            {
+                if (method.Value.ReturnParameter.ParameterType == typeof(void))
+                {
+                    //Say handler method:
+                    interlocutor.SaySubscribe(method.Key, (args) => method.Value.Invoke(contract, args));
+                }
+                else
+                {
+                    //Ask handler method:
+                    interlocutor.AskSubscribe(method.Key, (args) => method.Value.Invoke(contract, args));
+                }
+            }
+            OriginCallbackDelegatesHandlerFactory.CreateFor(contractMemebers, contract, interlocutor);
+            return contractMemebers;
+        }
+
+        public static ContractsMemberInfo GetContractMemebers(Type contractType, Type interfaceType)
+        {
             var contractMemebers = new ContractsMemberInfo(interfaceType);
             foreach (var meth in interfaceType.GetMethods())
             {
@@ -51,33 +71,8 @@ namespace TNT.Presentation.Origin
                 contractMemebers.ThrowIfAlreadyContainsId(attribute.Id, overrided);
                 contractMemebers.AddInfo(attribute.Id, overrided);
             }
-            foreach (var method in contractMemebers.GetMehodInfos())
-            {
-                if (method.Value.ReturnParameter.ParameterType == typeof(void))
-                {
-                    //Say handler method:
-                    interlocutor.SaySubscribe(method.Key, (args) => method.Value.Invoke(contract, args));
-                }
-                else
-                {
-                    //Ask handler method:
-                    interlocutor.AskSubscribe(method.Key, (args) => method.Value.Invoke(contract, args));
-                }
-            }
-            foreach (var property in contractMemebers.GetMehodInfos())
-            {
-                //propertyInfo.SetValue(contract);
 
-                //var DelegateObject = propertyInfo.GetValue(contract) as MulticastDelegate;
-
-                //if (propertyInfo != null)
-                //{
-                //    var delegateInfo = ReflectionHelper.GetDelegateInfoOrNull(propertyInfo.PropertyType);
-                //    if (delegateInfo == null)
-                //        //the property is not an delegate
-                //        throw new InvalidContractMemeberException(propertyInfo, interfaceType);
-                //}
-            }
+            return contractMemebers;
         }
     }
 }

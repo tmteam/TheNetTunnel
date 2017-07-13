@@ -27,7 +27,7 @@ namespace TNT.Presentation.Proxy
             
             var sayMehodInfo = interlocutor.GetType().GetMethod("Say", new[] {typeof(int), typeof(object[])});
 
-            var memberInfos = new ContractsMemberInfo(typeof(T));
+            var contractMemebers = ParseContractInterface(typeof(T));// new ContractsMemberInfo(typeof(T));
 
             foreach (var eventInfo in interfaceType.GetEvents())
                 throw new InvalidContractMemeberException(eventInfo, interfaceType);
@@ -35,21 +35,11 @@ namespace TNT.Presentation.Proxy
 
             #region реализуем методы интерфейса
 
-            foreach (var methodInfo in interfaceType.GetMethods())
+            foreach (var method in contractMemebers.GetMehodInfos())
             {
-                if (methodInfo.IsSpecialName) continue;
+                var methodBuilder = EmitHelper.ImplementInterfaceMethod(method.Value, typeBuilder);
 
-                var attribute = Attribute.GetCustomAttribute(methodInfo,
-                    typeof(ContractMessageAttribute)) as ContractMessageAttribute;
-                if (attribute == null)
-                    throw new ContractMemberAttributeMissingException(interfaceType,methodInfo.Name);
-
-                memberInfos.ThrowIfAlreadyContainsId(attribute.Id, methodInfo);
-                memberInfos.AddInfo(attribute.Id, methodInfo);
-
-                var methodBuilder = EmitHelper.ImplementInterfaceMethod(methodInfo, typeBuilder);
-
-                var returnType = methodInfo.ReturnType;
+                var returnType = method.Value.ReturnType;
                 MethodInfo askOrSayMethodInfo = null;
                 if (returnType == typeof(void))
                 {
@@ -64,37 +54,27 @@ namespace TNT.Presentation.Proxy
 
                 }
                 EmitHelper.GenerateSayOrAskMethodBody(
-                    cordId: attribute.Id,
+                    cordId: method.Key,
                     interlocutorSayOrAskMethodInfo: askOrSayMethodInfo,
                     interlocutorFieldInfo: outputApiFieldInfo,
                     methodBuilder: methodBuilder,
-                    callParameters: methodInfo.GetParameters().Select(p=>p.ParameterType).ToArray());
+                    callParameters: method.Value.GetParameters().Select(p=>p.ParameterType).ToArray());
             }
 
             #endregion
 
-            List<Action<ILGenerator>> constructorCodeGeneration = new List<Action<ILGenerator>>();
+            var constructorCodeGeneration = new List<Action<ILGenerator>>();
 
             #region реализуем делегат свойства интерфейса
 
-            foreach (var propertyInfo in interfaceType.GetProperties())
+            foreach (var property in contractMemebers.GetPropertyInfos())
             {
-                var attribute = Attribute.GetCustomAttribute(
-                    propertyInfo, 
-                    typeof(ContractMessageAttribute)) as ContractMessageAttribute;
-
-                if (attribute == null)
-                    throw new ContractMemberAttributeMissingException(interfaceType, propertyInfo.Name);
-
-                memberInfos.ThrowIfAlreadyContainsId(attribute.Id, propertyInfo);
-                memberInfos.AddInfo(attribute.Id, propertyInfo);
-
-                var propertyBuilder = EmitHelper.ImplementInterfaceProperty(typeBuilder, propertyInfo);
+                var propertyBuilder = EmitHelper.ImplementInterfaceProperty(typeBuilder, property.Value);
 
                 var delegateInfo = ReflectionHelper.GetDelegateInfoOrNull(propertyBuilder.PropertyBuilder.PropertyType);
                 if (delegateInfo == null)
                     //the property is not an delegate
-                    throw new InvalidContractMemeberException(propertyInfo,interfaceType);
+                    throw new InvalidContractMemeberException(property.Value, interfaceType);
 
                 // теперь для каждого делегат свойства нужно сделать хендлер
                 var handleMethodNuilder = ImplementAndGenerateHandleMethod(
@@ -103,7 +83,7 @@ namespace TNT.Presentation.Proxy
                     propertyBuilder.FieldBuilder);
 
                 constructorCodeGeneration.Add(
-                    iLGenerator => GenerateEventSubscribtion(iLGenerator, outputApiFieldInfo, attribute.Id, handleMethodNuilder));
+                    iLGenerator => GenerateEventSubscribtion(iLGenerator, outputApiFieldInfo, property.Key, handleMethodNuilder));
             }
             #endregion
 
@@ -117,7 +97,39 @@ namespace TNT.Presentation.Proxy
 
         }
 
-       private static TypeBuilder CreateProxyTypeBuilder<T>()
+        public static ContractsMemberInfo ParseContractInterface(Type contractInterfaceType)
+        {
+            var memberInfos = new ContractsMemberInfo(contractInterfaceType);
+
+            foreach (var methodInfo in contractInterfaceType.GetMethods())
+            {
+                if (methodInfo.IsSpecialName) continue;
+
+                var attribute = Attribute.GetCustomAttribute(methodInfo,
+                    typeof(ContractMessageAttribute)) as ContractMessageAttribute;
+                if (attribute == null)
+                    throw new ContractMemberAttributeMissingException(contractInterfaceType, methodInfo.Name);
+
+                memberInfos.ThrowIfAlreadyContainsId(attribute.Id, methodInfo);
+                memberInfos.AddInfo(attribute.Id, methodInfo);
+
+            }
+            foreach (var propertyInfo in contractInterfaceType.GetProperties())
+            {
+                var attribute = Attribute.GetCustomAttribute(
+                    propertyInfo,
+                    typeof(ContractMessageAttribute)) as ContractMessageAttribute;
+
+                if (attribute == null)
+                    throw new ContractMemberAttributeMissingException(contractInterfaceType, propertyInfo.Name);
+
+                memberInfos.ThrowIfAlreadyContainsId(attribute.Id, propertyInfo);
+                memberInfos.AddInfo(attribute.Id, propertyInfo);
+            }
+            return memberInfos;
+        }
+
+        private static TypeBuilder CreateProxyTypeBuilder<T>()
         {
             var typeCount = Interlocked.Increment(ref _exemmplarCounter);
             return EmitHelper.CreateTypeBuilder(typeof(T).Name + "_" + typeCount);

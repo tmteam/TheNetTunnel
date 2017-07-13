@@ -10,6 +10,12 @@ namespace Expirements.General
     public interface ITestContract
     {
         [ContractMessage(42)]
-        string SendChatMessage(DateTime time, string clientName, string message);
+        string Ask(DateTime time, string clientName, string message);
+        [ContractMessage(43)]
+        void Say(DateTime time, string clientName, string message);
+        [ContractMessage(44)]
+        Action<string> SayCallBack { get; set; }
+        [ContractMessage(45)]
+        Func<string,int> AskCallBack { get; set; }
     }
 }

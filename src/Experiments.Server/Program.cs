@@ -35,39 +35,8 @@ namespace Experiments.Server
 
             var client = listener.AcceptTcpClient();
             Console.WriteLine("Client connected");
+            var contract = Factory.CreateForServer(client);
 
-            var dispatcher = new ConveyorDispatcher();
-            var sendSeparationBehaviour = new FIFOSendMessageSequenceBehaviour();
-            channel = new LightChannel(
-                underlyingChannel: new TcpChannel(client),
-                sendMessageSequenceBehaviour: new FIFOSendMessageSequenceBehaviour(),
-                receiveMessageThreadBehavior: dispatcher);
-
-            channel.OnReceive += Channel_OnReceive;
-            channel.OnDisconnect += ChannelOnOnDisconnect;
-
-
-            messenger = new CordMessenger(
-                channel,
-                SerializerFactory.CreateDefault(),
-                DeserializerFactory.CreateDefault(),
-                outputMessages: new MessageTypeInfo[0],
-                inputMessages: new[]
-                {
-                    new MessageTypeInfo
-                    {
-                        ReturnType = typeof(string),
-                        ArgumentTypes = new[] { typeof(DateTime), typeof(string), typeof(string)},
-                        messageId = 42,
-                    }
-                }
-            );
-            var interlocutor = new CordInterlocutor(messenger);
-            var contract = new TestContractImplementation();
-            OriginContractLinker.Link<ITestContract>(contract, interlocutor);
-
-            //messenger.OnAsk+= MessengerOnOnAsk;
-            channel.AllowReceive = true;
             while (true)
             {
                 string msg;
@@ -77,23 +46,10 @@ namespace Experiments.Server
                 {
                     return;
                 }
-                using (var stream = new MemoryStream(Encoding.Unicode.GetBytes(msg)))
-                {
-                    channel.Write(stream);
-                }
             }
         }
 
-        private static void MessengerOnOnAsk(ICordMessenger cordMessenger, int msgId, int askId, object[] arguments)
-        {
-            //Console.Write($"received: {msgId} askId: {askId}");
-            //foreach (var o in arguments)
-            //{
-            //    Console.Write(o.ToString() + " ");
-            //}
-            //Console.WriteLine();
-            messenger.Ans((short )-msgId, (short)askId, "MySuperAnswer");
-        }
+   
 
        
         private static void ChannelOnOnDisconnect(LightChannel lightChannel)
@@ -101,15 +57,5 @@ namespace Experiments.Server
             Console.WriteLine("Disconnected!!");
         }
 
-        private static void Channel_OnReceive(LightChannel arg1, System.IO.MemoryStream arg2)
-        {
-            //var array = arg2.ToArray();
-            //Console.WriteLine(BitConverter.ToString(array));
-        }
-
     }
-
-   
-
-    
 }
