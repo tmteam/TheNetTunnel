@@ -5,7 +5,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
-using TNT.Channel.Tcp;
+using TNT.Channel;
 using TNT.Cord;
 using TNT.Cord.Deserializers;
 using TNT.Cord.Serializers;

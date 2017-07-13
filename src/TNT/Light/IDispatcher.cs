@@ -53,7 +53,19 @@ namespace TNT.Light
             _onNewMessage.Set();
         }
 
-        public event Action<IDispatcher, MemoryStream> OnNewMessage;
+        private Action<IDispatcher, MemoryStream> _onNewMessageDelegate;
+        public event Action<IDispatcher, MemoryStream> OnNewMessage
+        {
+            add
+            {
+                if (_onNewMessageDelegate == value)
+                {
+                    
+                }
+                _onNewMessageDelegate += value;
+            }
+            remove { _onNewMessageDelegate -= value; }
+        }
 
         void ConveyorProcedure()
         {
@@ -65,7 +77,12 @@ namespace TNT.Light
                     _queue.TryDequeue(out message);
                     if (message == null)
                         break;
-                    OnNewMessage?.Invoke(this, message);
+
+                    if (message.Length == 30)
+                    {
+                        Console.WriteLine(":(");
+                    }
+                    _onNewMessageDelegate?.Invoke(this, message);
                 }
                 _onNewMessage.WaitOne(4000);
             }

@@ -45,7 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Channel\IChannel.cs" />
-    <Compile Include="Channel\Tcp\TcpChannel.cs" />
+    <Compile Include="Channel\TcpChannel.cs" />
     <Compile Include="Cord\CordMessenger.cs" />
     <Compile Include="Cord\CordTools.cs" />
     <Compile Include="Cord\Deserializers\DeserializerFactory.cs" />
@@ -68,6 +68,7 @@
     <Compile Include="Light\QuantumHead.cs" />
     <Compile Include="Light\QuantumType.cs" />
     <Compile Include="Presentation\ContractMessageAttribute.cs" />
+    <Compile Include="Presentation\CordInterlocutor.cs" />
     <Compile Include="Presentation\DelegatePropertyInfo.cs" />
     <Compile Include="Presentation\EmitHelper.cs" />
     <Compile Include="Presentation\ICordInterlocutor.cs" />

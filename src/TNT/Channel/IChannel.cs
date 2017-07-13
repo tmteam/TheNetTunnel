@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using TNT.Channel.Tcp;
 
 namespace TNT.Channel
 {
@@ -13,7 +9,6 @@ namespace TNT.Channel
         /// Indicates connection status of downlayer TcpClient
         /// </summary>
         bool IsConnected { get; }
-
         /// <summary>
         /// Can Channel handle messages now?.
         /// </summary>

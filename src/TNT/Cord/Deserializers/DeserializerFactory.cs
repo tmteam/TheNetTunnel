@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using TNT.Cord.Serializers;
 using TNT.Exceptions;
 
 namespace TNT.Cord.Deserializers

@@ -1,19 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net.Sockets;
-using System.Runtime.Remoting.Messaging;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using TNT;
-using TNT.Channel.Tcp;
+using TNT.Channel;
 using TNT.Cord;
 using TNT.Cord.Deserializers;
 using TNT.Cord.Serializers;
 using TNT.Light;
 using TNT.Light.Sending;
+using TNT.Presentation;
 
 namespace Expirements
 {
@@ -27,7 +21,6 @@ namespace Expirements
             TcpClient client = new TcpClient();
             var tcpChannel = new TcpChannel(client);
             var channel = new LightChannel(tcpChannel, sendSeparationBehaviour, dispatcher);
-                channel.OnReceive += Channel_OnReceive;
             channel.OnDisconnect+= ChannelOnOnDisconnect;
 
             Thread.Sleep(1000);
@@ -49,7 +42,10 @@ namespace Expirements
                 },
                 inputMessages: new MessageTypeInfo[0]
             );
-            messenger.OnAns += Messenger_OnAns;
+
+            var interlocutor = new CordInterlocutor(messenger);
+
+            //messenger.OnAns += Messenger_OnAns;
             channel.AllowReceive = true;
 
             while (true)
@@ -63,7 +59,10 @@ namespace Expirements
                 }
 
                 //messenger.Say(42, new object[]{DateTime.Now, "Client", msg});
-                messenger.Ask(42, 115,new object[] { DateTime.Now, "Client", msg });
+                // messenger.Ask(42, 115, new object[] { DateTime.Now, "Client", msg });
+                var ans = interlocutor.Ask<string>(42, new object[] {DateTime.Now, "Client", msg});
+
+                Console.WriteLine("Answer: "+ ans);
             }
 
 
@@ -80,10 +79,7 @@ namespace Expirements
             Console.WriteLine("Disconnected!!");
         }
 
-        private static void Channel_OnReceive(LightChannel arg1, System.IO.MemoryStream arg2)
-        {
-            var des = new UnicodeDeserializer();
-            Console.WriteLine("USR: "+ des.DeserializeT(arg2, (int)arg2.Length));
-        }
+
+     
     }
 }

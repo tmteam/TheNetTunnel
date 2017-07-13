@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using TNT.Cord.Serializers;
 
 namespace TNT.Cord.Deserializers
 {

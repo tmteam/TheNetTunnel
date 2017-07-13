@@ -1,19 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace TNT.Channel.Tcp
+namespace TNT.Channel
 {
-    public class TcpChannel: IChannel
+    public class TcpChannel : IChannel
     {
         public TcpChannel(TcpClient client)
         {
             Client = client;
         }
-        public bool IsConnected { get { return Client != null && Client.Connected; } }
+
+        public bool IsConnected
+        {
+            get { return Client != null && Client.Connected; }
+        }
+
         /// <summary>
         /// Can LClient-user can handle messages now?.
         /// </summary>
@@ -40,7 +42,7 @@ namespace TNT.Channel.Tcp
                     }
                     if (!value)
                     {
-                        throw new InvalidOperationException("cannot stop reading");
+                        throw new InvalidOperationException("Cannot stop reading");
                     }
                 }
             }
@@ -54,28 +56,31 @@ namespace TNT.Channel.Tcp
 
         public event Action<IChannel, byte[]> OnReceive;
         public event Action<IChannel> OnDisconnect;
+
         public void Disconnect()
         {
             if (Client.Connected)
                 disconnect();
         }
+
         public async Task<bool> TryWriteAsync(byte[] array)
         {
             var stream = Client.GetStream();
             try
             {
-                var task =  stream.WriteAsync(array, 0, array.Length);
+                var task = stream.WriteAsync(array, 0, array.Length);
                 await task;
-                if(task.Exception==null)
+                if (task.Exception == null)
                     return true;
                 else
                     return false;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }
         }
+
         //public bool TryWrite(byte[] array)
         //{
         //    var stream = Client.GetStream();
@@ -89,6 +94,7 @@ namespace TNT.Channel.Tcp
         //        return false;
         //    }
         //}
+
         public void Write(byte[] data)
         {
             if (!Client.Connected)
@@ -110,7 +116,6 @@ namespace TNT.Channel.Tcp
                 disconnect();
             }
         }
-
 
         private void readCallback(IAsyncResult result)
         {
@@ -140,18 +145,19 @@ namespace TNT.Channel.Tcp
                 disconnect();
             }
         }
-
-
+        
         private void disconnect()
         {
             if (Client.Connected)
-                try
+            {    try
                 {
                     Client.Close();
                 }
                 catch
                 {
+                    // ignored
                 }
+            }
 
             if (!disconnectMsgWasSended)
             {
@@ -160,6 +166,5 @@ namespace TNT.Channel.Tcp
                 OnDisconnect?.Invoke(this);
             }
         }
-
-       }
+    }
 }

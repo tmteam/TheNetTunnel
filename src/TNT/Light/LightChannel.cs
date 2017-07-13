@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using TNT.Channel;
 using TNT.Light.Receiving;
@@ -23,10 +20,15 @@ namespace TNT.Light
             _sendMessageSeparatorBehaviour = sendMessageSequenceBehaviour;
             _receiveMessageThreadBehavior = receiveMessageThreadBehavior;
             _receiveMessageAssembler = new ReceiveMessageQueue();
-            _receiveMessageThreadBehavior.OnNewMessage += (sender, message) => OnReceive?.Invoke(this, message);
+            _receiveMessageThreadBehavior.OnNewMessage += _receiveMessageThreadBehavior_OnNewMessage;
             Channel = underlyingChannel;
             underlyingChannel.OnDisconnect += (s) => OnDisconnect?.Invoke(this);
             underlyingChannel.OnReceive += UnderlyingChannel_OnReceive;
+        }
+
+        private void _receiveMessageThreadBehavior_OnNewMessage(IDispatcher sender, MemoryStream message)
+        {
+            OnReceive?.Invoke(this, message);
         }
 
         public bool IsConnected => Channel.IsConnected;

@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TNT.Cord
 {
@@ -19,7 +15,12 @@ namespace TNT.Cord
 
         public static short ReadShort(MemoryStream from)
         {
-            return (short)(from.ReadByte() + (from.ReadByte()>>8));
+            if(from.Length- from.Position<2)
+                throw new EndOfStreamException();
+            byte[] arr = new byte[2];
+            from.Read(arr, 0,2);
+
+            return BitConverter.ToInt16(arr, 0);   //(short)(from.ReadByte() + (from.ReadByte()>>8));
         }
     }
 }

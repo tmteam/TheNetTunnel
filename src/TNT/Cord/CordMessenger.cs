@@ -11,10 +11,10 @@ namespace TNT.Cord
     {
         private readonly LightChannel _channel;
 
-        private Dictionary<int, OutputMessageSerializeInfo> _outputSayMessageSerializeInfos 
+        private readonly Dictionary<int, OutputMessageSerializeInfo> _outputSayMessageSerializeInfos 
             = new Dictionary<int, OutputMessageSerializeInfo>();
 
-        private Dictionary<int, InputMessageDeserializeInfo> _inputSayMessageDeserializeInfos 
+        private readonly Dictionary<int, InputMessageDeserializeInfo> _inputSayMessageDeserializeInfos 
             = new Dictionary<int, InputMessageDeserializeInfo>();
         public event Action<ICordMessenger, int, int, object[]> OnAsk;
         public event Action<ICordMessenger, int, object[]> OnSay;
@@ -131,10 +131,9 @@ namespace TNT.Cord
                     {
                         //input answer message handling
                         var askId = CordTools.ReadShort(data);
-                        var ans =
-                          (object[])
-                          sayDeserializer.Deserializer.Deserialize(data, (int)(data.Length - data.Position));
+                        var ans = sayDeserializer.Deserializer.Deserialize(data, (int)(data.Length - data.Position));
                         OnAns?.Invoke(this, id, askId, ans);
+                        return;
                     }
 
                     if (sayDeserializer.hasReturnType)
