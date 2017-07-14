@@ -1,7 +1,6 @@
-﻿using TNT.Presentation;
-using TNT.Presentation.Proxy;
+﻿using TNT.Presentation.Proxy;
 
-namespace TNT.Tests.Presentation.ContractInterfaces
+namespace TNT.Tests.Presentation.Proxy.ContractInterfaces
 {
     public interface ISayAskContract
     {        

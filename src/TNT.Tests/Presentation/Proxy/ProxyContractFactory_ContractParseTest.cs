@@ -1,10 +1,9 @@
 ﻿using NUnit.Framework;
 using TNT.Exceptions;
-using TNT.Presentation;
 using TNT.Presentation.Proxy;
-using TNT.Tests.Presentation.ContractInterfaces;
+using TNT.Tests.Presentation.Proxy.ContractInterfaces;
 
-namespace TNT.Tests.Presentation
+namespace TNT.Tests.Presentation.Proxy
 {
     [TestFixture]
     public class ProxyContractFactory_ContractParseTest
