@@ -12,9 +12,9 @@ namespace Expirements.General
         [ContractMessage(42)]
         string Ask(DateTime time, string clientName, string message);
         [ContractMessage(43)]
-        void Say(DateTime time, string clientName, string message);
+        void Say(int id);
         [ContractMessage(44)]
-        Action<string> SayCallBack { get; set; }
+        Action<int> SayCallBack { get; set; }
         [ContractMessage(45)]
         Func<string,int> AskCallBack { get; set; }
     }

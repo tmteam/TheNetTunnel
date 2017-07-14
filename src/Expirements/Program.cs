@@ -31,7 +31,16 @@ namespace Expirements
             //Thread.Sleep(1000);
             client.Connect("127.0.0.1", 17171);
             var contract = Factory.CreateForClient(client);
-            contract.SayCallBack += (s) => Console.WriteLine("Pong from server : " + s);
+            Stopwatch sw = new Stopwatch();
+            int limit = 100000;
+            contract.SayCallBack += (s) =>
+            {
+                if (s == limit)
+                {
+                    sw.Stop();
+                    Console.WriteLine("Elasped: " + sw.ElapsedMilliseconds);
+                }
+            };
             //var messenger = new CordMessenger(
             //    channel,
             //    SerializerFactory.CreateDefault(),
@@ -53,8 +62,7 @@ namespace Expirements
             ////messenger.OnAns += Messenger_OnAns;
             //channel.AllowReceive = true;
 
-            while (true)
-            {
+           
                 string msg;
 
                 msg = GetMessage(); //Console.ReadLine();
@@ -66,23 +74,21 @@ namespace Expirements
                     return;
                 }
 
-                // messenger.Ask(42, 115, new object[] { DateTime.Now, "Client", msg });
-                //var ans = interlocutor.Ask<string>(42, new object[] {DateTime.Now, "Client", msg});
-                Stopwatch sw = new Stopwatch();
+            // messenger.Ask(42, 115, new object[] { DateTime.Now, "Client", msg });
+            //var ans = interlocutor.Ask<string>(42, new object[] {DateTime.Now, "Client", msg});
+
+            while (true)
+            {
+                sw.Reset();
                 sw.Start();
 
                 string ans = null;
-                for (int i = 0; i < 1000; i++)
+                for (int i = 0; i <= limit; i++)
                 {
-                    contract.Say(DateTime.Now, "mememe","ping#"+i);
-                    Thread.Sleep(1000);
+                    contract.Say(i);
                 }
-                    //ans = contract.Ask(DateTime.Now, "Client", msg);
-                sw.Stop();
-               
-                Console.WriteLine("Answer: "+ ans+" with "+ sw.ElapsedMilliseconds);
+                Console.ReadLine();
             }
-
 
         }
 

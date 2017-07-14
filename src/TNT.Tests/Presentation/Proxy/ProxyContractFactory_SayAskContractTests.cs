@@ -70,7 +70,7 @@ namespace TNT.Tests.Presentation.Proxy
             CollectionAssert.AreEqual((IEnumerable)call.Arguments[1], strArray);
         }
 
-        #endregion //------------------- Say -------------------
+        #endregion 
 
         #region ------------------- Ask -------------------
 
@@ -135,6 +135,6 @@ namespace TNT.Tests.Presentation.Proxy
             CollectionAssert.AreEqual((IEnumerable)call.Arguments[1], strArray);
         }
 
-        #endregion //------------------- Ask -------------------
+        #endregion 
     }
 }

@@ -43,10 +43,9 @@ namespace TNT.Cord
                     });
                 if (hasReturnType)
                 {
-                    _inputSayMessageDeserializeInfos.Add(-messageSayInfo.messageId,new InputMessageDeserializeInfo
-                    {
-                        Deserializer = deserializerFactory.Create(messageSayInfo.ReturnType),
-                    });
+                    _inputSayMessageDeserializeInfos.Add(
+                        -messageSayInfo.messageId,
+                        new InputMessageDeserializeInfo(1, false, deserializerFactory.Create(messageSayInfo.ReturnType)));
                 }
             }
             foreach (var messageSayInfo in inputMessages)
@@ -54,11 +53,10 @@ namespace TNT.Cord
                 var hasReturnType = messageSayInfo.ReturnType != typeof(void);
 
                 var deserializer = deserializerFactory.Create(messageSayInfo.ArgumentTypes);
-                    _inputSayMessageDeserializeInfos.Add(messageSayInfo.messageId, new InputMessageDeserializeInfo
-                    {
-                        hasReturnType = hasReturnType,
-                        Deserializer = deserializer,
-                    });
+                _inputSayMessageDeserializeInfos.Add(
+                    messageSayInfo.messageId,
+                    new InputMessageDeserializeInfo(messageSayInfo.ArgumentTypes.Length, hasReturnType, deserializer));
+
                 if (hasReturnType)
                 {
                     _outputSayMessageSerializeInfos.Add(-messageSayInfo.messageId, new OutputMessageSerializeInfo
@@ -80,9 +78,7 @@ namespace TNT.Cord
             using (var stream = new MemoryStream())
             {
                 CordTools.WriteShort((short) id, to: stream);
-                info.Serializer.Serialize(values, stream);
-                stream.Position = 0;
-                _channel.Write(stream);
+                Write(values, info, stream);
             }
         }
 
@@ -104,7 +100,7 @@ namespace TNT.Cord
 
       
 
-        public void Ask(short id, short askId, object[] arguments)
+        public void Ask(short id, short askId, object[] values)
         {
             if (id < 0)
                 throw new InvalidOperationException("ask id < 0");
@@ -114,10 +110,19 @@ namespace TNT.Cord
             {
                 CordTools.WriteShort(id, to: stream);
                 CordTools.WriteShort(askId, to: stream);
-                info.Serializer.Serialize(arguments, stream);
-                stream.Position = 0;
-                _channel.Write(stream);
+                Write(values, info, stream);
             }
+        }
+
+        private void Write(object[] values, OutputMessageSerializeInfo info, MemoryStream stream)
+        {
+            if (values.Length == 1)
+                info.Serializer.Serialize(values[0], stream);
+            else if (values.Length > 1)
+                info.Serializer.Serialize(values, stream);
+            stream.Position = 0;
+            _channel.Write(stream);
+
         }
 
         private void _channel_OnReceive(LightChannel arg1, MemoryStream data)
@@ -136,7 +141,7 @@ namespace TNT.Cord
                         return;
                     }
 
-                    if (sayDeserializer.hasReturnType)
+                    if (sayDeserializer.HasReturnType)
                     {
                         //input ask messageHandling
                         var askId = CordTools.ReadShort(data);
@@ -149,10 +154,14 @@ namespace TNT.Cord
                     else
                     {
                         //input say messageHandling
-                        var ans =
-                            (object[])
-                            sayDeserializer.Deserializer.Deserialize(data, (int) (data.Length - data.Position));
-                        OnSay?.Invoke(this, id, ans);
+                        object[] arg = null;
+                        if(sayDeserializer.ArgumentsCount==0)
+                            arg = new object[0];
+                        else if(sayDeserializer.ArgumentsCount==1)
+                            arg =  new []{ sayDeserializer.Deserializer.Deserialize(data, (int)(data.Length - data.Position)) };
+                        else
+                            arg =  (object[]) sayDeserializer.Deserializer.Deserialize(data, (int) (data.Length - data.Position));
+                        OnSay?.Invoke(this, id, arg);
                         return;
                     }
                 }
@@ -170,8 +179,16 @@ namespace TNT.Cord
 
     class InputMessageDeserializeInfo
     {
-        public bool hasReturnType = false;
-        public IDeserializer Deserializer;
+        public InputMessageDeserializeInfo(int argumentsCount, bool hasReturnType, IDeserializer deserializer)
+        {
+            ArgumentsCount = argumentsCount;
+            HasReturnType = hasReturnType;
+            Deserializer = deserializer;
+        }
+
+        public int ArgumentsCount { get; }
+        public IDeserializer Deserializer { get; }
+        public bool HasReturnType { get; }
     }
 
     class OutputMessageSerializeInfo

@@ -10,13 +10,13 @@ namespace Expirements.General
             return $"received {message}";
         }
 
-        public void Say(DateTime time, string clientName, string message)
+        public void Say(int id)
         {
-            Console.WriteLine("Received: "+ message);
-           // SayCallBack("Callback for " + message);
+           // Console.WriteLine("Received: "+ message);
+            SayCallBack(id);
         }
 
-        public Action<string> SayCallBack { get; set; }
+        public Action<int> SayCallBack { get; set; }
         public Func<string, int> AskCallBack { get; set; }
     }
 }
