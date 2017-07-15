@@ -73,10 +73,11 @@
     <Compile Include="Light\Sending\MessageSeparator.cs" />
     <Compile Include="Light\QuantumHead.cs" />
     <Compile Include="Light\QuantumType.cs" />
-    <Compile Include="Presentation\ContractsMemberInfo.cs" />
+    <Compile Include="Presentation\ContractAttribute.cs" />
+    <Compile Include="Presentation\ContractInfo.cs" />
     <Compile Include="Presentation\Origin\OriginCallbackDelegatesHandlerFactory.cs" />
     <Compile Include="Presentation\Origin\OriginContractLinker.cs" />
-    <Compile Include="Presentation\Proxy\ContractMessageAttribute.cs" />
+    <Compile Include="Presentation\ContractMessageAttribute.cs" />
     <Compile Include="Presentation\CordInterlocutor.cs" />
     <Compile Include="Presentation\DelegatePropertyInfo.cs" />
     <Compile Include="Presentation\EmitHelper.cs" />

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TNT.Presentation.Proxy
+namespace TNT.Presentation
 {
     [AttributeUsage( AttributeTargets.Method
         | AttributeTargets.Property, AllowMultiple = false, Inherited= true)]

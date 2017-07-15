@@ -1,4 +1,5 @@
 ﻿using System;
+using TNT.Presentation;
 using TNT.Presentation.Proxy;
 
 namespace TNT.Tests.Presentation.Proxy.ContractInterfaces

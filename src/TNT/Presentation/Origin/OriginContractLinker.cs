@@ -12,12 +12,12 @@ namespace TNT.Presentation.Origin
 {
     public static class OriginContractLinker
     {
-        public static ContractsMemberInfo Link<TInterface>(TInterface contract, ICordInterlocutor interlocutor)
+        public static ContractInfo Link<TInterface>(TInterface contract, ICordInterlocutor interlocutor)
         {
             var contractType = contract.GetType();
             var interfaceType = typeof(TInterface);
-            ContractsMemberInfo contractMemebers = GetContractMemebers(contractType, interfaceType);
-            foreach (var method in contractMemebers.GetMehodInfos())
+            ContractInfo contractMemebers = GetContractMemebers(contractType, interfaceType);
+            foreach (var method in contractMemebers.GetMethods())
             {
                 if (method.Value.ReturnParameter.ParameterType == typeof(void))
                 {
@@ -34,9 +34,9 @@ namespace TNT.Presentation.Origin
             return contractMemebers;
         }
 
-        public static ContractsMemberInfo GetContractMemebers(Type contractType, Type interfaceType)
+        public static ContractInfo GetContractMemebers(Type contractType, Type interfaceType)
         {
-            var contractMemebers = new ContractsMemberInfo(interfaceType);
+            var contractMemebers = new ContractInfo(interfaceType);
             foreach (var meth in interfaceType.GetMethods())
             {
                 if (meth.IsSpecialName)

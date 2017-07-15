@@ -8,11 +8,11 @@ using TNT.Exceptions;
 
 namespace TNT.Presentation
 {
-    public class ContractsMemberInfo
+    public class ContractInfo
     {
         public Type ContractInterfaceType { get; }
 
-        public ContractsMemberInfo(Type contractInterfaceType)
+        public ContractInfo(Type contractInterfaceType)
         {
             ContractInterfaceType = contractInterfaceType;
         }
@@ -33,14 +33,14 @@ namespace TNT.Presentation
             Memebers.Add(cordId, info);
         }
 
-        public IEnumerable<KeyValuePair<int, PropertyInfo>> GetPropertyInfos()
+        public IEnumerable<KeyValuePair<int, PropertyInfo>> GetProperties()
         {
             return
                 Memebers
                     .Where(m => m.Value is PropertyInfo)
                     .Select(m => new KeyValuePair<int, PropertyInfo>(m.Key, m.Value as PropertyInfo));
         }
-        public IEnumerable<KeyValuePair<int, MethodInfo>> GetMehodInfos()
+        public IEnumerable<KeyValuePair<int, MethodInfo>> GetMethods()
         {
             return
                 Memebers

@@ -1,4 +1,5 @@
-﻿using TNT.Presentation.Proxy;
+﻿using TNT.Presentation;
+using TNT.Presentation.Proxy;
 
 namespace TNT.Tests.Presentation.Origin.OriginContracts
 {

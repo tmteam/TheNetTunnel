@@ -18,7 +18,7 @@ namespace Expirements.General
 {
     public static class Factory
     {
-        public static ITestContract CreateForClient(TcpClient client)
+        public static TContract CreateForClient<TContract>(TcpClient client)
         {
             var dispatcher = new ConveyorDispatcher();
             var sendSeparationBehaviour = new FIFOSendMessageSequenceBehaviour();
@@ -27,16 +27,16 @@ namespace Expirements.General
                 sendMessageSequenceBehaviour: new FIFOSendMessageSequenceBehaviour(),
                 receiveMessageThreadBehavior: dispatcher);
 
-            var memebers = ProxyContractFactory.ParseContractInterface(typeof(ITestContract));
+            var memebers = ProxyContractFactory.ParseContractInterface(typeof(TContract));
 
-            var outputMessages = memebers.GetMehodInfos().Select(m => new MessageTypeInfo
+            var outputMessages = memebers.GetMethods().Select(m => new MessageTypeInfo
             {
                 ReturnType = m.Value.ReturnType,
                 ArgumentTypes = m.Value.GetParameters().Select(p => p.ParameterType).ToArray(),
                 messageId = (short)m.Key
             });
 
-            var inputMessages = memebers.GetPropertyInfos().Select(m => new MessageTypeInfo
+            var inputMessages = memebers.GetProperties().Select(m => new MessageTypeInfo
             {
                 ArgumentTypes = ReflectionHelper.GetDelegateInfoOrNull(m.Value.PropertyType).ParameterTypes,
                 ReturnType = ReflectionHelper.GetDelegateInfoOrNull(m.Value.PropertyType).ReturnType,
@@ -51,7 +51,7 @@ namespace Expirements.General
                  inputMessages: inputMessages.ToArray()
              );
             var interlocutor = new CordInterlocutor(messenger);
-            var contract = ProxyContractFactory.CreateProxyContract<ITestContract>(interlocutor);
+            var contract = ProxyContractFactory.CreateProxyContract<TContract>(interlocutor);
             channel.AllowReceive = true;
             return contract;
         }
@@ -66,14 +66,14 @@ namespace Expirements.General
 
             var memebers = ProxyContractFactory.ParseContractInterface(typeof(ITestContract));
 
-            var inputMessages = memebers.GetMehodInfos().Select(m => new MessageTypeInfo
+            var inputMessages = memebers.GetMethods().Select(m => new MessageTypeInfo
             {
                 ReturnType = m.Value.ReturnType,
                 ArgumentTypes = m.Value.GetParameters().Select(p => p.ParameterType).ToArray(),
                 messageId = (short)m.Key
             });
 
-            var outputMessages = memebers.GetPropertyInfos().Select(m => new MessageTypeInfo
+            var outputMessages = memebers.GetProperties().Select(m => new MessageTypeInfo
             {
                 ArgumentTypes = ReflectionHelper.GetDelegateInfoOrNull(m.Value.PropertyType).ParameterTypes,
                 ReturnType = ReflectionHelper.GetDelegateInfoOrNull(m.Value.PropertyType).ReturnType,

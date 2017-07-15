@@ -35,7 +35,7 @@ namespace TNT.Presentation.Proxy
 
             #region реализуем методы интерфейса
 
-            foreach (var method in contractMemebers.GetMehodInfos())
+            foreach (var method in contractMemebers.GetMethods())
             {
                 var methodBuilder = EmitHelper.ImplementInterfaceMethod(method.Value, typeBuilder);
 
@@ -67,7 +67,7 @@ namespace TNT.Presentation.Proxy
 
             #region реализуем делегат свойства интерфейса
 
-            foreach (var property in contractMemebers.GetPropertyInfos())
+            foreach (var property in contractMemebers.GetProperties())
             {
                 var propertyBuilder = EmitHelper.ImplementInterfaceProperty(typeBuilder, property.Value);
 
@@ -97,9 +97,9 @@ namespace TNT.Presentation.Proxy
 
         }
 
-        public static ContractsMemberInfo ParseContractInterface(Type contractInterfaceType)
+        public static ContractInfo ParseContractInterface(Type contractInterfaceType)
         {
-            var memberInfos = new ContractsMemberInfo(contractInterfaceType);
+            var memberInfos = new ContractInfo(contractInterfaceType);
 
             foreach (var methodInfo in contractInterfaceType.GetMethods())
             {

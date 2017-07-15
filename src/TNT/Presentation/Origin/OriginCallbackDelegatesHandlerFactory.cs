@@ -41,7 +41,7 @@ namespace TNT.Presentation.Origin
          */
         private static int _exemmplarCounter;
 
-        public static void CreateFor(ContractsMemberInfo contractMembers, object contractObject,
+        public static void CreateFor(ContractInfo contractMembers, object contractObject,
             ICordInterlocutor interlocutor)
         {
             Dictionary<PropertyInfo, string> delegateToMethodsMap;
@@ -57,7 +57,7 @@ namespace TNT.Presentation.Origin
             }
         }
 
-        public static void CreateHandlerType(ContractsMemberInfo contractMembers, out Dictionary<PropertyInfo, string> delegateToMethodsMap, out Type generatedType)
+        public static void CreateHandlerType(ContractInfo contractMembers, out Dictionary<PropertyInfo, string> delegateToMethodsMap, out Type generatedType)
         {
             var interlocutorType = typeof(ICordInterlocutor);
             var typeCount = Interlocked.Increment(ref _exemmplarCounter);
@@ -76,7 +76,7 @@ namespace TNT.Presentation.Origin
             var sayMehodInfo = interlocutorType.GetMethod("Say", new[] { typeof(int), typeof(object[]) });
 
 
-            foreach (var property in contractMembers.GetPropertyInfos())
+            foreach (var property in contractMembers.GetProperties())
             {
                 MethodBuilder metbuilder;
 
