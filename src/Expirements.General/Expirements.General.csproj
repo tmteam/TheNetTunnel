@@ -40,9 +40,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ChannelServer.cs" />
+    <Compile Include="Connection.cs" />
+    <Compile Include="ConnectionBuilder.cs" />
     <Compile Include="Factory.cs" />
+    <Compile Include="IChannelListener.cs" />
+    <Compile Include="IChannelServer.cs" />
     <Compile Include="ITestContract.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TcpChanelListener.cs" />
+    <Compile Include="TcpChannelServer.cs" />
+    <Compile Include="TcpServer.cs" />
     <Compile Include="TestContractImplementation.cs" />
     <Compile Include="TntBuilder.cs" />
   </ItemGroup>

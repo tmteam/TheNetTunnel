@@ -84,29 +84,46 @@ namespace Expirements
 
         public void Test()
         {
-            var channel = new TcpChannel(new TcpClient());
 
 
             var tcpConnection = new ConnectionBuilder<ITestContract>()
                 .CreateTcpConnection(IPAddress.Any, 17171);
 
-            var customChannel = new  ConnectionBuilder<ITestContract>()
-                .For(new TcpChannel(new TcpClient())).Buid();
-
-            var customChannel2 = new ConnectionBuilder<ITestContract>()
-                .For(new TcpChannel(new TcpClient()))
-                .UseSerializer<string>(new UnicodeSerializer())
-                .UseDeserializer<string>(new UnicodeDeserializer())
+            var channel = new TcpChannel(new TcpClient());
+            channel.Client.Connect(IPAddress.Any, 1111);
+            var connection1 = new  ConnectionBuilder<ITestContract>()
+                .UseChannel(channel)
                 .Buid();
 
-            //   .UseChannel(new TcpChannel(new TcpClient()))
-            //    .UseTcpClient(new IPEndPoint(IPAddress.Any, 17171))
-            var customConnection =TntBuilder
+
+            var connection2 = new ConnectionBuilder<ITestContract>()
+                .UseSerializer<string>(new UnicodeSerializer())
+                .UseDeserializer<string>(new UnicodeDeserializer())
+                .UseChannel(new TcpChannel())
+                .Buid();
+            connection2.Channel.Client.Connect(IPAddress.Any, 1111);
+
+            var connection3 = new ConnectionBuilder<ITestContract>()
+               .UseChannel(()=>new TcpChannel(new TcpClient(/*ip, port*/)))
+               .Buid();
+
+            var connection4 = new ConnectionBuilder<ITestContract>()
+               .UseChannel(() => new TcpChannel(new TcpClient(/*ip, port*/)))
+               .Buid();
+            connection4.Channel.Client.Connect(IPAddress.Any, 1111);
+
+            var connection5 = new ConnectionBuilder<ITestContract>()
+               .UseChannel<TcpChannel>()
+               .Buid();
+            connection5.Channel.Client.Connect(IPAddress.Any, 1111);
+
+           
+            var connection6 = TntBuilder
                 .CreateConnectionBuilder<ITestContract>()
                 .UseChannel(channel)
                 .Buid();
 
-            customConnection.Channel.Disconnect();
+            connection6.Channel.Disconnect();
             using (var connection = new ConnectionBuilder<ITestContract>().CreateTcpConnection(IPAddress.Any, 17171))
             {
 
@@ -115,18 +132,18 @@ namespace Expirements
             {
                 
             }
-            using (var connection = TntBuilder
-                    .UseContract<ITestContract>()
-                    .UseTcpClient(IPAddress.Any, 17171)
-                    .Buid())
-            {
-                var wa = connection.Contract.Ask(DateTime.Now, null, null);
-            }
+            //using (var connection = TntBuilder
+            //        .UseContract<ITestContract>()
+            //        .UseTcpClient(IPAddress.Any, 17171)
+            //        .Buid())
+            //{
+            //    var wa = connection.Contract.Ask(DateTime.Now, null, null);
+            //}
 
-            var connection2 = TntBuilder
-                .UseContract<ITestContract>()
-                .UseTcpClient(IPAddress.Any, 17171)
-                .Buid();
+            //var connection2 = TntBuilder
+            //    .UseContract<ITestContract>()
+            //    .UseTcpClient(IPAddress.Any, 17171)
+            //    .Buid();
         }
      
     }

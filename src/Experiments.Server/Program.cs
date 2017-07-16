@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
@@ -49,9 +50,31 @@ namespace Experiments.Server
             }
         }
 
-   
+        private static void OtherMain()
+        {
+            var connectionBuilder =
+                new ConnectionBuilder<TestContractImplementation>()
+                    .UseDeserializer<string>(new UnicodeDeserializer());
 
-       
+
+            var server = new TcpChannelServer<TestContractImplementation>(connectionBuilder, new IPEndPoint(IPAddress.Any, 1111));
+            var server2 = new ChannelServer<TestContractImplementation, TcpChannel>(connectionBuilder, new TcpChanelListener(new IPEndPoint(IPAddress.Any, 1111)));
+
+            var server3 =
+                new ConnectionBuilder<TestContractImplementation>()
+                    .UseDeserializer<string>(new UnicodeDeserializer())
+                    .UseReceiveDispatcher<NotThreadDispatcher>()
+                    .CreateTcpServer(IPAddress.Any, 1111);
+
+            server.IsListening = true;
+
+            //...
+
+            server.Close();
+        }
+
+
+
         private static void ChannelOnOnDisconnect(LightChannel lightChannel)
         {
             Console.WriteLine("Disconnected!!");

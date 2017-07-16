@@ -10,7 +10,10 @@ namespace TNT.Channel
         {
             Client = client;
         }
-
+        public TcpChannel()
+        {
+            Client = new TcpClient();
+        }
         public bool IsConnected
         {
             get { return Client != null && Client.Connected; }

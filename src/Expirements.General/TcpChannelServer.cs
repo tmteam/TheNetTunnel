@@ -8,9 +8,9 @@ namespace Expirements.General
         public IPEndPoint EndPoint { get; }
 
         public TcpChannelServer(
-            TntContractBuilder<TContract, TcpChannel> channelBuilder, 
+            ConnectionBuilder<TContract> connectionBuilder, 
             IPEndPoint endPoint 
-        ) : base(channelBuilder, new TcpChanelListener(endPoint))
+        ) : base(connectionBuilder, new TcpChanelListener(endPoint))
         {
             EndPoint = endPoint;
         }
