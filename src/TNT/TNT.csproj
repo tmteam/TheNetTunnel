@@ -44,8 +44,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Channel\ChannelServer.cs" />
+    <Compile Include="Channel\Connection.cs" />
+    <Compile Include="Channel\ConnectionBuilder.cs" />
     <Compile Include="Channel\IChannel.cs" />
-    <Compile Include="Channel\TcpChannel.cs" />
+    <Compile Include="Channel\IChannelListener.cs" />
+    <Compile Include="Channel\IChannelServer.cs" />
+    <Compile Include="Channel\Tcp\TcpChanelListener.cs" />
+    <Compile Include="Channel\Tcp\TcpChannel.cs" />
+    <Compile Include="Channel\Tcp\TcpChannelServer.cs" />
+    <Compile Include="Channel\Tcp\TcpHelper.cs" />
+    <Compile Include="Channel\Test\IOneSideConnection.cs" />
+    <Compile Include="Channel\Test\OneSideConnection.cs" />
+    <Compile Include="Channel\Test\TestChannel.cs" />
+    <Compile Include="Channel\Test\TestChannelListener.cs" />
+    <Compile Include="Channel\Test\TestChannelPair.cs" />
+    <Compile Include="Channel\Test\TestChannelServer.cs" />
+    <Compile Include="Channel\Test\TntTestHelper.cs" />
     <Compile Include="Cord\CordMessenger.cs" />
     <Compile Include="Cord\CordTools.cs" />
     <Compile Include="Cord\Deserializers\DeserializerFactory.cs" />

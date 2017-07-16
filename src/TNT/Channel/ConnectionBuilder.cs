@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
-using TNT.Channel;
+using TNT.Channel.Tcp;
 using TNT.Cord.Deserializers;
 using TNT.Cord.Serializers;
 
-namespace Expirements.General
+namespace TNT.Channel
 {
     public class ConnectionBuilder<TContract, TChannel> where TChannel: IChannel
     {
@@ -63,18 +63,10 @@ namespace Expirements.General
             return this;
         }
 
-        public  Connection<TContract, TcpChannel> CreateTcpConnection(IPAddress ip, int port)
+        public ConnectionBuilder<TContract> UseContractInitalization(Action<TContract> initializer)
         {
-            var channel = new TcpChannel(new TcpClient(new IPEndPoint(ip, port)));
-            var builder =this.UseChannel(channel);
-            return builder.Buid();
+            return this;
         }
-        public TcpChannelServer<TContract> CreateTcpServer(IPAddress ip, int port)
-        {
-            return new TcpChannelServer<TContract>(this, new IPEndPoint(ip, port));
-        }
-
-
         public ConnectionBuilder<TContract, TChannel> UseChannel<TChannel>() where TChannel: IChannel, new() 
         {
             throw new NotImplementedException();

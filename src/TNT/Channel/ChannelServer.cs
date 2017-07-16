@@ -2,35 +2,34 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using TNT.Channel;
 
-namespace Expirements.General
+namespace TNT.Channel
 {
-    public class ChannelServer<TContract, TChannel>: IChannelServer<TChannel,TContract> where TChannel : IChannel
+    public class ChannelServer<TContract, TChannel>: IChannelServer<TContract,TChannel> where TChannel : IChannel
     {
         private readonly ConnectionBuilder<TContract> _connectionBuilder;
-        private readonly IChannelListener<TChannel> _listener;
+        protected readonly IChannelListener<TChannel> Listener;
 
         readonly ConcurrentDictionary<IChannel, Connection<TContract, TChannel>> _connections
             = new ConcurrentDictionary<IChannel, Connection<TContract, TChannel>>();
 
         public bool IsListening {
-            get { return _listener.IsListening; }
-            set { _listener.IsListening = value; }
+            get { return Listener.IsListening; }
+            set { Listener.IsListening = value; }
         }
 
-        public event Action<IChannelServer<TChannel, TContract>, BeforeConnectEventArgs<TContract, TChannel>> 
+        public event Action<IChannelServer<TContract, TChannel>, BeforeConnectEventArgs<TContract, TChannel>> 
             BeforeConnect;
-        public event Action<IChannelServer<TChannel, TContract>, Connection<TContract, TChannel>> 
+        public event Action<IChannelServer<TContract, TChannel>, Connection<TContract, TChannel>> 
             AfterConnect;
-        public event Action<IChannelServer<TChannel, TContract>, Connection<TContract, TChannel>> 
+        public event Action<IChannelServer<TContract, TChannel>, Connection<TContract, TChannel>> 
             Disconnected;
 
         public ChannelServer(ConnectionBuilder<TContract> channelBuilder, IChannelListener<TChannel> listener)
         {
             _connectionBuilder = channelBuilder;
-            _listener = listener;
-            _listener.Accepted += _listener_Accepted;
+            Listener = listener;
+            Listener.Accepted += _listener_Accepted;
         }
 
         private void _listener_Accepted(IChannelListener<TChannel> sender, TChannel channel)

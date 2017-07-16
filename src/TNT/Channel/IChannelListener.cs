@@ -1,7 +1,6 @@
 ﻿using System;
-using TNT.Channel;
 
-namespace Expirements.General
+namespace TNT.Channel
 {
     public interface IChannelListener<out TChannel> where TChannel : IChannel
     {

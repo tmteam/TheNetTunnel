@@ -2,7 +2,7 @@
 using System.Net.Sockets;
 using System.Threading.Tasks;
 
-namespace TNT.Channel
+namespace TNT.Channel.Tcp
 {
     public class TcpChannel : IChannel
     {
@@ -84,21 +84,7 @@ namespace TNT.Channel
             }
         }
 
-        //public bool TryWrite(byte[] array)
-        //{
-        //    var stream = Client.GetStream();
-        //    try
-        //    {
-        //        stream.Write(array, 0, array.Length);
-        //        return true;
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        return false;
-        //    }
-        //}
-
-        public void Write(byte[] data)
+      public void Write(byte[] data)
         {
             if (!Client.Connected)
                 return;

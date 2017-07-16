@@ -1,7 +1,6 @@
 ﻿using System.Net;
-using TNT.Channel;
 
-namespace Expirements.General
+namespace TNT.Channel.Tcp
 {
     public class TcpChannelServer<TContract> : ChannelServer<TContract, TcpChannel>
     {

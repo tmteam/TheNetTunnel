@@ -5,13 +5,12 @@ using System.Net.Sockets;
 using System.Threading;
 using Expirements.General;
 using TNT.Channel;
+using TNT.Channel.Tcp;
 using TNT.Cord;
 using TNT.Cord.Deserializers;
 using TNT.Cord.Serializers;
 using TNT.Light;
-using TNT.Light.Sending;
-using TNT.Presentation;
-using TNT.Presentation.Proxy;
+
 
 namespace Expirements
 {
@@ -118,20 +117,20 @@ namespace Expirements
             connection5.Channel.Client.Connect(IPAddress.Any, 1111);
 
            
-            var connection6 = TntBuilder
-                .CreateConnectionBuilder<ITestContract>()
-                .UseChannel(channel)
-                .Buid();
+            //var connection6 = TntBuilder
+            //    .CreateConnectionBuilder<ITestContract>()
+            //    .UseChannel(channel)
+            //    .Buid();
 
-            connection6.Channel.Disconnect();
-            using (var connection = new ConnectionBuilder<ITestContract>().CreateTcpConnection(IPAddress.Any, 17171))
-            {
+            //connection6.Channel.Disconnect();
+            //using (var connection = new ConnectionBuilder<ITestContract>().CreateTcpConnection(IPAddress.Any, 17171))
+            //{
 
-            }
-            using (var connection = TntBuilder.CreateTcpConnection<ITestContract>(IPAddress.Any, 17171))
-            {
+            //}
+            //using (var connection = TntBuilder.CreateTcpConnection<ITestContract>(IPAddress.Any, 17171))
+            //{
                 
-            }
+            //}
             //using (var connection = TntBuilder
             //        .UseContract<ITestContract>()
             //        .UseTcpClient(IPAddress.Any, 17171)
