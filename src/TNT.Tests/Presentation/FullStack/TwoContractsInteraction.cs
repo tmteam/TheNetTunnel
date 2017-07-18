@@ -2,6 +2,8 @@
 using NUnit.Framework;
 using TNT.Channel;
 using TNT.Channel.Test;
+using TNT.Light;
+using TNT.Presentation;
 
 namespace TNT.Tests.Presentation.FullStack
 {
@@ -12,13 +14,23 @@ namespace TNT.Tests.Presentation.FullStack
         public void SayCall_FromProxyToOrigin_OriginSayCalled()
         {
             var channelPair = TntTestHelper.CreateChannelPair();
-            var proxyConnection = new ConnectionBuilder<ITestContract>().UseChannel(channelPair.CahnnelA).Buid();
-            var originConnection = new ConnectionBuilder<TestContractImplementation>().UseChannel(channelPair.ChannelB).Buid();
+            var proxyConnection = ConnectionBuilder
+                .UseContract<ITestContract>()
+                .UseReceiveDispatcherFactory<NotThreadDispatcher>()
+                .UseChannel(channelPair.CahnnelA)
+                .Buid();
+
+            var originConnection = ConnectionBuilder
+                .UseContract<ITestContract,TestContractImplementation>()
+                .UseReceiveDispatcherFactory<NotThreadDispatcher>()
+                .UseChannel(channelPair.ChannelB)
+                .Buid();
+
             channelPair.Connect();
 
             const string sentMessage = "Hey you";
             proxyConnection.Contract.Say(sentMessage);
-            var received =  originConnection.Contract.SaySCalled.SingleOrDefault();
+            var received =  ((TestContractImplementation) originConnection.Contract).SaySCalled.SingleOrDefault();
             Assert.AreEqual(received, sentMessage);
         }
     }

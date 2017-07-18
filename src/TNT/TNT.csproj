@@ -30,6 +30,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="nunit.framework, Version=3.7.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\NUnit.3.7.1\lib\net45\nunit.framework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="protobuf-net, Version=2.2.1.0, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
       <HintPath>..\packages\protobuf-net.2.2.1\lib\net40\protobuf-net.dll</HintPath>
       <Private>True</Private>
@@ -44,23 +48,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Channel\ChannelServer.cs" />
-    <Compile Include="Channel\Connection.cs" />
-    <Compile Include="Channel\ConnectionBuilder.cs" />
-    <Compile Include="Channel\IChannel.cs" />
-    <Compile Include="Channel\IChannelListener.cs" />
-    <Compile Include="Channel\IChannelServer.cs" />
-    <Compile Include="Channel\Tcp\TcpChanelListener.cs" />
-    <Compile Include="Channel\Tcp\TcpChannel.cs" />
-    <Compile Include="Channel\Tcp\TcpChannelServer.cs" />
-    <Compile Include="Channel\Tcp\TcpHelper.cs" />
-    <Compile Include="Channel\Test\IOneSideConnection.cs" />
-    <Compile Include="Channel\Test\OneSideConnection.cs" />
-    <Compile Include="Channel\Test\TestChannel.cs" />
-    <Compile Include="Channel\Test\TestChannelListener.cs" />
-    <Compile Include="Channel\Test\TestChannelPair.cs" />
-    <Compile Include="Channel\Test\TestChannelServer.cs" />
-    <Compile Include="Channel\Test\TntTestHelper.cs" />
+    <Compile Include="Presentation\ChannelServer.cs" />
+    <Compile Include="Presentation\Connection.cs" />
+    <Compile Include="Presentation\ConnectionBuilder.cs" />
+    <Compile Include="Light\IChannel.cs" />
+    <Compile Include="Presentation\IChannelListener.cs" />
+    <Compile Include="Presentation\IChannelServer.cs" />
+    <Compile Include="Tcp\TcpChanelListener.cs" />
+    <Compile Include="Tcp\TcpChannel.cs" />
+    <Compile Include="Tcp\TcpChannelServer.cs" />
+    <Compile Include="Tcp\TcpHelper.cs" />
+    <Compile Include="Testing\IOneSideConnection.cs" />
+    <Compile Include="Testing\OneSideConnection.cs" />
+    <Compile Include="Testing\TestChannel.cs" />
+    <Compile Include="Testing\TestChannelListener.cs" />
+    <Compile Include="Testing\TestChannelPair.cs" />
+    <Compile Include="Testing\TestChannelServer.cs" />
+    <Compile Include="Testing\TntTestHelper.cs" />
     <Compile Include="Cord\CordMessenger.cs" />
     <Compile Include="Cord\CordTools.cs" />
     <Compile Include="Cord\Deserializers\DeserializerFactory.cs" />
@@ -88,18 +92,18 @@
     <Compile Include="Light\Sending\MessageSeparator.cs" />
     <Compile Include="Light\QuantumHead.cs" />
     <Compile Include="Light\QuantumType.cs" />
-    <Compile Include="Presentation\ContractAttribute.cs" />
-    <Compile Include="Presentation\ContractInfo.cs" />
-    <Compile Include="Presentation\Origin\OriginCallbackDelegatesHandlerFactory.cs" />
-    <Compile Include="Presentation\Origin\OriginContractLinker.cs" />
-    <Compile Include="Presentation\ContractMessageAttribute.cs" />
+    <Compile Include="Contract\ContractAttribute.cs" />
+    <Compile Include="Contract\ContractInfo.cs" />
+    <Compile Include="Contract\Origin\OriginCallbackDelegatesHandlerFactory.cs" />
+    <Compile Include="Contract\Origin\OriginContractLinker.cs" />
+    <Compile Include="Contract\ContractMessageAttribute.cs" />
     <Compile Include="Presentation\CordInterlocutor.cs" />
-    <Compile Include="Presentation\DelegatePropertyInfo.cs" />
-    <Compile Include="Presentation\EmitHelper.cs" />
-    <Compile Include="Presentation\ICordInterlocutor.cs" />
+    <Compile Include="Contract\DelegatePropertyInfo.cs" />
+    <Compile Include="Contract\EmitHelper.cs" />
+    <Compile Include="Tcp\ICordInterlocutor.cs" />
     <Compile Include="Cord\ICordMessenger.cs" />
-    <Compile Include="Presentation\Proxy\ProxyContractFactory.cs" />
-    <Compile Include="Presentation\ReflectionHelper.cs" />
+    <Compile Include="Contract\Proxy\ProxyContractFactory.cs" />
+    <Compile Include="Contract\ReflectionHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Cord\Deserializers\ArrayDeserializer.cs" />
     <Compile Include="Cord\Deserializers\DeserializerBase.cs" />

@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using TNT.Channel;
 using TNT.Channel.Test;
+using TNT.Presentation;
 
 namespace TNT.Tests.Presentation.FullStack
 {
@@ -12,8 +13,7 @@ namespace TNT.Tests.Presentation.FullStack
         {
             var channel = new TestChannel();
             channel.ImmitateConnect();
-            var proxyConnection = new ConnectionBuilder<ITestContract>().UseChannel(channel).Buid();
-            proxyConnection.Channel.ImmitateConnect();
+            var proxyConnection = ConnectionBuilder.UseContract<ITestContract>().UseChannel(channel).Buid();
             byte[] sentMessage = null;
             proxyConnection.Channel.OnWrited += (s, msg) => sentMessage = msg;
             proxyConnection.Contract.Say();
@@ -25,7 +25,7 @@ namespace TNT.Tests.Presentation.FullStack
         public void ProxyBuilder_SayCalled_DataSent()
         {
             var channel = new TestChannel();
-            var proxyConnection = new ConnectionBuilder<ITestContract>().UseChannel(channel).Buid();
+            var proxyConnection = ConnectionBuilder.UseContract<ITestContract>().UseChannel(channel).Buid();
             proxyConnection.Channel.ImmitateConnect();
             byte[] sentMessage = null;
             proxyConnection.Channel.OnWrited += (s, msg) => sentMessage = msg;
@@ -38,14 +38,14 @@ namespace TNT.Tests.Presentation.FullStack
         public void ProxyBuilderCreatesWithCorrectConnection()
         {
             var channel = new TestChannel();
-            var proxyConnection = new ConnectionBuilder<ITestContract>().UseChannel(channel).Buid();
+            var proxyConnection = ConnectionBuilder.UseContract<ITestContract>().UseChannel(channel).Buid();
             Assert.AreEqual(channel, proxyConnection.Channel);
         }
         [Test]
         public void ProxyBuilderBuilds_ChannelAllowReceiveIsTrue()
         {
             var channel = new TestChannel();
-            var proxyConnection = new ConnectionBuilder<ITestContract>()
+            var proxyConnection = ConnectionBuilder.UseContract<ITestContract>()
                 .UseChannel(channel)
                 .Buid();
             Assert.IsTrue(channel.AllowReceive);
@@ -56,7 +56,7 @@ namespace TNT.Tests.Presentation.FullStack
         {
             var channel = new TestChannel();
             ITestContract initializationArgument = null;
-            var proxyConnection = new ConnectionBuilder<ITestContract>()
+            var proxyConnection = ConnectionBuilder.UseContract<ITestContract>()
                 .UseContractInitalization((i)=> initializationArgument = i)
                 .UseChannel(channel)
                 .Buid();
@@ -68,7 +68,7 @@ namespace TNT.Tests.Presentation.FullStack
         public void ConnectionDisposes_channelBecomesDisconnected()
         {
             var channel = new TestChannel();
-            using (var proxyConnection = new ConnectionBuilder<ITestContract>()
+            using (var proxyConnection = ConnectionBuilder.UseContract<ITestContract>()
                 .UseChannel(new TestChannel())
                 .Buid())
             {
@@ -81,7 +81,7 @@ namespace TNT.Tests.Presentation.FullStack
         {
             var channel = new TestChannel();
             
-            var proxyConnection = new ConnectionBuilder<TestContractImplementation>()
+            var proxyConnection = ConnectionBuilder.UseContract<ITestContract, TestContractImplementation>()
                 .UseChannel(channel)
                 .Buid();
             Assert.IsNotNull(proxyConnection.Contract);
@@ -89,7 +89,7 @@ namespace TNT.Tests.Presentation.FullStack
         [Test]
         public void OriginContract_CreatesByFactory_ContractCreated()
         {
-            var proxyConnection = new ConnectionBuilder<TestContractImplementation>(()=>new TestContractImplementation())
+            var proxyConnection = ConnectionBuilder.UseContract<ITestContract, TestContractImplementation>()
                 .UseChannel(new TestChannel())
                 .Buid();
 
@@ -98,18 +98,18 @@ namespace TNT.Tests.Presentation.FullStack
         [Test]
         public void OriginContractAsInterface_CreatesByFactory_ContractCreated()
         {
-            var proxyConnection = new ConnectionBuilder<ITestContract>(() => new TestContractImplementation())
+            var proxyConnection = ConnectionBuilder.UseContract<ITestContract, TestContractImplementation>()
                 .UseChannel(new TestChannel())
                 .Buid();
 
-            Assert.IsInstanceOf<TestContractImplementation>(proxyConnection.Contract);
+            Assert.IsInstanceOf<ITestContract>(proxyConnection.Contract);
         }
 
         [Test]
         public void OriginContractAsSingleTone_CreatesByFactory_ContractCreated()
         {
             var contract = new TestContractImplementation();
-            var proxyConnection = new ConnectionBuilder<ITestContract>(contract)
+            var proxyConnection = ConnectionBuilder.UseContract<ITestContract>(contract)
                 .UseChannel(new TestChannel())
                 .Buid();
             Assert.AreEqual(contract, proxyConnection.Contract);
