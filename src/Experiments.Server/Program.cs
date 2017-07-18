@@ -22,60 +22,48 @@ namespace Experiments.Server
 {
     class Program
     {
-        static TcpListener listener;
-        static LightChannel channel;
-        static CordMessenger messenger;
-
         static void Main(string[] args)
         {
-
-            listener = new TcpListener(17171);
+            var tcpServer = ConnectionBuilder
+                .UseContract<ITestContract, TestContractImplementation>()
+                .CreateTcpServer(IPAddress.Loopback, 17171);
+            tcpServer.BeforeConnect+= TcpServerOnBeforeConnect;
+            tcpServer.AfterConnect += TcpServer_AfterConnect;
+            tcpServer.Disconnected += TcpServer_Disconnected;
             Console.WriteLine("Start listen");
-
-            listener.Start();
+            tcpServer.IsListening = true;
             Console.WriteLine("Listen started");
-
-            var client = listener.AcceptTcpClient();
-            Console.WriteLine("Client connected");
-            var contract = Factory.CreateForServer(client);
 
             while (true)
             {
-                string msg;
-
-                msg = Console.ReadLine();
-                if (msg == "exit")
+                var line = Console.ReadLine();
+                if(line.ToLower()=="exit")
+                    break;
+                foreach (var connection in tcpServer.GetAllConnections())
                 {
-                    return;
+                   var returned = connection.Contract.AskCallBack(line);
+                   Console.WriteLine($"Returned: {returned}");
                 }
             }
+            tcpServer.Close();
+            Console.ReadLine();
         }
 
-        private static void OtherMain()
+        private static void TcpServer_Disconnected(IChannelServer<ITestContract, TcpChannel> arg1, Connection<ITestContract, TcpChannel> arg2)
         {
-            //var connectionBuilder =ConnectionBuilder.UseContract<ITestContract, TestContractImplementation>()
-            //        .UseDeserializer<string, UnicodeDeserializer>()
-            //        .UseReceiveDispatcher<NotThreadDispatcher>();
-
-
-            //var server = new TcpChannelServer<TestContractImplementation>(connectionBuilder, new IPEndPoint(IPAddress.Any, 1111));
-            //var server2 = new ChannelServer<TestContractImplementation, TcpChannel>(connectionBuilder, new TcpChanelListener(new IPEndPoint(IPAddress.Any, 1111)));
-
-            //var server3 = connectionBuilder.CreateTcpServer(IPAddress.Any, 1111);
-
-            //server.BeforeConnect += 
-            //    (sender, args) => args.AllowConnection = sender.GetAllConnections().Count() < 4;
-            //server.AfterConnect += (sender, connection)
-            //    => Console.WriteLine("Income connection from: " + connection.Channel.Client.Client.RemoteEndPoint);
-            //server.Disconnected += (sender, connection)
-            //    => Console.WriteLine("Client disconnected");
-
-            //server.IsListening = true;
-
-            ////...
-
-            //server.Close();
-
+            Console.WriteLine("Disconnected");
         }
+
+        private static void TcpServer_AfterConnect(IChannelServer<ITestContract, TcpChannel> arg1, Connection<ITestContract, TcpChannel> arg2)
+        {
+            Console.WriteLine("Client connected");
+        }
+
+        private static void TcpServerOnBeforeConnect(IChannelServer<ITestContract, TcpChannel> channelServer, BeforeConnectEventArgs<ITestContract, TcpChannel> beforeConnectEventArgs)
+        {
+            Console.WriteLine("Before client connected");
+        }
+
+        
     }
 }

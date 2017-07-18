@@ -51,7 +51,9 @@ namespace TNT.Presentation
 
         public Func<IDispatcher> ReceiveDispatcherFactory { get; private set; } = ()=>new ConveyorDispatcher();
 
-        public Action<TContract> ContractInitializer { get; private set; } = (t) => { };
+        public Action<TContract, IChannel> ContractInitializer { get; private set; } = (contract, channel) => { };
+        public Action<TContract, IChannel> ContractFinalizer   { get; private set; } = (contract, channel) => { };
+
 
         public List<DeserializationRule> UserDeserializationRules { get; } = new List<DeserializationRule>();
 
@@ -131,7 +133,7 @@ namespace TNT.Presentation
             return UseDeserializer(new DeserializationRule((t) => t == typeof(TType), (t) => new TDeserializer()));
         }
 
-        public ConnectionBuilder<TContract> UseContractInitalization(Action<TContract> initializer)
+        public ConnectionBuilder<TContract> UseContractInitalization(Action<TContract, IChannel> initializer)
         {
             if (initializer == null)
                 throw new ArgumentNullException(nameof(initializer));
@@ -139,7 +141,14 @@ namespace TNT.Presentation
             ContractInitializer = initializer;
             return this;
         }
-        
+        public ConnectionBuilder<TContract> UseContractFinalization(Action<TContract, IChannel> finalizer)
+        {
+            if(finalizer == null)
+                throw  new ArgumentNullException(nameof(finalizer));
+            ContractFinalizer = finalizer;
+            return this;
+        }
+
         public ConnectionBuilder<TContract, TChannel> UseChannel<TChannel>() 
             where TChannel: IChannel, new()
         {
@@ -160,6 +169,11 @@ namespace TNT.Presentation
             if (channelFactory == null)
                 throw new ArgumentNullException(nameof(channelFactory));
             return new ConnectionBuilder<TContract, TChannel>(this, channelFactory);
+        }
+
+        public object UseContractInitalization()
+        {
+            throw new NotImplementedException();
         }
     }
 
@@ -196,10 +210,11 @@ namespace TNT.Presentation
                 contract = CreateOriginContract(light);
             }
 
-            _contractBuilder.ContractInitializer(contract);
-            channel.AllowReceive = true;
+            _contractBuilder.ContractInitializer(contract, channel);
+            if(channel.IsConnected)
+                channel.AllowReceive = true;
 
-            return new Connection<TContract, TChannel>(contract, channel);
+            return new Connection<TContract, TChannel>(contract, channel, _contractBuilder.ContractFinalizer);
         }
         private TContract CreateOriginContract(LightChannel light)
         {

@@ -145,27 +145,32 @@ namespace TNT.Cord
                     {
                         //input ask messageHandling
                         var askId = CordTools.ReadShort(data);
-                        var ans =
-                            (object[])
-                            sayDeserializer.Deserializer.Deserialize(data, (int) (data.Length - data.Position));
-                        OnAsk?.Invoke(this, id, askId, ans);
+
+                        object[] arg = Deserialize(data, sayDeserializer);
+                        OnAsk?.Invoke(this, id, askId, arg);
                         return;
                     }
                     else
-                    {
-                        //input say messageHandling
-                        object[] arg = null;
-                        if(sayDeserializer.ArgumentsCount==0)
-                            arg = new object[0];
-                        else if(sayDeserializer.ArgumentsCount==1)
-                            arg =  new []{ sayDeserializer.Deserializer.Deserialize(data, (int)(data.Length - data.Position)) };
-                        else
-                            arg =  (object[]) sayDeserializer.Deserializer.Deserialize(data, (int) (data.Length - data.Position));
-                        OnSay?.Invoke(this, id, arg);
-                        return;
-                    }
+                {
+                    //input say messageHandling
+                    object[] arg = Deserialize(data, sayDeserializer);
+                    OnSay?.Invoke(this, id, arg);
+                    return;
                 }
+            }
                 throw new Exception($"Unknown id {id}");
+        }
+
+        private static object[] Deserialize(MemoryStream data, InputMessageDeserializeInfo sayDeserializer)
+        {
+            object[] arg = null;
+            if (sayDeserializer.ArgumentsCount == 0)
+                arg = new object[0];
+            else if (sayDeserializer.ArgumentsCount == 1)
+                arg = new[] { sayDeserializer.Deserializer.Deserialize(data, (int)(data.Length - data.Position)) };
+            else
+                arg = (object[])sayDeserializer.Deserializer.Deserialize(data, (int)(data.Length - data.Position));
+            return arg;
         }
     }
 

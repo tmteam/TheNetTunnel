@@ -26,10 +26,12 @@ namespace TNT.Channel.Tcp
                 if (value)
                 {
                     _listener = new TcpListener(_endpoint);
+                    _listener.Start();
                     _listenResults = _listener.BeginAcceptTcpClient(EndAcceptTcpClient, _listener);
                 }
                 else
                 {
+                    _listener.Stop();
                     _listener.EndAcceptTcpClient(_listenResults);
                     _listener = null;
                     _listenResults = null;

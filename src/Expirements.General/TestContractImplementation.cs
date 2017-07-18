@@ -6,7 +6,7 @@ namespace Expirements.General
     {
         public string Ask(DateTime time, string clientName, string message)
         {
-           // Console.WriteLine($"[{time}] {clientName}: {message}");
+            Console.WriteLine($"[{time}] {clientName}: {message}");
             return $"received {message}";
         }
 

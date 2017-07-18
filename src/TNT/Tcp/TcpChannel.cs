@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 
@@ -6,6 +7,10 @@ namespace TNT.Channel.Tcp
 {
     public class TcpChannel : IChannel
     {
+        public TcpChannel(IPAddress address, int port): this(new TcpClient(new IPEndPoint(address, port)))
+        {
+            
+        }
         public TcpChannel(TcpClient client)
         {
             Client = client;
@@ -60,6 +65,11 @@ namespace TNT.Channel.Tcp
         public event Action<IChannel, byte[]> OnReceive;
         public event Action<IChannel> OnDisconnect;
 
+        public void Connect(IPEndPoint endPoint)
+        {
+            this.Client.Connect(endPoint);
+            AllowReceive = true;
+        }
         public void Disconnect()
         {
             if (Client.Connected)
