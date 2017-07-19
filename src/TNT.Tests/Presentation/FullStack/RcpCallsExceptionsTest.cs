@@ -27,25 +27,12 @@ namespace TNT.Tests.Presentation.FullStack
                 .UseChannel(channel)
                 .Build();
 
-            Assert.Throws<ConnectionIsNotEstablishedYet>(()=>proxyConnection.Contract.Say());
+            TestTools.AssertThrowsAndNotBlocks<ConnectionIsNotEstablishedYet>(() => proxyConnection.Contract.Say());
         }
 
 
         [Test]
-        public void OriginConnectionIsNotEstablishedYet_SayCallThrows()
-        {
-            var channel = new TestChannel();
-            var proxyConnection = ConnectionBuilder
-                .UseContract<ITestContract, TestContractImplementation>()
-                .UseReceiveDispatcher<NotThreadDispatcher>()
-                .UseChannel(channel)
-                .Build();
-
-            Assert.Throws<ConnectionIsNotEstablishedYet>(() => proxyConnection.Contract.OnSay());
-        }
-
-        [Test]
-        public async Task ProxyConnectionIsNotEstablishedYet_AskCallThrows()
+        public void ProxyConnectionIsNotEstablishedYet_AskCallThrows()
         {
             var channel = new TestChannel();
             var proxyConnection = ConnectionBuilder
@@ -53,8 +40,8 @@ namespace TNT.Tests.Presentation.FullStack
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channel)
                 .Build();
-                var exception = TryCatchAsyncWithTaskBlockedAssert(() => proxyConnection.Contract.Ask());
-                Assert.IsInstanceOf<ConnectionIsNotEstablishedYet>(exception.Result);
+
+            TestTools.AssertThrowsAndNotBlocks<ConnectionIsNotEstablishedYet>(() => proxyConnection.Contract.Ask());
         }
 
         [Test]
@@ -68,7 +55,7 @@ namespace TNT.Tests.Presentation.FullStack
                 .Build();
             channel.ImmitateConnect();
             channel.ImmitateDisconnect();
-            Assert.Throws<ConnectionIsLostException>(() => proxyConnection.Contract.Say("test"));
+            TestTools.AssertThrowsAndNotBlocks<ConnectionIsLostException>(() => proxyConnection.Contract.Say());
         }
 
         [Test]
@@ -84,11 +71,10 @@ namespace TNT.Tests.Presentation.FullStack
             channel.ImmitateConnect();
             channel.ImmitateDisconnect();
 
-            var exception = TryCatchAsyncWithTaskBlockedAssert(()=>proxyConnection.Contract.Ask());
-            Assert.IsInstanceOf<ConnectionIsLostException>(exception.Result);
+            TestTools.AssertThrowsAndNotBlocks<ConnectionIsNotEstablishedYet>(() => proxyConnection.Contract.Ask());
         }
 
-     
+
 
         [Test]
         public void Proxy_AskMissingCord_Throws()
@@ -108,7 +94,7 @@ namespace TNT.Tests.Presentation.FullStack
 
             channelPair.ConnectAndStartReceiving();
 
-            Assert.Throws<TNT.Exceptions.RemoteContractImplementationException>(()=> proxyConnection.Contract.Ask("test"));
+            TestTools.AssertThrowsAndNotBlocks<RemoteContractImplementationException>(()=> proxyConnection.Contract.Ask());
         }
         [Test]
         public void Proxy_SayMissingCord_NotThrows()
@@ -127,7 +113,7 @@ namespace TNT.Tests.Presentation.FullStack
                 .Build();
 
             channelPair.ConnectAndStartReceiving();
-            proxyConnection.Contract.Say("test");
+            TestTools.AssertNotBlocks(proxyConnection.Contract.Say);
         }
         [Test]
         public void Origin_SayMissingCord_NotThrows()
@@ -147,7 +133,7 @@ namespace TNT.Tests.Presentation.FullStack
                 .Build();
 
             channelPair.ConnectAndStartReceiving();
-            originConnection.Contract.Say("test");
+            TestTools.AssertNotBlocks(originConnection.Contract.OnSay);
         }
         [Test]
         public void Proxy_SayWithException_CallNotThrows()
@@ -166,7 +152,7 @@ namespace TNT.Tests.Presentation.FullStack
                 .Build();
 
             channelPair.ConnectAndStartReceiving();
-            proxyConnection.Contract.Say();
+            TestTools.AssertNotBlocks(proxyConnection.Contract.Say);
         }
         [Test]
         public void Proxy_AskWithException_Throws()
@@ -185,7 +171,7 @@ namespace TNT.Tests.Presentation.FullStack
                 .Build();
 
             channelPair.ConnectAndStartReceiving();
-            Assert.Throws<TNT.Exceptions.RemoteSideUnhandledException>(()=>proxyConnection.Contract.Ask());
+            TestTools.AssertThrowsAndNotBlocks<RemoteSideUnhandledException>(() => proxyConnection.Contract.Ask());
         }
 
         [Test]
@@ -211,7 +197,7 @@ namespace TNT.Tests.Presentation.FullStack
                 .Build();
 
             channelPair.ConnectAndStartReceiving();
-            originConnection.Contract.Say();
+            TestTools.AssertNotBlocks(originConnection.Contract.OnSay);
         }
 
 
@@ -238,7 +224,7 @@ namespace TNT.Tests.Presentation.FullStack
                 .Build();
 
             channelPair.ConnectAndStartReceiving();
-            Assert.Throws<RemoteSideUnhandledException>(()=> originConnection.Contract.Ask());
+            TestTools.AssertThrowsAndNotBlocks<RemoteSideUnhandledException>(() => originConnection.Contract.Ask());
         }
         [Test]
         public void Origin_AsksNotImplemented_returnsDefault()
@@ -258,7 +244,8 @@ namespace TNT.Tests.Presentation.FullStack
                 .Build();
 
             channelPair.ConnectAndStartReceiving();
-            var answer =  originConnection.Contract.Ask();
+
+            var answer = TestTools.AssertNotBlocks(originConnection.Contract.Ask).Result;
             Assert.AreEqual(default(int), answer);
         }
 
@@ -308,22 +295,6 @@ namespace TNT.Tests.Presentation.FullStack
             );
             Assert.Throws<ConnectionIsLostException>(() => originConnection.Contract.Ask());
         }
-        private static Task<Exception> TryCatchAsyncWithTaskBlockedAssert(Action action)
-        {
-            var exception = Task.Factory.StartNew(() =>
-            {
-                try
-                {
-                    action();
-                }
-                catch (Exception e)
-                {
-                    return e;
-                }
-                return null;
-            });
-            Assert.IsTrue(exception.Wait(1000), "ask call is blocked");
-            return exception;
-        }
+      
     }
 }

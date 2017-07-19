@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,10 +12,24 @@ namespace TNT.Channel.Test
     {
         private bool _wasConnected;
         private bool _allowReceive;
+        ConcurrentQueue<byte[]> _receiveQueue = new ConcurrentQueue<byte[]>();
+        private Task _receiveQueueHandlerTask = new Task(() => { });
 
         public void ImmitateReceive(byte[] message)
         {
-            OnReceive?.Invoke(this, message);
+            _receiveQueue.Enqueue(message);
+            _receiveQueueHandlerTask= _receiveQueueHandlerTask.ContinueWith((t) => HandleReceiveQueue());
+        }
+
+        void HandleReceiveQueue()
+        {
+            byte[] msg;
+            _receiveQueue.TryDequeue(out msg);
+            if(msg==null)
+                return;
+            if(!IsConnected)
+                return;
+            OnReceive?.Invoke(this, msg);
         }
         public void ImmitateConnect()
         {
@@ -46,6 +61,10 @@ namespace TNT.Channel.Test
                     return;
                 
                 _allowReceive = value;
+                if(_allowReceive)
+                    if (_receiveQueueHandlerTask.Status == TaskStatus.Created)
+                        _receiveQueueHandlerTask.Start();
+                                        
                 AllowReceiveChanged?.Invoke(this,value);
             }
         }

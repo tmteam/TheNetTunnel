@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Exceptions\ConnectionIsNotEstablishedYet.cs" />
+    <Compile Include="Exceptions\NetworkDeadLockException.cs" />
     <Compile Include="Presentation\ChannelServer.cs" />
     <Compile Include="Presentation\Connection.cs" />
     <Compile Include="Presentation\ConnectionBuilder.cs" />

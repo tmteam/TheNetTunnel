@@ -79,6 +79,7 @@
     <Compile Include="Cord\Serializers\DateTimeSerializationTest.cs" />
     <Compile Include="Cord\Serializers\PrimitiveConvertSerializerTests.cs" />
     <Compile Include="Cord\Serializers\PrimitiveSerializerTests.cs" />
+    <Compile Include="TestTools.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
