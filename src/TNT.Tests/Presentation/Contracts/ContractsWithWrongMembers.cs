@@ -53,4 +53,15 @@ namespace TNT.Tests.Presentation.Proxy.ContractInterfaces
         [ContractMessage(1)]
         void Say2();
     }
+    public interface IUnserializeableContract
+    {
+        [ContractMessage(1)]
+        void Say(EventArgs arg);
+    }
+
+    public interface IUnDeserializeableContract
+    {
+        [ContractMessage(1)]
+        EventArgs Ask();
+    }
 }

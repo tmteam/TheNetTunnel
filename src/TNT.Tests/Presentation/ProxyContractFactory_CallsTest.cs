@@ -8,13 +8,13 @@ namespace TNT.Tests.Presentation.Proxy
     public class ProxyContractFactory_CallsTest
     {
         private CordInterlocutorMock      _cordMock;
-        private ICallContract _contract;
+        private ICallContract2 _contract;
 
         [SetUp]
         public void InitializeProxyContractFactory()
         {
             _cordMock = new CordInterlocutorMock();
-            _contract = ProxyContractFactory.CreateProxyContract<ICallContract>(_cordMock);
+            _contract = ProxyContractFactory.CreateProxyContract<ICallContract2>(_cordMock);
         }
 
         [Test]

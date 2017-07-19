@@ -5,4 +5,8 @@ namespace TNT.Tests.Presentation.Proxy.ContractInterfaces
     {
 
     }
+
+    public class EmptyContract : IEmptyContract
+    {
+    }
 }

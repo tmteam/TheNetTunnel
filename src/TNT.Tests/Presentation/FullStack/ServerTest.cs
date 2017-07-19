@@ -17,7 +17,7 @@ namespace TNT.Tests.Presentation.FullStack
     public class ServerTest
     {
         [Test]
-        public void ServerRecieveConnection_BeforeConnectRaised()
+        public void ServerAcceptConnection_BeforeConnectRaised()
         {
             var server = new TestChannelServer<ITestContract>(ConnectionBuilder.UseContract<ITestContract, TestContractImplementation>());
             server.IsListening = true;
@@ -33,7 +33,7 @@ namespace TNT.Tests.Presentation.FullStack
         }
 
         [Test]
-        public void ServerRecieveConnection_AfterConnectRaised()
+        public void ServerAcceptConnection_AfterConnectRaised()
         {
             var server = new TestChannelServer<ITestContract>(ConnectionBuilder.UseContract<ITestContract,TestContractImplementation>());
             server.IsListening = true; 
@@ -44,5 +44,33 @@ namespace TNT.Tests.Presentation.FullStack
             server.TestListener.ImmitateAccept(clientChannel);
             Assert.IsNotNull(incomeContractConnection, "AfterConnect not raised");
         }
+
+
+        [Test]
+        public void ServerAcceptConnection_AllowReceiveEqualTrue()
+        {
+            var server = new TestChannelServer<ITestContract>(ConnectionBuilder.UseContract<ITestContract, TestContractImplementation>());
+            server.IsListening = true;
+            var clientChannel = new TestChannel();
+            ConnectionBuilder.UseContract<ITestContract>().UseChannel(clientChannel).Buid();
+            server.TestListener.ImmitateAccept(clientChannel);
+            Assert.IsTrue(server.GetAllConnections().First().Channel.AllowReceive);
+        }
+
+        [Test]
+        public void ClientDisconnected_DisconnectedRaised()
+        {
+            var server = new TestChannelServer<ITestContract>(ConnectionBuilder.UseContract<ITestContract, TestContractImplementation>());
+            server.IsListening = true;
+            Connection<ITestContract, TestChannel> disconnectedConnection = null;
+            server.Disconnected += (sender, income) => disconnectedConnection = income;
+            var clientChannel = new TestChannel();
+            var proxyConnection = ConnectionBuilder.UseContract<ITestContract>().UseChannel(clientChannel).Buid();
+            var pair = server.TestListener.ImmitateAccept(clientChannel);
+            pair.Disconnect();
+            Assert.IsNotNull(disconnectedConnection, "Disconnect not raised");
+        }
+
+
     }
 }

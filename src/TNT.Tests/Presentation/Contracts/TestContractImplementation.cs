@@ -8,6 +8,8 @@ namespace TNT.Tests.Presentation.FullStack
 {
     public class TestContractImplementation:ITestContract
     {
+        public const int AskReturns = 42;
+
         public int SayCalledCount { get; set; }
 
         public void Say()
@@ -26,7 +28,7 @@ namespace TNT.Tests.Presentation.FullStack
 
         public int Ask()
         {
-            return 0;
+            return AskReturns;
         }
 
         public int Ask(string s)

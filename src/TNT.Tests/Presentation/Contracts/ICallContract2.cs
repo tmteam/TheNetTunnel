@@ -4,7 +4,7 @@ using TNT.Presentation.Proxy;
 
 namespace TNT.Tests.Presentation.Proxy.ContractInterfaces
 {
-    public interface ICallContract
+    public interface ICallContract2
     {
         [ContractMessage(CordInterlocutorMock.ProcedureCallId)]
         Action ProcedureCall { get; set; }

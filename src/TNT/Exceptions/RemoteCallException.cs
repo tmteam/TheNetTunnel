@@ -22,6 +22,7 @@ namespace TNT.Exceptions
     public enum RemoteCallExceptionId
     {
         ConnectionIsLostException = 1,
+        ConnectionIsNotEstablishedYet =2,
         RemoteSideUnhandledException = 3,
         LocalSideSerializationException = 4,
         RemoteSideSerializationException = 5,

@@ -27,6 +27,13 @@
             IsConnected = true;
         }
 
+        public void ConnectAndStartReceiving()
+        {
+            Connect();
+            ChannelB.AllowReceive = true;
+            CahnnelA.AllowReceive = true;
+        }
+
         public void Disconnect()
         {
             FromAToB.Stop();

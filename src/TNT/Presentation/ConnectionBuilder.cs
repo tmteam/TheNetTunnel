@@ -54,7 +54,7 @@ namespace TNT.Presentation
         public Action<TContract, IChannel> ContractInitializer { get; private set; } = (contract, channel) => { };
         public Action<TContract, IChannel> ContractFinalizer   { get; private set; } = (contract, channel) => { };
 
-
+        
         public List<DeserializationRule> UserDeserializationRules { get; } = new List<DeserializationRule>();
 
         public List<SerializationRule> UserSerializationRules { get; } = new List<SerializationRule>();
@@ -74,11 +74,7 @@ namespace TNT.Presentation
             OriginContractFactory = contractFactory;
         }
 
-        public ConnectionBuilder<TContract> UseReceiveDispatcher<TDispatcher>() 
-            where TDispatcher : IDispatcher, new()
-        {
-            return this.UseReceiveDispatcherFactory(() => new TDispatcher());
-        }
+        
 
         public ConnectionBuilder<TContract> UseSendSeparationBehaviour<TSendMessageSequenceBehaviour>() 
             where TSendMessageSequenceBehaviour: ISendMessageSequenceBehaviour, new()
@@ -92,17 +88,27 @@ namespace TNT.Presentation
             SendMessageSequenceBehaviourFactory = sendMessageSequenceBehaviourFactory;
             return this;
         }
-        public ConnectionBuilder<TContract> UseReceiveDispatcherFactory<TDispatcher>() 
-            where TDispatcher: IDispatcher, new()
+        public ConnectionBuilder<TContract> UseReceiveDispatcher<TDispatcher>()
+            where TDispatcher : IDispatcher, new()
         {
-            return UseReceiveDispatcherFactory(() => new TDispatcher());
+            return this.UseReceiveDispatcher(() => new TDispatcher());
         }
-        public ConnectionBuilder<TContract> UseReceiveDispatcherFactory(Func<IDispatcher> dispatcherFactory)
+        public ConnectionBuilder<TContract> UseReceiveDispatcher(Func<IDispatcher> dispatcherFactory)
         {
             if (dispatcherFactory == null)
                 throw new ArgumentNullException(nameof(dispatcherFactory));
             ReceiveDispatcherFactory = dispatcherFactory;
             return this;
+        }
+
+        public ConnectionBuilder<TContract> DontUseDefaultSerializers()
+        {
+            throw new NotImplementedException();
+        }
+
+        public ConnectionBuilder<TContract> DontUseDefaultDeserializers()
+        {
+            throw new NotImplementedException();
         }
 
         public ConnectionBuilder<TContract> UseSerializer(SerializationRule rule)

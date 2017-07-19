@@ -69,5 +69,19 @@ namespace TNT.Tests.Presentation.Proxy
             Assert.Throws<InvalidContractMemeberException>(
                 () => ProxyContractFactory.CreateProxyContract<IContractWithNonDelegateProperty>(stub));
         }
+        [Test]
+        public void UnserializeableContract_CreateT_throwsException()
+        {
+            var stub = new CordInterlocutorMock();
+            Assert.Throws<TypeCannotBeSerializedException>(
+                () => ProxyContractFactory.CreateProxyContract<IUnserializeableContract>(stub));
+        }
+        [Test]
+        public void UnDeserializeableContract_CreateT_throwsException()
+        {
+            var stub = new CordInterlocutorMock();
+            Assert.Throws<TypeCannotBeDeserializedException>(
+                () => ProxyContractFactory.CreateProxyContract<IUnDeserializeableContract>(stub));
+        }
     }
 }
