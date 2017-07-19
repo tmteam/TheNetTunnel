@@ -38,7 +38,8 @@
         {
             FromAToB.Stop();
             FromBToA.Stop();
-            IsConnected = true;
+            IsConnected = false;
+
         }
     }
 }

@@ -19,13 +19,13 @@ namespace TNT.Tests.Presentation.FullStack
                 .UseContract<ITestContract>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channelPair.CahnnelA)
-                .Buid();
+                .Build();
 
             var originConnection = ConnectionBuilder
                 .UseContract<ITestContract,TestContractImplementation>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channelPair.ChannelB)
-                .Buid();
+                .Build();
 
             channelPair.ConnectAndStartReceiving();
 
@@ -46,12 +46,12 @@ namespace TNT.Tests.Presentation.FullStack
                 //It can provoke an networkDeadlock
                 .UseContractInitalization((c,_)=> c.OnAsk+=c.Ask)
                 .UseChannel(channelPair.CahnnelA)
-                .Buid();
+                .Build();
 
             var originConnection = ConnectionBuilder
                 .UseContract<ITestContract, TestContractImplementation>()
                 .UseChannel(channelPair.ChannelB)
-                .Buid();
+                .Build();
 
             channelPair.ConnectAndStartReceiving();
 

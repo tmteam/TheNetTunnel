@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TNT.Exceptions;
 
 namespace TNT.Channel.Test
 {
     public class TestChannel: IChannel
     {
+        private bool _wasConnected;
         private bool _allowReceive;
 
         public void ImmitateReceive(byte[] message)
@@ -18,6 +20,7 @@ namespace TNT.Channel.Test
         {
             if(IsConnected)
                 throw  new InvalidOperationException("Cannot to immitate connect while IsConnected = true");
+            _wasConnected = true;
             IsConnected = true;
         }
 
@@ -72,6 +75,10 @@ namespace TNT.Channel.Test
 
         public void Write(byte[] array)
         {
+            if (!_wasConnected)
+                throw new ConnectionIsNotEstablishedYet();
+            if (!IsConnected)
+                throw new ConnectionIsLostException();
             OnWrited?.Invoke(this, array);
         }
     }

@@ -27,7 +27,7 @@ namespace TNT.Channel.Tcp
                         var channel = new TcpChannel();
                         channel.Connect(new IPEndPoint(IPAddress.Loopback, 17171));
                         return channel;
-                    }).Buid();
+                    }).Build();
         }
     }
 }

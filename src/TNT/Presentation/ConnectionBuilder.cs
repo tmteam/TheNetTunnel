@@ -195,7 +195,7 @@ namespace TNT.Presentation
             _contractBuilder = contractBuilder;
             _channelFactory = channelFactory;
         }
-        public Connection<TContract, TChannel> Buid()
+        public Connection<TContract, TChannel> Build()
         {
             var dispatcher = _contractBuilder.ReceiveDispatcherFactory();
             var sendSeparationBehaviour = _contractBuilder.SendMessageSequenceBehaviourFactory();

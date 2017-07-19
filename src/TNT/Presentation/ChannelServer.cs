@@ -42,7 +42,7 @@ namespace TNT.Presentation
 
             if (!channel.IsConnected)
                 return;
-            var connection = _connectionBuilder.UseChannel(channel).Buid();
+            var connection = _connectionBuilder.UseChannel(channel).Build();
 
             var beforeConnectEventArgs = new BeforeConnectEventArgs<TContract, TChannel>(connection);
 

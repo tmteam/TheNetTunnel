@@ -25,9 +25,9 @@ namespace TNT.Tests.Presentation.FullStack
                 .UseContract<ITestContract>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channel)
-                .Buid();
+                .Build();
 
-            Assert.Throws<ConnectionIsNotEstablishedYet>(()=>proxyConnection.Contract.Say("test"));
+            Assert.Throws<ConnectionIsNotEstablishedYet>(()=>proxyConnection.Contract.Say());
         }
 
 
@@ -36,28 +36,25 @@ namespace TNT.Tests.Presentation.FullStack
         {
             var channel = new TestChannel();
             var proxyConnection = ConnectionBuilder
-                .UseContract<ITestContract>()
+                .UseContract<ITestContract, TestContractImplementation>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channel)
-                .Buid();
+                .Build();
 
-            Assert.Throws<ConnectionIsNotEstablishedYet>(() => proxyConnection.Contract.Say("test"));
+            Assert.Throws<ConnectionIsNotEstablishedYet>(() => proxyConnection.Contract.OnSay());
         }
 
         [Test]
-        public void ProxyConnectionIsNotEstablishedYet_AskCallThrows()
+        public async Task ProxyConnectionIsNotEstablishedYet_AskCallThrows()
         {
             var channel = new TestChannel();
             var proxyConnection = ConnectionBuilder
                 .UseContract<ITestContract>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channel)
-                .Buid();
-            var tsk = Task.Run(() => proxyConnection.Contract.Ask());
-            tsk.Wait(1000);
-            Assert.IsTrue(tsk.IsCompleted, "ask call is blocked");
-            int bufer = 0;
-            Assert.Throws<ConnectionIsNotEstablishedYet>(() => bufer = tsk.Result);
+                .Build();
+                var exception = TryCatchAsyncWithTaskBlockedAssert(() => proxyConnection.Contract.Ask());
+                Assert.IsInstanceOf<ConnectionIsNotEstablishedYet>(exception.Result);
         }
 
         [Test]
@@ -68,8 +65,9 @@ namespace TNT.Tests.Presentation.FullStack
                 .UseContract<ITestContract>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channel)
-                .Buid();
-
+                .Build();
+            channel.ImmitateConnect();
+            channel.ImmitateDisconnect();
             Assert.Throws<ConnectionIsLostException>(() => proxyConnection.Contract.Say("test"));
         }
 
@@ -81,17 +79,17 @@ namespace TNT.Tests.Presentation.FullStack
                 .UseContract<ITestContract>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channel)
-                .Buid();
+                .Build();
 
             channel.ImmitateConnect();
             channel.ImmitateDisconnect();
 
-            var tsk=   Task.Run(()=>proxyConnection.Contract.Ask());
-            tsk.Wait(1000);
-            Assert.IsTrue(tsk.IsCompleted,"ask call is blocked");
-            int bufer = 0;
-            Assert.Throws<ConnectionIsLostException>(()=> bufer =  tsk.Result);
+            var exception = TryCatchAsyncWithTaskBlockedAssert(()=>proxyConnection.Contract.Ask());
+            Assert.IsInstanceOf<ConnectionIsLostException>(exception.Result);
         }
+
+     
+
         [Test]
         public void Proxy_AskMissingCord_Throws()
         {
@@ -100,13 +98,13 @@ namespace TNT.Tests.Presentation.FullStack
                 .UseContract<ITestContract>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channelPair.CahnnelA)
-                .Buid();
+                .Build();
 
             var originConnection = ConnectionBuilder
                 .UseContract<IEmptyContract, EmptyContract>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channelPair.ChannelB)
-                .Buid();
+                .Build();
 
             channelPair.ConnectAndStartReceiving();
 
@@ -120,13 +118,13 @@ namespace TNT.Tests.Presentation.FullStack
                 .UseContract<ITestContract>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channelPair.CahnnelA)
-                .Buid();
+                .Build();
 
             var originConnection = ConnectionBuilder
                 .UseContract<IEmptyContract, EmptyContract>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channelPair.ChannelB)
-                .Buid();
+                .Build();
 
             channelPair.ConnectAndStartReceiving();
             proxyConnection.Contract.Say("test");
@@ -140,13 +138,13 @@ namespace TNT.Tests.Presentation.FullStack
                 .UseContract<IEmptyContract>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channelPair.CahnnelA)
-                .Buid();
+                .Build();
 
             var originConnection = ConnectionBuilder
                 .UseContract<ITestContract, TestContractImplementation>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channelPair.ChannelB)
-                .Buid();
+                .Build();
 
             channelPair.ConnectAndStartReceiving();
             originConnection.Contract.Say("test");
@@ -159,13 +157,13 @@ namespace TNT.Tests.Presentation.FullStack
                 .UseContract<IExceptionalContract>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channelPair.CahnnelA)
-                .Buid();
+                .Build();
 
             var originConnection = ConnectionBuilder
                 .UseContract<IExceptionalContract, ExceptionalContract>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channelPair.ChannelB)
-                .Buid();
+                .Build();
 
             channelPair.ConnectAndStartReceiving();
             proxyConnection.Contract.Say();
@@ -178,13 +176,13 @@ namespace TNT.Tests.Presentation.FullStack
                 .UseContract<IExceptionalContract>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channelPair.CahnnelA)
-                .Buid();
+                .Build();
 
             var originConnection = ConnectionBuilder
                 .UseContract<IExceptionalContract, ExceptionalContract>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channelPair.ChannelB)
-                .Buid();
+                .Build();
 
             channelPair.ConnectAndStartReceiving();
             Assert.Throws<TNT.Exceptions.RemoteSideUnhandledException>(()=>proxyConnection.Contract.Ask());
@@ -204,13 +202,13 @@ namespace TNT.Tests.Presentation.FullStack
                     c.OnAsk += () => { throw new InvalidOperationException(); };
                 })
                 .UseChannel(channelPair.CahnnelA)
-                .Buid();
+                .Build();
 
             var originConnection = ConnectionBuilder
                 .UseContract<ITestContract, TestContractImplementation>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channelPair.ChannelB)
-                .Buid();
+                .Build();
 
             channelPair.ConnectAndStartReceiving();
             originConnection.Contract.Say();
@@ -231,13 +229,13 @@ namespace TNT.Tests.Presentation.FullStack
                     c.OnAsk += () => { throw new InvalidOperationException(); };
                 })
                 .UseChannel(channelPair.CahnnelA)
-                .Buid();
+                .Build();
 
             var originConnection = ConnectionBuilder
                 .UseContract<ITestContract, TestContractImplementation>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channelPair.ChannelB)
-                .Buid();
+                .Build();
 
             channelPair.ConnectAndStartReceiving();
             Assert.Throws<RemoteSideUnhandledException>(()=> originConnection.Contract.Ask());
@@ -251,13 +249,13 @@ namespace TNT.Tests.Presentation.FullStack
                 .UseContract<ITestContract>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channelPair.CahnnelA)
-                .Buid();
+                .Build();
 
             var originConnection = ConnectionBuilder
                 .UseContract<ITestContract, TestContractImplementation>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channelPair.ChannelB)
-                .Buid();
+                .Build();
 
             channelPair.ConnectAndStartReceiving();
             var answer =  originConnection.Contract.Ask();
@@ -283,13 +281,13 @@ namespace TNT.Tests.Presentation.FullStack
                     };
                 })
                 .UseChannel(channelPair.CahnnelA)
-                .Buid();
+                .Build();
 
             var originConnection = ConnectionBuilder
                 .UseContract<ITestContract, TestContractImplementation>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channelPair.ChannelB)
-                .Buid();
+                .Build();
 
             channelPair.ConnectAndStartReceiving();
             Task.Run(() =>
@@ -309,6 +307,23 @@ namespace TNT.Tests.Presentation.FullStack
                 }
             );
             Assert.Throws<ConnectionIsLostException>(() => originConnection.Contract.Ask());
+        }
+        private static Task<Exception> TryCatchAsyncWithTaskBlockedAssert(Action action)
+        {
+            var exception = Task.Factory.StartNew(() =>
+            {
+                try
+                {
+                    action();
+                }
+                catch (Exception e)
+                {
+                    return e;
+                }
+                return null;
+            });
+            Assert.IsTrue(exception.Wait(1000), "ask call is blocked");
+            return exception;
         }
     }
 }

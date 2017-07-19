@@ -8,8 +8,8 @@ namespace TNT.Exceptions
 {
     public abstract class RemoteCallException: Exception
     {
-        protected RemoteCallException(bool connectionIsLost, RemoteCallExceptionId id, string message = null)
-            :base($"[{id}]"+ (message??(" tnt call exception")))
+        protected RemoteCallException(bool connectionIsLost, RemoteCallExceptionId id, string message = null, Exception innerException = null)
+            :base($"[{id}]"+ (message??(" tnt call exception")), innerException)
         {
             IsConnectionLost = connectionIsLost;
             Id = id;

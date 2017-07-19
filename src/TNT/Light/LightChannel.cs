@@ -68,8 +68,7 @@ namespace TNT.Light
             byte[] msg;
             while (_sendMessageSeparatorBehaviour.TryDequeue(out msg, out id))
             {
-                if(Channel.IsConnected)
-                    Channel.Write(msg);
+                  Channel.Write(msg);
             }
             return true;
         }

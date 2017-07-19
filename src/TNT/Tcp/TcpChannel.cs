@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
@@ -7,6 +8,12 @@ namespace TNT.Channel.Tcp
 {
     public class TcpChannel : IChannel
     {
+        private bool _wasConnected = false;
+
+        private bool allowReceive = false;
+        private bool disconnectMsgWasSended = false;
+        private bool readWasStarted = false;
+
         public TcpChannel(IPAddress address, int port): this(new TcpClient(new IPEndPoint(address, port)))
         {
             
@@ -56,9 +63,6 @@ namespace TNT.Channel.Tcp
             }
         }
 
-        private bool allowReceive = false;
-        private bool disconnectMsgWasSended = false;
-        private bool readWasStarted = false;
 
         public TcpClient Client { get; }
 
@@ -68,6 +72,7 @@ namespace TNT.Channel.Tcp
         public void Connect(IPEndPoint endPoint)
         {
             this.Client.Connect(endPoint);
+            _wasConnected = IsConnected;
             AllowReceive = true;
         }
         public void Disconnect()
@@ -96,11 +101,31 @@ namespace TNT.Channel.Tcp
 
       public void Write(byte[] data)
         {
+            if (!_wasConnected)
+                throw new TNT.Exceptions.ConnectionIsNotEstablishedYet("tcp channel was not connected yet");
+
             if (!Client.Connected)
-                return;
-            NetworkStream networkStream = Client.GetStream();
-            //Start async write operation
-            networkStream.BeginWrite(data, 0, data.Length, writeCallback, null);
+            {
+                throw new TNT.Exceptions.ConnectionIsLostException("tcp channel is not connected");
+            }
+
+            try
+            {
+                NetworkStream networkStream = Client.GetStream();
+                //Start async write operation
+                networkStream.BeginWrite(data, 0, data.Length, writeCallback, null);
+
+            }
+            catch (Exception e)
+            {
+                if (!IsConnected)// e is IOException || e is InvalidOperationException)
+                {
+                    throw new TNT.Exceptions.ConnectionIsLostException(innerException: e,
+                        message: "Write operation was failed");
+                }
+                else
+                    throw;
+            }
         }
 
         private void writeCallback(IAsyncResult result)
