@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using TNT.Cord.Deserializers;
 using TNT.Cord.Serializers;
 using TNT.Light;
@@ -19,7 +20,7 @@ namespace TNT.Cord
         public event Action<ICordMessenger, int, int, object[]> OnAsk;
         public event Action<ICordMessenger, int, object[]> OnSay;
         public event Action<ICordMessenger, int, int, object> OnAns;
-
+        public const short AskHandleExceptionCordId = -32500;
         public CordMessenger(
             LightChannel channel,
             SerializerFactory serializerFactory,
@@ -45,7 +46,7 @@ namespace TNT.Cord
                 {
                     _inputSayMessageDeserializeInfos.Add(
                         -messageSayInfo.messageId,
-                        new InputMessageDeserializeInfo(1, false, deserializerFactory.Create(messageSayInfo.ReturnType)));
+                        InputMessageDeserializeInfo.CreateForAnswer(deserializerFactory.Create(messageSayInfo.ReturnType)));
                 }
             }
             foreach (var messageSayInfo in inputMessages)
@@ -53,9 +54,10 @@ namespace TNT.Cord
                 var hasReturnType = messageSayInfo.ReturnType != typeof(void);
 
                 var deserializer = deserializerFactory.Create(messageSayInfo.ArgumentTypes);
-                _inputSayMessageDeserializeInfos.Add(
-                    messageSayInfo.messageId,
-                    new InputMessageDeserializeInfo(messageSayInfo.ArgumentTypes.Length, hasReturnType, deserializer));
+                _inputSayMessageDeserializeInfos.Add( 
+                    messageSayInfo.messageId, 
+                    InputMessageDeserializeInfo.CreateForAsk(messageSayInfo.ArgumentTypes.Length, hasReturnType, deserializer));
+                  
 
                 if (hasReturnType)
                 {
@@ -66,7 +68,6 @@ namespace TNT.Cord
                 }
             }
         }
-
       
 
         public void Say(int id, object[] values)
@@ -128,50 +129,40 @@ namespace TNT.Cord
         private void _channel_OnReceive(LightChannel arg1, MemoryStream data)
         {
             var id = CordTools.ReadShort(data);
-                InputMessageDeserializeInfo sayDeserializer;
-                _inputSayMessageDeserializeInfos.TryGetValue(id, out sayDeserializer);
-                if (sayDeserializer != null)
+            InputMessageDeserializeInfo sayDeserializer;
+            _inputSayMessageDeserializeInfos.TryGetValue(id, out sayDeserializer);
+            if (sayDeserializer != null)
+            {
+                if (id < 0)
                 {
-                    if (id < 0)
-                    {
-                        //input answer message handling
-                        var askId = CordTools.ReadShort(data);
-                        var ans = sayDeserializer.Deserializer.Deserialize(data, (int)(data.Length - data.Position));
-                        OnAns?.Invoke(this, id, askId, ans);
-                        return;
-                    }
+                    //input answer message handling
+                    var askId = CordTools.ReadShort(data);
+                    var ans = sayDeserializer.Deserialize(data).Single();
+                    OnAns?.Invoke(this, id, askId, ans);
+                    return;
+                }
 
-                    if (sayDeserializer.HasReturnType)
-                    {
-                        //input ask messageHandling
-                        var askId = CordTools.ReadShort(data);
+                if (sayDeserializer.HasReturnType)
+                {
+                    //input ask messageHandling
+                    var askId = CordTools.ReadShort(data);
 
-                        object[] arg = Deserialize(data, sayDeserializer);
-                        OnAsk?.Invoke(this, id, askId, arg);
-                        return;
-                    }
-                    else
+                    object[] arg = sayDeserializer.Deserialize(data);
+                    OnAsk?.Invoke(this, id, askId, arg);
+                    return;
+                }
+                else
                 {
                     //input say messageHandling
-                    object[] arg = Deserialize(data, sayDeserializer);
+                    object[] arg = sayDeserializer.Deserialize(data);
                     OnSay?.Invoke(this, id, arg);
                     return;
                 }
             }
-                throw new Exception($"Unknown id {id}");
+            throw new Exception($"Unknown id {id}");
         }
 
-        private static object[] Deserialize(MemoryStream data, InputMessageDeserializeInfo sayDeserializer)
-        {
-            object[] arg = null;
-            if (sayDeserializer.ArgumentsCount == 0)
-                arg = new object[0];
-            else if (sayDeserializer.ArgumentsCount == 1)
-                arg = new[] { sayDeserializer.Deserializer.Deserialize(data, (int)(data.Length - data.Position)) };
-            else
-                arg = (object[])sayDeserializer.Deserializer.Deserialize(data, (int)(data.Length - data.Position));
-            return arg;
-        }
+
     }
 
     public class MessageTypeInfo
@@ -184,7 +175,17 @@ namespace TNT.Cord
 
     class InputMessageDeserializeInfo
     {
-        public InputMessageDeserializeInfo(int argumentsCount, bool hasReturnType, IDeserializer deserializer)
+        public static InputMessageDeserializeInfo CreateForAnswer(IDeserializer deserializer)
+        {
+            return new InputMessageDeserializeInfo(1, false, deserializer);
+        }
+
+        public static InputMessageDeserializeInfo CreateForAsk(int argumentsCount, bool hasReturnType,
+            IDeserializer deserializer)
+        {
+            return new InputMessageDeserializeInfo(argumentsCount,hasReturnType, deserializer);
+        }
+        private InputMessageDeserializeInfo(int argumentsCount, bool hasReturnType, IDeserializer deserializer)
         {
             ArgumentsCount = argumentsCount;
             HasReturnType = hasReturnType;
@@ -194,6 +195,18 @@ namespace TNT.Cord
         public int ArgumentsCount { get; }
         public IDeserializer Deserializer { get; }
         public bool HasReturnType { get; }
+
+        public object[] Deserialize(MemoryStream data)
+        {
+            object[] arg = null;
+            if (ArgumentsCount == 0)
+                arg = new object[0];
+            else if (ArgumentsCount == 1)
+                arg = new[] { Deserializer.Deserialize(data, (int)(data.Length - data.Position)) };
+            else
+                arg = (object[])Deserializer.Deserialize(data, (int)(data.Length - data.Position));
+            return arg;
+        }
     }
 
     class OutputMessageSerializeInfo

@@ -42,6 +42,7 @@ namespace TNT.Presentation
             unchecked {
                 askId = (short)Interlocked.Increment(ref lastUsedAskId);
             }
+            //
             var awaiter = new AnswerAwaiter();
             _answerAwaiters.TryAdd(askId, awaiter);
             _messenger.Ask((short)cordId, (short)askId, values);
