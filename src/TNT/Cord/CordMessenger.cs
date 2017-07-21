@@ -5,6 +5,8 @@ using System.Linq;
 using TNT.Cord.Deserializers;
 using TNT.Cord.Serializers;
 using TNT.Exceptions;
+using TNT.Exceptions.ContractImplementation;
+using TNT.Exceptions.Remote;
 using TNT.Light;
 
 namespace TNT.Cord
@@ -25,7 +27,7 @@ namespace TNT.Cord
 
 
 
-        public event Action<ICordMessenger, int, int, object> OnAns;
+        public event Action<ICordMessenger, short, short, object> OnAns;
         public event Action<ICordMessenger, ExceptionMessage> OnException;
 
         public CordMessenger(
@@ -71,7 +73,7 @@ namespace TNT.Cord
                 InputMessageDeserializeInfo.CreateForExceptionHandling());
         }
 
-        public void HandleCallException( RemoteCallException rcException)
+        public void HandleCallException( RemoteExceptionBase rcException)
         {
             Say(CordMessenger.ExceptionMessageId,
                 new object[] { new ExceptionMessage(rcException) },
@@ -146,7 +148,8 @@ namespace TNT.Cord
         {
             if (data.Length - data.Position < 2)
             {
-                HandleCallException(new RemoteSideSerializationException(CordMessenger.GeneralExceptionCordId, null, "Cord id missed"));
+                HandleCallException(new RemoteSerializationException(
+                     null, null, true,  "Cord id missed"));
                 return;
             }
             var id = CordTools.ReadShort(data);
@@ -155,7 +158,8 @@ namespace TNT.Cord
             if (sayDeserializer == null)
             {
                 HandleCallException(new
-                    RemoteContractImplementationException(id, $"Cord message id{id} is not implemented"));
+                    RemoteContractImplementationException(
+                    id, null, false, $"Cord message id{id} is not implemented"));
                 return;
             }
 
@@ -164,7 +168,7 @@ namespace TNT.Cord
             {
                 if (data.Length - data.Position < 2)
                 {
-                    HandleCallException(new RemoteSideSerializationException(id, null, "Ask Id missed"));
+                    HandleCallException(new RemoteSerializationException(id, null, true, "Ask Id missed"));
                     return;
                 }
                 askId = CordTools.ReadShort(data);
@@ -177,7 +181,7 @@ namespace TNT.Cord
             }
             catch (Exception ex)
             {
-                HandleCallException(new RemoteSideSerializationException(id, askId,
+                HandleCallException(new RemoteSerializationException(id, askId, true,
                     $"Cord message id{id} with could not be deserialized. InnerException: {ex.ToString()}"));
                 return;
             }
@@ -189,7 +193,7 @@ namespace TNT.Cord
                     //input answer message handling
                     OnAns?.Invoke(this, id, askId.Value, deserialized.Single());
                 }
-                catch (RemoteCallException e)
+                catch (RemoteExceptionBase e)
                 {
                     HandleCallException(e);
                 }

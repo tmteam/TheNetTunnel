@@ -1,6 +1,7 @@
 ﻿using System;
+using TNT.Light;
 
-namespace TNT.Channel
+namespace TNT.Presentation
 {
     public interface IChannelListener<out TChannel> where TChannel : IChannel
     {

@@ -1,5 +1,5 @@
 ﻿using System;
-using TNT.Channel;
+using TNT.Light;
 
 namespace TNT.Presentation
 {

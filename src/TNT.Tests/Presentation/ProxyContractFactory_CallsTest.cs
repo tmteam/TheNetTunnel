@@ -1,5 +1,5 @@
 ﻿using NUnit.Framework;
-using TNT.Presentation.Proxy;
+using TNT.Contract.Proxy;
 using TNT.Tests.Presentation.Proxy.ContractInterfaces;
 
 namespace TNT.Tests.Presentation.Proxy

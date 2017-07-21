@@ -1,6 +1,6 @@
 using System;
 
-namespace TNT.Presentation
+namespace TNT.Contract
 {
     [AttributeUsage(AttributeTargets.Interface)]
     public class ContractAttribute : Attribute

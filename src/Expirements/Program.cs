@@ -4,13 +4,12 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using Expirements.General;
-using TNT.Channel;
-using TNT.Channel.Tcp;
 using TNT.Cord;
 using TNT.Cord.Deserializers;
 using TNT.Cord.Serializers;
 using TNT.Light;
 using TNT.Presentation;
+using TNT.Tcp;
 
 namespace Expirements
 {

@@ -5,10 +5,13 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using TNT.Channel.Test;
 using TNT.Exceptions;
+using TNT.Exceptions.ContractImplementation;
+using TNT.Exceptions.Local;
+using TNT.Exceptions.Remote;
 using TNT.Light;
 using TNT.Presentation;
+using TNT.Testing;
 using TNT.Tests.Presentation.Contracts;
 using TNT.Tests.Presentation.Proxy.ContractInterfaces;
 
@@ -171,7 +174,7 @@ namespace TNT.Tests.Presentation.FullStack
                 .Build();
 
             channelPair.ConnectAndStartReceiving();
-            TestTools.AssertThrowsAndNotBlocks<RemoteSideUnhandledException>(() => proxyConnection.Contract.Ask());
+            TestTools.AssertThrowsAndNotBlocks<RemoteUnhandledException>(() => proxyConnection.Contract.Ask());
         }
 
         [Test]
@@ -224,7 +227,7 @@ namespace TNT.Tests.Presentation.FullStack
                 .Build();
 
             channelPair.ConnectAndStartReceiving();
-            TestTools.AssertThrowsAndNotBlocks<RemoteSideUnhandledException>(() => originConnection.Contract.Ask());
+            TestTools.AssertThrowsAndNotBlocks<RemoteUnhandledException>(() => originConnection.Contract.Ask());
         }
         [Test]
         public void Origin_AsksNotImplemented_returnsDefault()

@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using TNT.Channel;
+using TNT.Light;
 using TNT.Presentation;
 
 namespace TNT.Presentation

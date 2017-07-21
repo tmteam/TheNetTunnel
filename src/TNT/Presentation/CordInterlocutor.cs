@@ -7,6 +7,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using TNT.Cord;
 using TNT.Exceptions;
+using TNT.Exceptions.ContractImplementation;
+using TNT.Exceptions.Local;
+using TNT.Exceptions.Remote;
+using TNT.Tcp;
 
 namespace TNT.Presentation
 {
@@ -50,9 +54,9 @@ namespace TNT.Presentation
                 askId = (short)Interlocked.Increment(ref lastUsedAskId);
             }
             
-            var awaiter = new AnswerAwaiter(cordId,askId);
+            var awaiter = new AnswerAwaiter((short)cordId,askId);
             _answerAwaiters.TryAdd(askId, awaiter);
-            _messenger.Ask((short)cordId, (short)askId, values);
+            _messenger.Ask((short)cordId, askId, values);
             var result = awaiter.WaitOrThrow(10000);
             return (T)result;
         }
@@ -78,14 +82,14 @@ namespace TNT.Presentation
         }
 
 
-        private void _messenger_OnAns(ICordMessenger sender, int cordId, int askId, object answer)
+        private void _messenger_OnAns(ICordMessenger sender, short cordId, short askId, object answer)
         {
             //use not conveyor. 
             AnswerAwaiter awaiter;
             _answerAwaiters.TryRemove((short) askId, out awaiter);
             //in case of timeoutException awaiter is still in dictionary
             if(awaiter==null)
-                throw new RemoteSideSerializationException(cordId, askId, $"answer {cordId} / {askId} not awaited");
+                throw new RemoteSerializationException(cordId, askId, true,  $"answer {cordId} / {askId} not awaited");
             //in case of timeoutException, do nothing:
             awaiter.SetResult(answer);
         }
@@ -108,7 +112,8 @@ namespace TNT.Presentation
                     Func<object[], object> handler;
                     _askSubscribtion.TryGetValue(message.Id, out handler);
                     if (handler == null)
-                        throw new RemoteContractImplementationException(message.Id,
+                        throw new RemoteContractImplementationException(
+                            message.Id, message.AskId, false,
                             $"ask {message.Id} not implemented");
                     object answer = null;
                     answer = handler.Invoke(message.Arguments);
@@ -123,17 +128,20 @@ namespace TNT.Presentation
             }
             catch (Exception e)
             {
-                _messenger.HandleCallException(new RemoteSideUnhandledException(message.Id, message.AskId.Value,
+                _messenger.HandleCallException(new RemoteUnhandledException(message.Id, message.AskId, e,
                     $"UnhandledException: {e.ToString()}"));
             }
         }
         class AnswerAwaiter
         {
-            private readonly int _cordId;
-            private readonly int _askId;
-            private Exception _exceptionalResult;
+            private readonly short _cordId;
+            private readonly short _askId;
+            private readonly ManualResetEvent _event;
 
-            public AnswerAwaiter(int cordId, int askId)
+            private Exception _exceptionalResult;
+            private object _returnResult;
+
+            public AnswerAwaiter(short cordId, short askId)
             {
                 _cordId = cordId;
                 _askId = askId;
@@ -146,23 +154,22 @@ namespace TNT.Presentation
                     throw new CallTimeoutException(_cordId, _askId);
                 if (_exceptionalResult != null)
                     throw _exceptionalResult;
-                return ReturnResult;
+                return _returnResult;
             }
 
             public void SetExceptionalResult(Exception ex)
             {
-                ReturnResult = null;
+                _returnResult = null;
                 _exceptionalResult = ex;
                 _event.Set();
             }
             public void SetResult(object result)
             {
-                ReturnResult = result;
+                _returnResult = result;
                 _event.Set();
             }
 
-            private ManualResetEvent _event;
-            public object ReturnResult { get; private set; }
+            
         }
     }
     

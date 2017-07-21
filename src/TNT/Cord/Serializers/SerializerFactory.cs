@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using TNT.Exceptions;
+using TNT.Exceptions.ContractImplementation;
 
 namespace TNT.Cord.Serializers
 {

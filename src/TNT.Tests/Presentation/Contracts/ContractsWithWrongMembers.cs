@@ -1,6 +1,6 @@
 ﻿using System;
+using TNT.Contract;
 using TNT.Presentation;
-using TNT.Presentation.Proxy;
 
 namespace TNT.Tests.Presentation.Proxy.ContractInterfaces
 {

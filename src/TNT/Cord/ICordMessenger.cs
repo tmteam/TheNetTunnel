@@ -1,5 +1,6 @@
 ﻿using System;
 using TNT.Exceptions;
+using TNT.Exceptions.Remote;
 
 namespace TNT.Cord
 {
@@ -9,11 +10,11 @@ namespace TNT.Cord
         void Say(int id, object[] values);
         void Ans(short id, short askId, object value);
 
-        void HandleCallException(RemoteCallException rcException);
+        void HandleCallException(RemoteExceptionBase rcException);
 
         event Action<ICordMessenger, CordRequestMessage> OnRequest;
 
-        event Action<ICordMessenger, int, int, object> OnAns;
+        event Action<ICordMessenger, short, short, object> OnAns;
 
         event Action<ICordMessenger, ExceptionMessage> OnException;
     }

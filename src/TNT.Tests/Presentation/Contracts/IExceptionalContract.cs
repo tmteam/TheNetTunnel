@@ -1,4 +1,5 @@
-﻿using TNT.Presentation;
+﻿using TNT.Contract;
+using TNT.Presentation;
 
 namespace TNT.Tests.Presentation.Contracts
 {

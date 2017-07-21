@@ -1,5 +1,5 @@
 ﻿using NUnit.Framework;
-using TNT.Presentation.Origin;
+using TNT.Contract.Origin;
 using TNT.Tests.Presentation.Origin.OriginContracts;
 
 namespace TNT.Tests.Presentation.Origin

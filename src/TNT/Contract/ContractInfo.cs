@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using TNT.Exceptions;
+using TNT.Exceptions.ContractImplementation;
 
-namespace TNT.Presentation
+namespace TNT.Contract
 {
     public class ContractInfo
     {

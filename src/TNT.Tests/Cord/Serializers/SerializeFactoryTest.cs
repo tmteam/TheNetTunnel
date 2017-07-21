@@ -7,6 +7,7 @@ using NUnit.Framework;
 using TNT.Cord.Deserializers;
 using TNT.Cord.Serializers;
 using TNT.Exceptions;
+using TNT.Exceptions.ContractImplementation;
 
 namespace TNT.Tests.Cord.Serializers
 {

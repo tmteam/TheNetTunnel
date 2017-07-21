@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using TNT.Exceptions.Remote;
 
-namespace TNT.Exceptions
+namespace TNT.Exceptions.Local
 {
-    public class ConnectionIsNotEstablishedYet: RemoteCallException
+    public class ConnectionIsNotEstablishedYet: LocalException
     {
-        public ConnectionIsNotEstablishedYet(string message = null) : base(true, RemoteCallExceptionId.ConnectionIsNotEstablishedYet, message)
+        public ConnectionIsNotEstablishedYet(
+            string message = null, short? cordId = null, short? askId = null)
+            :base(true, cordId,askId,  message)
         {
+
         }
     }
 }

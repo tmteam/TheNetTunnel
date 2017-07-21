@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using TNT.Exceptions;
-using TNT.Presentation.Proxy;
+using TNT.Exceptions.ContractImplementation;
+using TNT.Presentation;
 
-namespace TNT.Presentation.Origin
+namespace TNT.Contract.Origin
 {
     public static class OriginCallbackDelegatesHandlerFactory
     {

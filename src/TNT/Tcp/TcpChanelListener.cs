@@ -1,8 +1,9 @@
 using System;
 using System.Net;
 using System.Net.Sockets;
+using TNT.Presentation;
 
-namespace TNT.Channel.Tcp
+namespace TNT.Tcp
 {
     public class TcpChanelListener : IChannelListener<TcpChannel>
     {

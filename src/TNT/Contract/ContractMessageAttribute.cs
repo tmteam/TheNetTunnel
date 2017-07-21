@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TNT.Presentation
+namespace TNT.Contract
 {
     [AttributeUsage( AttributeTargets.Method
         | AttributeTargets.Property, AllowMultiple = false, Inherited= true)]

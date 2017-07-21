@@ -1,7 +1,8 @@
 ﻿using System.Collections.Concurrent;
 using System.IO;
+using TNT.Light;
 
-namespace TNT.Channel.Test
+namespace TNT.Testing
 {
     class OneSideConnection
     {

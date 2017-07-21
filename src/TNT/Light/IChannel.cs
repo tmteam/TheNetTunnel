@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace TNT.Channel
+namespace TNT.Light
 {
     public interface IChannel
     {

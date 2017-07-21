@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TNT.Contract;
 using TNT.Presentation;
-using TNT.Presentation.Proxy;
 
 namespace Expirements.General
 {

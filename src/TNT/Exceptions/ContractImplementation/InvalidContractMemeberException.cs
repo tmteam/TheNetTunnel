@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace TNT.Exceptions
+namespace TNT.Exceptions.ContractImplementation
 {
     public class InvalidContractMemeberException : Exception
     {

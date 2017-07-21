@@ -1,10 +1,11 @@
 ﻿using System;
-using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using TNT.Exceptions.Local;
+using TNT.Light;
 
-namespace TNT.Channel.Tcp
+namespace TNT.Tcp
 {
     public class TcpChannel : IChannel
     {
@@ -102,11 +103,11 @@ namespace TNT.Channel.Tcp
       public void Write(byte[] data)
         {
             if (!_wasConnected)
-                throw new TNT.Exceptions.ConnectionIsNotEstablishedYet("tcp channel was not connected yet");
+                throw new ConnectionIsNotEstablishedYet("tcp channel was not connected yet");
 
             if (!Client.Connected)
             {
-                throw new TNT.Exceptions.ConnectionIsLostException("tcp channel is not connected");
+                throw new ConnectionIsLostException("tcp channel is not connected");
             }
 
             try
@@ -120,7 +121,7 @@ namespace TNT.Channel.Tcp
             {
                 if (!IsConnected)// e is IOException || e is InvalidOperationException)
                 {
-                    throw new TNT.Exceptions.ConnectionIsLostException(innerException: e,
+                    throw new ConnectionIsLostException(innerException: e,
                         message: "Write operation was failed");
                 }
                 else

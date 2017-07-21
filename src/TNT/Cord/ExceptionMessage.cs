@@ -1,11 +1,12 @@
 ﻿using System;
 using TNT.Exceptions;
+using TNT.Exceptions.Remote;
 
 namespace TNT.Cord
 {
     public class ExceptionMessage
     {
-        public ExceptionMessage(RemoteCallException exception)
+        public ExceptionMessage(RemoteExceptionBase exception)
         {
             Exception = exception;
             ExceptionType = exception.Id;
@@ -14,27 +15,27 @@ namespace TNT.Cord
             AdditionalExceptionInformation = exception.Message;
         }
 
-        public ExceptionMessage(short cordId, short askId, RemoteCallExceptionId type, string additionalExceptionInformation)
+        public ExceptionMessage(short cordId, short askId, RemoteExceptionId type, string additionalExceptionInformation)
         {
             this.CordId = cordId;
             this.AskId = askId;
             ExceptionType = type;
-            Exception = RemoteCallException.Create(type, additionalExceptionInformation, cordId, askId);
+            Exception = RemoteExceptionBase.Create(type, additionalExceptionInformation, cordId, askId);
         }
         public static ExceptionMessage CreateBy(short? cordId, short? askId, Exception exception)
         {
-            var rcException = (exception as RemoteCallException)
-                ??new RemoteSideUnhandledException(cordId, askId, exception.ToString());
+            var rcException = (exception as RemoteExceptionBase)
+                ??new RemoteUnhandledException(cordId, askId, exception, exception.ToString());
             return CreateBy(rcException);
         }
-        public static ExceptionMessage CreateBy(RemoteCallException rcExccException)
+        public static ExceptionMessage CreateBy(RemoteExceptionBase rcExccException)
         {
             return  new ExceptionMessage(rcExccException);
         }
         public short CordId { get; set; }
         public short AskId { get; set; }
-        public RemoteCallExceptionId ExceptionType { get; set; }
+        public RemoteExceptionId ExceptionType { get; set; }
         public string AdditionalExceptionInformation { get; set; }
-        public  RemoteCallException Exception { get; }
+        public  RemoteExceptionBase Exception { get; }
     }
 }

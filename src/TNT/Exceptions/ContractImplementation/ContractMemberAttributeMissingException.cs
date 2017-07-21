@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TNT.Exceptions
+namespace TNT.Exceptions.ContractImplementation
 {
     public class ContractMemberAttributeMissingException: Exception
     {

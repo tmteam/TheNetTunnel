@@ -3,11 +3,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using TNT.Channel;
-using TNT.Channel.Test;
 using TNT.Exceptions;
 using TNT.Light;
 using TNT.Presentation;
+using TNT.Testing;
 
 namespace TNT.Tests.Presentation.FullStack
 {

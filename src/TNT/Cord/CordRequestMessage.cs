@@ -2,15 +2,15 @@ namespace TNT.Cord
 {
     public class CordRequestMessage
     {
-        public CordRequestMessage(int id, int? askId, object[] arguments)
+        public CordRequestMessage(short id, short? askId, object[] arguments)
         {
             Arguments = arguments;
             Id = id;
             AskId = askId;
         }
 
-        public int Id { get; }
-        public int? AskId { get; }
+        public short Id { get; }
+        public short? AskId { get; }
         public object[] Arguments { get; }
     }
 }

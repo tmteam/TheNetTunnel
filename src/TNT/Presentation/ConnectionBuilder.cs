@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using TNT.Channel;
-using TNT.Channel.Tcp;
+using TNT.Contract;
+using TNT.Contract.Origin;
+using TNT.Contract.Proxy;
 using TNT.Cord;
 using TNT.Cord.Deserializers;
 using TNT.Cord.Serializers;
 using TNT.Light;
 using TNT.Light.Sending;
-using TNT.Presentation.Origin;
-using TNT.Presentation.Proxy;
 
 namespace TNT.Presentation
 {

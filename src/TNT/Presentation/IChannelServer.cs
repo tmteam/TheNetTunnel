@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using TNT.Channel;
+using TNT.Light;
 
 namespace TNT.Presentation
 {

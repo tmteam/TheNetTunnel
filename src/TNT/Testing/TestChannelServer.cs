@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TNT.Presentation;
+﻿using TNT.Presentation;
 
-namespace TNT.Channel.Test
+namespace TNT.Testing
 {
     public class TestChannelServer<TContract>: ChannelServer<TContract,TestChannel> 
         where TContract : class

@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Permissions;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using TNT.Channel.Tcp;
-
-namespace TNT.Channel.Test
+﻿namespace TNT.Testing
 {
     public static class TntTestHelper
     {

@@ -1,7 +1,7 @@
 ﻿using System.Net;
-using TNT.Channel.Tcp;
+using TNT.Presentation;
 
-namespace TNT.Presentation
+namespace TNT.Tcp
 {
     public class TcpChannelServer<TContract> : ChannelServer<TContract, TcpChannel> 
         where TContract : class

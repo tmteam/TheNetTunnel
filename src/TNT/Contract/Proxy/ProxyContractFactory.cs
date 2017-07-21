@@ -4,9 +4,10 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading;
-using TNT.Exceptions;
+using TNT.Exceptions.ContractImplementation;
+using TNT.Presentation;
 
-namespace TNT.Presentation.Proxy
+namespace TNT.Contract.Proxy
 {
     public static class ProxyContractFactory
     {
@@ -33,7 +34,7 @@ namespace TNT.Presentation.Proxy
                 throw new InvalidContractMemeberException(eventInfo, interfaceType);
 
 
-            #region реализуем методы интерфейса
+            #region interface methods implementation
 
             foreach (var method in contractMemebers.GetMethods())
             {
@@ -65,7 +66,7 @@ namespace TNT.Presentation.Proxy
 
             var constructorCodeGeneration = new List<Action<ILGenerator>>();
 
-            #region реализуем делегат свойства интерфейса
+            #region interface delegate properties implementation
 
             foreach (var property in contractMemebers.GetProperties())
             {
@@ -76,7 +77,7 @@ namespace TNT.Presentation.Proxy
                     //the property is not an delegate
                     throw new InvalidContractMemeberException(property.Value, interfaceType);
 
-                // теперь для каждого делегат свойства нужно сделать хендлер
+                // Create handler for every delegate property
                 var handleMethodNuilder = ImplementAndGenerateHandleMethod(
                     typeBuilder, 
                     delegateInfo,
@@ -196,7 +197,7 @@ namespace TNT.Presentation.Proxy
 
             var id = Interlocked.Increment(ref _exemmplarCounter);
 
-            //Строим Handle - метод:
+            //build Handle method:
             var handleMethodBuilder = typeBuilder.DefineMethod(
                 name: "Handle" + delegateFieldInfo.Name + id,
                 attributes: MethodAttributes.Public,
@@ -210,17 +211,16 @@ namespace TNT.Presentation.Proxy
 
             if (hasReturnType)
             {
-                //cоздаём локальную переменную returnValue, равную нулю
+                //create local variable returnValue, equals zero
                 returnValue = ilGen.DeclareLocal(delegatePropertyInfo.ReturnType);
-                //Сюда должен ставится default(delegatePropertyInfo.ReturnType)
-                //Хотя почему то работает и так. Странно
+                //we need set default(delegatePropertyInfo.ReturnType), but somehow it works. Little bit strange...
                 ilGen.Emit(OpCodes.Ldnull);
                 ilGen.Emit(OpCodes.Stloc, returnValue);
             }
 
             ilGen.Emit(OpCodes.Ldarg_0);
 
-            //проверяем что delegate == null
+            //check weather delegate == null
             ilGen.Emit(OpCodes.Ldfld, delegateFieldInfo);
             var delegateFieldValue = ilGen.DeclareLocal(delegateFieldInfo.FieldType);
 
@@ -231,7 +231,7 @@ namespace TNT.Presentation.Proxy
             ilGen.Emit(OpCodes.Ceq);
 
             var finishLabel = ilGen.DefineLabel();
-            //если поле == null то сразу выходим
+            //if field == null  than return
             ilGen.Emit(OpCodes.Brtrue_S, finishLabel);
 
             ilGen.Emit(OpCodes.Ldloc, delegateFieldValue);

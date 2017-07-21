@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace TNT.Presentation
+namespace TNT.Contract
 {
     public class DelegatePropertyInfo
     {

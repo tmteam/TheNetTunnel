@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using TNT.Presentation.Proxy;
 
-namespace TNT.Presentation
+namespace TNT.Contract
 {
     public static class ReflectionHelper
     {

@@ -1,4 +1,4 @@
-﻿namespace TNT.Channel.Test
+﻿namespace TNT.Testing
 {
     public class TestChannelPair
     {

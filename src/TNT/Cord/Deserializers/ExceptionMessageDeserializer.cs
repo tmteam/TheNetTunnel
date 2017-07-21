@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TNT.Exceptions;
+using TNT.Exceptions.Remote;
 
 namespace TNT.Cord.Deserializers
 {
@@ -19,7 +20,7 @@ namespace TNT.Cord.Deserializers
             {
                   new ValueTypeDeserializer<short>(),
                   new ValueTypeDeserializer<short>(),
-                  new EnumDeserializer<RemoteCallExceptionId>(),
+                  new EnumDeserializer<RemoteExceptionId>(),
                   new UnicodeDeserializer()
             });
         }
@@ -30,7 +31,7 @@ namespace TNT.Cord.Deserializers
             (
                 cordId: (short) deserialized[0],
                 askId: (short) deserialized[1],
-                type: (RemoteCallExceptionId) deserialized[2],
+                type: (RemoteExceptionId) deserialized[2],
                 additionalExceptionInformation: (string) deserialized[3]
             );
         }

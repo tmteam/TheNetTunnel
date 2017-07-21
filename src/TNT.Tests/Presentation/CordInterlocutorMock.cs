@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using TNT.Presentation;
+using TNT.Tcp;
 
 namespace TNT.Tests.Presentation
 {

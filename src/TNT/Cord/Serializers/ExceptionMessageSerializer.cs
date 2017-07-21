@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using TNT.Exceptions;
+using TNT.Exceptions.Remote;
 
 namespace TNT.Cord.Serializers
 {
@@ -21,7 +22,7 @@ namespace TNT.Cord.Serializers
                    {
                         new ValueTypeSerializer<short>(),
                         new ValueTypeSerializer<short>(),
-                        new EnumSerializer<RemoteCallExceptionId>(),
+                        new EnumSerializer<RemoteExceptionId>(),
                         new UnicodeSerializer()
                    });
         }
