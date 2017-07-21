@@ -13,6 +13,8 @@ namespace TNT.Presentation
     public class CordInterlocutor:ICordInterlocutor
     {
         private readonly ICordMessenger _messenger;
+        private readonly IDispatcher _receiveDispatcher;
+
         private readonly ConcurrentDictionary<int, Action<object[]>> _saySubscribtion 
             = new ConcurrentDictionary<int, Action<object[]>>();
 
@@ -24,14 +26,17 @@ namespace TNT.Presentation
 
         public int lastUsedAskId = 0;
 
-        public CordInterlocutor(ICordMessenger messenger)
+        public CordInterlocutor(ICordMessenger messenger, IDispatcher receiveDispatcher)
         {
             _messenger = messenger;
-            _messenger.OnSay += _messenger_OnSay;
-            _messenger.OnAsk += _messenger_OnAsk;
+            _receiveDispatcher = receiveDispatcher;
+            _receiveDispatcher.OnNewMessage += _receiveDispatcher_OnNewMessage;
+            _messenger.OnRequest += (_, message)=> _receiveDispatcher.Set(message);
             _messenger.OnAns += _messenger_OnAns;
             _messenger.OnException += _messenger_OnException;
         }
+
+        
 
         public void Say(int cordId, object[] values)
         {
@@ -84,50 +89,43 @@ namespace TNT.Presentation
             //in case of timeoutException, do nothing:
             awaiter.SetResult(answer);
         }
+    
 
-        private void _messenger_OnAsk(ICordMessenger sender, int cordId, int askId, object[] args)
-        {
-            Func<object[],object> handler;
-            _askSubscribtion.TryGetValue(cordId, out handler);
-            if (handler == null)
-                throw new RemoteContractImplementationException(cordId,
-                    $"ask {cordId} not implemented");
-            object answer = null;
-            //todo conveyor
-
-            try
-            {
-                answer = handler.Invoke(args);
-            }
-            catch (Exception e)
-            {
-                _messenger.HandleCallException(new RemoteSideUnhandledException(cordId, askId,
-                    $"UnhandledException: {e.ToString()}"));
-            }
-            _messenger.Ans((short)-cordId, (short)askId, answer);
-        }
-
-        private void _messenger_OnSay(ICordMessenger sender, int cordId, object[] args)
-        {
-            Action<object[]> handler;
-            _saySubscribtion.TryGetValue(cordId, out handler);
-            //todo conveyor
-            try
-            {
-                handler?.Invoke(args);
-            }
-            catch (Exception e)
-            {
-                _messenger.HandleCallException(new RemoteSideUnhandledException(cordId, null,
-                    $"UnhandledException: {e.ToString()}"));
-            }
-        }
         private void _messenger_OnException(ICordMessenger arg1, ExceptionMessage message)
         {
             AnswerAwaiter awaiter;
             _answerAwaiters.TryRemove((short)message.AskId, out awaiter);
             //miss information if exception is general
             awaiter?.SetExceptionalResult(message.Exception);
+        }
+
+        private void _receiveDispatcher_OnNewMessage(IDispatcher arg1, CordRequestMessage message)
+        {
+            try
+            {
+                if (message.AskId.HasValue)
+                {
+                    Func<object[], object> handler;
+                    _askSubscribtion.TryGetValue(message.Id, out handler);
+                    if (handler == null)
+                        throw new RemoteContractImplementationException(message.Id,
+                            $"ask {message.Id} not implemented");
+                    object answer = null;
+                    answer = handler.Invoke(message.Arguments);
+                    _messenger.Ans((short)-message.Id, (short)message.AskId.Value, answer);
+                }
+                else
+                {
+                    Action<object[]> handler;
+                    _saySubscribtion.TryGetValue(message.Id, out handler);
+                    handler?.Invoke(message.Arguments);
+                }
+            }
+            catch (Exception e)
+            {
+                _messenger.HandleCallException(new RemoteSideUnhandledException(message.Id, message.AskId.Value,
+                    $"UnhandledException: {e.ToString()}"));
+            }
         }
         class AnswerAwaiter
         {

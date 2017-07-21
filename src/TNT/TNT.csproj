@@ -48,6 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cord\CordRequestMessage.cs" />
     <Compile Include="Cord\Deserializers\ExceptionMessageDeserializer.cs" />
     <Compile Include="Cord\ExceptionMessage.cs" />
     <Compile Include="Cord\Serializers\ExceptionMessageSerializer.cs" />
@@ -60,6 +61,7 @@
     <Compile Include="Light\IChannel.cs" />
     <Compile Include="Presentation\IChannelListener.cs" />
     <Compile Include="Presentation\IChannelServer.cs" />
+    <Compile Include="Presentation\IDispatcher.cs" />
     <Compile Include="Tcp\TcpChanelListener.cs" />
     <Compile Include="Tcp\TcpChannel.cs" />
     <Compile Include="Tcp\TcpChannelServer.cs" />
@@ -88,7 +90,6 @@
     <Compile Include="Exceptions\RemoteSideUnhandledException.cs" />
     <Compile Include="Exceptions\TypeCannotBeDeserializedException.cs" />
     <Compile Include="Exceptions\TypeCannotBeSerializedException.cs" />
-    <Compile Include="Light\IDispatcher.cs" />
     <Compile Include="Light\LightChannel.cs" />
     <Compile Include="Light\Receiving\MessageCollector.cs" />
     <Compile Include="Light\Receiving\ReceiveMessageQueue.cs" />

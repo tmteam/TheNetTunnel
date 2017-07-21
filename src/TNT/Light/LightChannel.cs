@@ -10,25 +10,16 @@ namespace TNT.Light
     public class LightChannel
     {
         private readonly ISendMessageSequenceBehaviour _sendMessageSeparatorBehaviour;
-        private readonly IDispatcher _receiveMessageThreadBehavior;
         private readonly ReceiveMessageQueue _receiveMessageAssembler;
 
         public LightChannel(IChannel underlyingChannel, 
-            ISendMessageSequenceBehaviour sendMessageSequenceBehaviour,
-            IDispatcher receiveMessageThreadBehavior)
+            ISendMessageSequenceBehaviour sendMessageSequenceBehaviour)
         {
             _sendMessageSeparatorBehaviour = sendMessageSequenceBehaviour;
-            _receiveMessageThreadBehavior = receiveMessageThreadBehavior;
             _receiveMessageAssembler = new ReceiveMessageQueue();
-            _receiveMessageThreadBehavior.OnNewMessage += _receiveMessageThreadBehavior_OnNewMessage;
             Channel = underlyingChannel;
             underlyingChannel.OnDisconnect += (s) => OnDisconnect?.Invoke(this);
             underlyingChannel.OnReceive += UnderlyingChannel_OnReceive;
-        }
-
-        private void _receiveMessageThreadBehavior_OnNewMessage(IDispatcher sender, MemoryStream message)
-        {
-            OnReceive?.Invoke(this, message);
         }
 
         public bool IsConnected => Channel.IsConnected;
@@ -43,7 +34,6 @@ namespace TNT.Light
 
         public void Disconnect()
         {
-            _receiveMessageThreadBehavior.Release();
             Channel.Disconnect();
         }
 
@@ -82,7 +72,7 @@ namespace TNT.Light
                 var message = _receiveMessageAssembler.DequeueOrNull();
                 if (message == null)
                     return;
-                _receiveMessageThreadBehavior.Set(message);
+                OnReceive?.Invoke(this, message);
             }
         }
     }

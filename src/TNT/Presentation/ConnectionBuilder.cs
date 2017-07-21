@@ -197,14 +197,13 @@ namespace TNT.Presentation
         }
         public Connection<TContract, TChannel> Build()
         {
-            var dispatcher = _contractBuilder.ReceiveDispatcherFactory();
+            
             var sendSeparationBehaviour = _contractBuilder.SendMessageSequenceBehaviourFactory();
             var channel = _channelFactory();
 
             var light = new LightChannel(
                 underlyingChannel: channel,
-                sendMessageSequenceBehaviour: sendSeparationBehaviour,
-                receiveMessageThreadBehavior: dispatcher);
+                sendMessageSequenceBehaviour: sendSeparationBehaviour);
 
             TContract contract = null;
             if (_contractBuilder.OriginContractFactory == null)
@@ -225,7 +224,7 @@ namespace TNT.Presentation
         private TContract CreateOriginContract(LightChannel light)
         {
             var memebers = ProxyContractFactory.ParseContractInterface(typeof(TContract));
-
+            var dispatcher = _contractBuilder.ReceiveDispatcherFactory();
             var inputMessages = memebers.GetMethods().Select(m => new MessageTypeInfo
             {
                 ReturnType = m.Value.ReturnType,
@@ -248,7 +247,7 @@ namespace TNT.Presentation
                 inputMessages: inputMessages.ToArray()
             );
 
-            var interlocutor = new CordInterlocutor(messenger);
+            var interlocutor = new CordInterlocutor(messenger, dispatcher);
 
             TContract contract = _contractBuilder.OriginContractFactory(light.Channel);
             OriginContractLinker.Link(contract, interlocutor);
@@ -257,6 +256,7 @@ namespace TNT.Presentation
         private TContract CreateProxyContract(LightChannel light)
         {
             var memebers = ProxyContractFactory.ParseContractInterface(typeof(TContract));
+            var dispatcher = _contractBuilder.ReceiveDispatcherFactory();
 
             var outputMessages = memebers.GetMethods().Select(m => new MessageTypeInfo
             {
@@ -280,10 +280,9 @@ namespace TNT.Presentation
                 inputMessages: inputMessages.ToArray()
             );
 
-            var interlocutor = new CordInterlocutor(messenger);
+            var interlocutor = new CordInterlocutor(messenger, dispatcher);
 
-            TContract contract;
-            contract = ProxyContractFactory.CreateProxyContract<TContract>(interlocutor);
+            var contract = ProxyContractFactory.CreateProxyContract<TContract>(interlocutor);
             return contract;
         }
 

@@ -10,10 +10,9 @@ namespace TNT.Cord
 
         void HandleCallException(Exception ex);
 
-        event Action<ICordMessenger, int, int, object[]> OnAsk;
-        event Action<ICordMessenger, int, int, object> OnAns;
+        event Action<ICordMessenger, CordRequestMessage> OnRequest;
 
-        event Action<ICordMessenger, int, object[]> OnSay;
+        event Action<ICordMessenger, int, int, object> OnAns;
 
         event Action<ICordMessenger, ExceptionMessage> OnException;
     }

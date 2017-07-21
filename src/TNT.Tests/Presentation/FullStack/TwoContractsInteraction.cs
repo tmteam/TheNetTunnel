@@ -63,11 +63,11 @@ namespace TNT.Tests.Presentation.FullStack
             Assert.IsTrue(tsk.IsCompleted);
             Assert.AreEqual(TestContractImplementation.AskReturns,   tsk.Result);
         }
+
         [Test]
         public void NoThreadDispatcher_NetworkDeadlockThrows()
         {
             Exception wereRaised = null;
-            ManualResetEvent callBackDone = new ManualResetEvent(false);
             var channelPair = TntTestHelper.CreateChannelPair();
             var proxyConnection = ConnectionBuilder
                 .UseContract<ITestContract>()

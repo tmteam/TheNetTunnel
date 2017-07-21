@@ -25,8 +25,6 @@ namespace TNT.Cord
 
 
 
-        public event Action<ICordMessenger, int, int, object[]> OnAsk;
-        public event Action<ICordMessenger, int, object[]> OnSay;
         public event Action<ICordMessenger, int, int, object> OnAns;
         public event Action<ICordMessenger, ExceptionMessage> OnException;
 
@@ -64,9 +62,7 @@ namespace TNT.Cord
                     InputMessageDeserializeInfo.CreateForAsk(messageSayInfo.ArgumentTypes.Length, hasReturnType,
                         deserializer));
 
-
-                if (hasReturnType)
-                {
+                if (hasReturnType) {
                     _outputSayMessageSerializes.Add(-messageSayInfo.messageId,
                         serializerFactory.Create(messageSayInfo.ReturnType));
                 }
@@ -85,6 +81,8 @@ namespace TNT.Cord
             if (message.Exception.IsFatal)
                 _channel.Disconnect();
         }
+
+        public event Action<ICordMessenger, CordRequestMessage> OnRequest;
 
         public void Say(int id, object[] values)
         {
@@ -198,33 +196,17 @@ namespace TNT.Cord
                 }
                
             }
-            else if (sayDeserializer.HasReturnType)
+            else if(id == CordMessenger.ExceptionMessageId)
             {
-                try
-                {
-                    OnAsk?.Invoke(this, id, askId.Value, deserialized);
-                }
-                catch (RemoteCallException e)
-                {
-                    HandleCallException(e);
-                }
-                //input ask messageHandling
-              
-            }
-            else if (id == CordMessenger.ExceptionMessageId)
-            {
-                var exceptionMessage = (ExceptionMessage) deserialized.First();
+                var exceptionMessage = (ExceptionMessage)deserialized.First();
                 if (exceptionMessage.Exception.IsFatal)
-                {
                     _channel.Disconnect();
-                }
                 OnException?.Invoke(this, exceptionMessage);
             }
             else
             {
-                 //input say messageHandling
-                 //[Optimization] the code does not provoke any exceptions
-                 OnSay?.Invoke(this, id, deserialized);
+                //input ask / say messageHandling
+                OnRequest?.Invoke(this, new CordRequestMessage(id, askId, deserialized));  
             }
         }
     }

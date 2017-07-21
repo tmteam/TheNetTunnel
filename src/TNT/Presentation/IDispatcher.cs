@@ -2,24 +2,25 @@
 using System.Collections.Concurrent;
 using System.IO;
 using System.Threading;
+using TNT.Cord;
 
-namespace TNT.Light
+namespace TNT.Presentation
 {
     public interface IDispatcher
     {
-        void Set(MemoryStream stream);
-        event Action<IDispatcher, MemoryStream> OnNewMessage;
+        void Set(CordRequestMessage message);
+        event Action<IDispatcher, CordRequestMessage> OnNewMessage;
         void Release();
     }
 
     public class NotThreadDispatcher: IDispatcher
     {
-        public void Set(MemoryStream stream)
+        public void Set(CordRequestMessage message)
         {
-            OnNewMessage?.Invoke(this, stream);
+            OnNewMessage?.Invoke(this, message);
         }
 
-        public event Action<IDispatcher, MemoryStream> OnNewMessage;
+        public event Action<IDispatcher, CordRequestMessage> OnNewMessage;
         public void Release()
         {
             
@@ -28,14 +29,14 @@ namespace TNT.Light
 
     public class ConveyorDispatcher : IDispatcher
     {
-        private ConcurrentQueue<MemoryStream> _queue;
+        private ConcurrentQueue<CordRequestMessage> _queue;
         private AutoResetEvent _onNewMessage;
         private bool _exitToken = false;
 
         public ConveyorDispatcher()
         {
             _onNewMessage= new AutoResetEvent(false);
-            _queue = new ConcurrentQueue<MemoryStream>();
+            _queue = new ConcurrentQueue<CordRequestMessage>();
             new Thread(ConveyorProcedure)
             {
                 IsBackground = true,
@@ -47,14 +48,14 @@ namespace TNT.Light
         {
             _exitToken = true;
         }
-        public void Set(MemoryStream stream)
+        public void Set(CordRequestMessage message)
         {
-            _queue.Enqueue(stream);
+            _queue.Enqueue(message);
             _onNewMessage.Set();
         }
 
-        private Action<IDispatcher, MemoryStream> _onNewMessageDelegate;
-        public event Action<IDispatcher, MemoryStream> OnNewMessage
+        private Action<IDispatcher, CordRequestMessage> _onNewMessageDelegate;
+        public event Action<IDispatcher, CordRequestMessage> OnNewMessage
         {
             add
             {
@@ -69,7 +70,7 @@ namespace TNT.Light
             {
                 while (true)
                 {
-                    MemoryStream message;
+                    CordRequestMessage message;
                     _queue.TryDequeue(out message);
                     if (message == null)
                         break;
