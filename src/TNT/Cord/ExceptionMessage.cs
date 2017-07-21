@@ -5,13 +5,31 @@ namespace TNT.Cord
 {
     public class ExceptionMessage
     {
-        //public static ExceptionMessage CreateForUnhandledDuringCall(Exception unhandledException)
-        //{
-            
-        //}
-        public static ExceptionMessage CreateBy(Exception rcExccException)
+        public ExceptionMessage(RemoteCallException exception)
         {
-            throw new NotImplementedException();
+            Exception = exception;
+            ExceptionType = exception.Id;
+            CordId = exception.CordId ?? 0;
+            AskId = exception.AskId ?? 0;
+            AdditionalExceptionInformation = exception.Message;
+        }
+
+        public ExceptionMessage(short cordId, short askId, RemoteCallExceptionId type, string additionalExceptionInformation)
+        {
+            this.CordId = cordId;
+            this.AskId = askId;
+            ExceptionType = type;
+            Exception = RemoteCallException.Create(type, additionalExceptionInformation, cordId, askId);
+        }
+        public static ExceptionMessage CreateBy(short? cordId, short? askId, Exception exception)
+        {
+            var rcException = (exception as RemoteCallException)
+                ??new RemoteSideUnhandledException(cordId, askId, exception.ToString());
+            return CreateBy(rcException);
+        }
+        public static ExceptionMessage CreateBy(RemoteCallException rcExccException)
+        {
+            return  new ExceptionMessage(rcExccException);
         }
         public short CordId { get; set; }
         public short AskId { get; set; }

@@ -27,12 +27,12 @@ namespace TNT.Cord.Deserializers
         {
             var deserialized = _deserializer.DeserializeT(stream, size);
             return new ExceptionMessage
-            {
-                CordId = (short)deserialized[0],
-                AskId = (short) deserialized[1],
-                ExceptionType = (RemoteCallExceptionId)deserialized[2],
-                AdditionalExceptionInformation = (string)deserialized[3]
-            };
+            (
+                cordId: (short) deserialized[0],
+                askId: (short) deserialized[1],
+                type: (RemoteCallExceptionId) deserialized[2],
+                additionalExceptionInformation: (string) deserialized[3]
+            );
         }
     }
 }

@@ -9,17 +9,17 @@ namespace TNT.Tests
 {
     public static class TestTools
     {
-        public static Task AssertNotBlocks(Action  action)
+        public static Task AssertNotBlocks(Action  action, int maxTimeout = 1000)
         {
             var task = Task.Factory.StartNew(action);
-            Assert.IsTrue(task.Wait(1000), "call is blocked");
+            Assert.IsTrue(task.Wait(maxTimeout), "call is blocked");
             return task;
 
         }
-        public static Task<T> AssertNotBlocks<T>(Func<T> func)
+        public static Task<T> AssertNotBlocks<T>(Func<T> func, int maxTimeout = 1000)
         {
             var task = Task.Factory.StartNew(func);
-            Assert.IsTrue(task.Wait(1000), "call is blocked");
+            Assert.IsTrue(task.Wait(maxTimeout), "call is blocked");
             return task;
 
         }

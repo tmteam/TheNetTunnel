@@ -58,46 +58,33 @@ namespace TNT.Tests.Presentation.FullStack
 
             channelPair.ConnectAndStartReceiving();
 
-            var tsk = Task.Run(originConnection.Contract.OnAsk);
-            tsk.Wait(1000);
-            Assert.IsTrue(tsk.IsCompleted);
-            Assert.AreEqual(TestContractImplementation.AskReturns,   tsk.Result);
+            var task = TestTools.AssertNotBlocks(originConnection.Contract.OnAsk);
+            Assert.AreEqual(TestContractImplementation.AskReturns, task.Result);
         }
 
-        [Test]
-        public void NoThreadDispatcher_NetworkDeadlockThrows()
-        {
-            Exception wereRaised = null;
-            var channelPair = TntTestHelper.CreateChannelPair();
-            var proxyConnection = ConnectionBuilder
-                .UseContract<ITestContract>()
-                .UseReceiveDispatcher<NotThreadDispatcher>()
-                .UseContractInitalization((c, _) => c.OnAsk += 
-                ()=> {
-                    try
-                    {
-                        var result = c.Ask();
-                        return result;
-                    }
-                    catch (NetworkDeadLockException e)
-                    {
-                        wereRaised = e;
-                        return 0;
-                    }
-                })
-                .UseChannel(channelPair.CahnnelA)
-                .Build();
+        //[Test]
+        //public void NoThreadDispatcher_NetworkDeadlockThrows()
+        //{
+        //    var channelPair = TntTestHelper.CreateChannelPair();
+        //    var proxyConnection = ConnectionBuilder
+        //        .UseContract<ITestContract>()
 
-            var originConnection = ConnectionBuilder
-                .UseContract<ITestContract, TestContractImplementation>()
-                .UseChannel(channelPair.ChannelB)
-                .Build();
+        //        //On income ask request, calling rpc ask. 
+        //        //It can provoke an networkDeadlock 
+        //        .UseContractInitalization((c, _) => c.OnAsk += c.Ask)
+        //        .UseChannel(channelPair.CahnnelA)
+        //        .Build();
 
-            channelPair.ConnectAndStartReceiving();
+        //    var originConnection = ConnectionBuilder
+        //        .UseContract<ITestContract, TestContractImplementation>()
+        //        .UseChannel(channelPair.ChannelB)
+        //        .Build();
 
-            TestTools.AssertNotBlocks(originConnection.Contract.OnAsk);
-            Assert.IsInstanceOf<NetworkDeadLockException>(wereRaised,"networkDeadLock was not raised");
-        }
+        //    channelPair.ConnectAndStartReceiving();
+
+        //    var result = TestTools.AssertNotBlocks(originConnection.Contract.OnAsk);
+        //    Assert.AreEqual(TestContractImplementation.AskReturns, result);
+        //}
     }
     
 }

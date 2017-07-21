@@ -71,14 +71,13 @@ namespace TNT.Cord
                 InputMessageDeserializeInfo.CreateForExceptionHandling());
         }
 
-        public void HandleCallException(Exception ex)
+        public void HandleCallException( RemoteCallException rcException)
         {
-            var message = ExceptionMessage.CreateBy(ex);
             Say(CordMessenger.ExceptionMessageId,
-                new object[] {message},
+                new object[] { new ExceptionMessage(rcException) },
                 new ExceptionMessageSerializer());
 
-            if (message.Exception.IsFatal)
+            if (rcException.IsFatal)
                 _channel.Disconnect();
         }
 

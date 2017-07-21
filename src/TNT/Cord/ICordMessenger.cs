@@ -1,4 +1,5 @@
 ﻿using System;
+using TNT.Exceptions;
 
 namespace TNT.Cord
 {
@@ -8,7 +9,7 @@ namespace TNT.Cord
         void Say(int id, object[] values);
         void Ans(short id, short askId, object value);
 
-        void HandleCallException(Exception ex);
+        void HandleCallException(RemoteCallException rcException);
 
         event Action<ICordMessenger, CordRequestMessage> OnRequest;
 
