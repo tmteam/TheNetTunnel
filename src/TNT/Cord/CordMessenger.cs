@@ -187,13 +187,29 @@ namespace TNT.Cord
 
             if (id < 0)
             {
-                //input answer message handling
-                OnAns?.Invoke(this, id, askId.Value, deserialized.Single());
+                try
+                {
+                    //input answer message handling
+                    OnAns?.Invoke(this, id, askId.Value, deserialized.Single());
+                }
+                catch (RemoteCallException e)
+                {
+                    HandleCallException(e);
+                }
+               
             }
             else if (sayDeserializer.HasReturnType)
             {
+                try
+                {
+                    OnAsk?.Invoke(this, id, askId.Value, deserialized);
+                }
+                catch (RemoteCallException e)
+                {
+                    HandleCallException(e);
+                }
                 //input ask messageHandling
-                OnAsk?.Invoke(this, id, askId.Value, deserialized);
+              
             }
             else if (id == CordMessenger.ExceptionMessageId)
             {
@@ -206,8 +222,9 @@ namespace TNT.Cord
             }
             else
             {
-                //input say messageHandling
-                OnSay?.Invoke(this, id, deserialized);
+                 //input say messageHandling
+                 //[Optimization] the code does not provoke any exceptions
+                 OnSay?.Invoke(this, id, deserialized);
             }
         }
     }

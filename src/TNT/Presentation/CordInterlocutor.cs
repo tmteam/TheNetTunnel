@@ -75,10 +75,13 @@ namespace TNT.Presentation
 
         private void _messenger_OnAns(ICordMessenger sender, int cordId, int askId, object answer)
         {
+            //use not conveyor. 
             AnswerAwaiter awaiter;
             _answerAwaiters.TryRemove((short) askId, out awaiter);
+            //in case of timeoutException awaiter is still in dictionary
             if(awaiter==null)
                 throw new RemoteSideSerializationException(cordId, askId, $"answer {cordId} / {askId} not awaited");
+            //in case of timeoutException, do nothing:
             awaiter.SetResult(answer);
         }
 
@@ -90,6 +93,7 @@ namespace TNT.Presentation
                 throw new RemoteContractImplementationException(cordId,
                     $"ask {cordId} not implemented");
             object answer = null;
+            //todo conveyor
 
             try
             {
@@ -107,6 +111,7 @@ namespace TNT.Presentation
         {
             Action<object[]> handler;
             _saySubscribtion.TryGetValue(cordId, out handler);
+            //todo conveyor
             try
             {
                 handler?.Invoke(args);
@@ -121,7 +126,7 @@ namespace TNT.Presentation
         {
             AnswerAwaiter awaiter;
             _answerAwaiters.TryRemove((short)message.AskId, out awaiter);
-
+            //miss information if exception is general
             awaiter?.SetExceptionalResult(message.Exception);
         }
         class AnswerAwaiter
