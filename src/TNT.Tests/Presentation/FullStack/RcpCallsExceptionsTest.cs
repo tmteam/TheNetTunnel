@@ -74,7 +74,7 @@ namespace TNT.Tests.Presentation.FullStack
             channel.ImmitateConnect();
             channel.ImmitateDisconnect();
 
-            TestTools.AssertThrowsAndNotBlocks<ConnectionIsNotEstablishedYet>(() => proxyConnection.Contract.Ask());
+            TestTools.AssertThrowsAndNotBlocks<ConnectionIsLostException>(() => proxyConnection.Contract.Ask());
         }
 
 
@@ -214,7 +214,6 @@ namespace TNT.Tests.Presentation.FullStack
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseContractInitalization((c, _) =>
                 {
-                    c.OnSay += () => { throw new InvalidOperationException(); };
                     c.OnAsk += () => { throw new InvalidOperationException(); };
                 })
                 .UseChannel(channelPair.CahnnelA)
@@ -227,7 +226,7 @@ namespace TNT.Tests.Presentation.FullStack
                 .Build();
 
             channelPair.ConnectAndStartReceiving();
-            TestTools.AssertThrowsAndNotBlocks<RemoteUnhandledException>(() => originConnection.Contract.Ask());
+            TestTools.AssertThrowsAndNotBlocks<RemoteUnhandledException>(() => originConnection.Contract.OnAsk());
         }
         [Test]
         public void Origin_AsksNotImplemented_returnsDefault()
@@ -248,7 +247,7 @@ namespace TNT.Tests.Presentation.FullStack
 
             channelPair.ConnectAndStartReceiving();
 
-            var answer = TestTools.AssertNotBlocks(originConnection.Contract.Ask).Result;
+            var answer = TestTools.AssertNotBlocks(originConnection.Contract.OnAsk).Result;
             Assert.AreEqual(default(int), answer);
         }
 
@@ -256,22 +255,6 @@ namespace TNT.Tests.Presentation.FullStack
         public void Disconnected_duringOriginAsk_throws()
         {
             var channelPair = TntTestHelper.CreateChannelPair();
-            ManualResetEvent AskCalled = new ManualResetEvent(false);
-            var proxyConnection = ConnectionBuilder
-                .UseContract<ITestContract>()
-                .UseReceiveDispatcher<NotThreadDispatcher>()
-                .UseContractInitalization((c, _) =>
-                {
-                    c.OnAsk += () =>
-                    {
-                        AskCalled.Set();
-                        //block the thread
-                        new ManualResetEvent(false).WaitOne();
-                        return 0;
-                    };
-                })
-                .UseChannel(channelPair.CahnnelA)
-                .Build();
 
             var originConnection = ConnectionBuilder
                 .UseContract<ITestContract, TestContractImplementation>()
@@ -279,24 +262,25 @@ namespace TNT.Tests.Presentation.FullStack
                 .UseChannel(channelPair.ChannelB)
                 .Build();
 
-            channelPair.ConnectAndStartReceiving();
-            Task.Run(() =>
+            var proxyConnection = ConnectionBuilder
+                .UseContract<ITestContract>()
+                .UseReceiveDispatcher<NotThreadDispatcher>()
+                .UseContractInitalization((c, _) =>
                 {
-                    //Wait for ask method called
-                    AskCalled.WaitOne();
-                    //While origin ask call is busy - immitate disconnect
-                    channelPair.Disconnect();
-                    try
+                    c.OnAsk += () =>
                     {
-                        //call say method to notify channel about disconnection (tcp channel immitating)
-                        originConnection.Contract.Say();
-                    }
-                    catch (ConnectionIsLostException)
-                    {
-                    }
-                }
-            );
-            Assert.Throws<ConnectionIsLostException>(() => originConnection.Contract.Ask());
+                        channelPair.Disconnect();
+                        try {
+                            //call say method to notify channel about disconnection (tcp channel immitation)
+                            originConnection.Contract.Say();
+                        } catch (ConnectionIsLostException) { /*suppressTheException*/ }
+                        return 0;
+                    };
+                })
+                .UseChannel(channelPair.CahnnelA)
+                .Build();
+            channelPair.ConnectAndStartReceiving();
+            TestTools.AssertThrowsAndNotBlocks<ConnectionIsLostException>(() => originConnection.Contract.OnAsk());
         }
       
     }

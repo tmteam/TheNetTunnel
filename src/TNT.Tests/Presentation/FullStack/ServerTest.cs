@@ -66,8 +66,8 @@ namespace TNT.Tests.Presentation.FullStack
             var clientChannel = new TestChannel();
             var proxyConnection = ConnectionBuilder.UseContract<ITestContract>().UseChannel(clientChannel).Build();
             var pair = server.TestListener.ImmitateAccept(clientChannel);
+
             pair.Disconnect();
-            server.GetAllConnections().First().Channel.ImmitateDisconnect();
 
             Assert.IsNotNull(disconnectedConnection, "Disconnect not raised");
         }

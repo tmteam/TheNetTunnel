@@ -38,9 +38,11 @@ namespace TNT.Presentation
             _messenger.OnRequest += (_, message)=> _receiveDispatcher.Set(message);
             _messenger.OnAns += _messenger_OnAns;
             _messenger.OnException += _messenger_OnException;
+            _messenger.ChannelIsDisconnected += _messenger_ChannelIsDisconnected;
+
         }
 
-        
+     
 
         public void Say(int cordId, object[] values)
         {
@@ -130,6 +132,19 @@ namespace TNT.Presentation
             {
                 _messenger.HandleCallException(new RemoteUnhandledException(message.Id, message.AskId, e,
                     $"UnhandledException: {e.ToString()}"));
+            }
+        }
+
+        private void _messenger_ChannelIsDisconnected(ICordMessenger obj)
+        {
+            _receiveDispatcher.Release();
+            while (!_answerAwaiters.IsEmpty)
+            {
+                AnswerAwaiter awaiter;
+                _answerAwaiters.TryRemove(_answerAwaiters.ToArray().First().Key, out awaiter);
+                if(awaiter==null)
+                    return;
+                awaiter.SetExceptionalResult(new ConnectionIsLostException("Connection is lost during the transaction"));
             }
         }
         class AnswerAwaiter

@@ -38,6 +38,8 @@
         {
             FromAToB.Stop();
             FromBToA.Stop();
+            ChannelB.ImmitateDisconnect();
+            CahnnelA.ImmitateDisconnect();
             IsConnected = false;
 
         }

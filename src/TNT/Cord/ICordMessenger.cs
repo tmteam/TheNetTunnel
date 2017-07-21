@@ -17,5 +17,7 @@ namespace TNT.Cord
         event Action<ICordMessenger, short, short, object> OnAns;
 
         event Action<ICordMessenger, ExceptionMessage> OnException;
+
+        event Action<ICordMessenger> ChannelIsDisconnected;
     }
 }

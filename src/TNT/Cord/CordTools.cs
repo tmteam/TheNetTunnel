@@ -12,8 +12,21 @@ namespace TNT.Cord
             //Write second byte
             to.WriteByte((byte)(outputCordId >> 8));
         }
-
-        public static short ReadShort(MemoryStream from)
+        public static short? TryReadShort(this MemoryStream from)
+        {
+            if (from.Length - from.Position < sizeof(short))
+                return null;
+            return from.ReadShort();
+        }
+        public static bool TryReadShort(this MemoryStream from, out short value)
+        {
+            value = 0;
+            if (from.Length - from.Position < sizeof(short))
+                return false;
+            value = from.ReadShort();
+            return true;
+        }
+        public static short ReadShort(this MemoryStream from)
         {
             if(from.Length- from.Position<2)
                 throw new EndOfStreamException();
