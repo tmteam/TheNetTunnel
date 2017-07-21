@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using TNT.Cord;
+using TNT.Exceptions;
 
 namespace TNT.Presentation
 {
@@ -29,6 +30,7 @@ namespace TNT.Presentation
             _messenger.OnSay += _messenger_OnSay;
             _messenger.OnAsk += _messenger_OnAsk;
             _messenger.OnAns += _messenger_OnAns;
+            _messenger.OnException += _messenger_OnException;
         }
 
         public void Say(int cordId, object[] values)
@@ -42,12 +44,12 @@ namespace TNT.Presentation
             unchecked {
                 askId = (short)Interlocked.Increment(ref lastUsedAskId);
             }
-            //
-            var awaiter = new AnswerAwaiter();
+            
+            var awaiter = new AnswerAwaiter(cordId,askId);
             _answerAwaiters.TryAdd(askId, awaiter);
             _messenger.Ask((short)cordId, (short)askId, values);
-            awaiter.Event.WaitOne();
-            return (T) awaiter.ReturnResult;
+            var result = awaiter.WaitOrThrow(10000);
+            return (T)result;
         }
 
         public void SaySubscribe(int cordId, Action<object[]> callback)
@@ -76,7 +78,7 @@ namespace TNT.Presentation
             AnswerAwaiter awaiter;
             _answerAwaiters.TryRemove((short) askId, out awaiter);
             if(awaiter==null)
-                throw new InvalidOperationException($"answer {cordId} / {askId} not awaited");
+                throw new RemoteSideSerializationException(cordId, askId, $"answer {cordId} / {askId} not awaited");
             awaiter.SetResult(answer);
         }
 
@@ -85,8 +87,19 @@ namespace TNT.Presentation
             Func<object[],object> handler;
             _askSubscribtion.TryGetValue(cordId, out handler);
             if (handler == null)
-                throw new InvalidOperationException($"ask {cordId} not implemented");
-            var answer = handler.Invoke(args);
+                throw new RemoteContractImplementationException(cordId,
+                    $"ask {cordId} not implemented");
+            object answer = null;
+
+            try
+            {
+                answer = handler.Invoke(args);
+            }
+            catch (Exception e)
+            {
+                _messenger.HandleCallException(new RemoteSideUnhandledException(cordId, askId,
+                    $"UnhandledException: {e.ToString()}"));
+            }
             _messenger.Ans((short)-cordId, (short)askId, answer);
         }
 
@@ -94,22 +107,58 @@ namespace TNT.Presentation
         {
             Action<object[]> handler;
             _saySubscribtion.TryGetValue(cordId, out handler);
-            handler?.Invoke(args);
+            try
+            {
+                handler?.Invoke(args);
+            }
+            catch (Exception e)
+            {
+                _messenger.HandleCallException(new RemoteSideUnhandledException(cordId, null,
+                    $"UnhandledException: {e.ToString()}"));
+            }
         }
+        private void _messenger_OnException(ICordMessenger arg1, ExceptionMessage message)
+        {
+            AnswerAwaiter awaiter;
+            _answerAwaiters.TryRemove((short)message.AskId, out awaiter);
 
+            awaiter?.SetExceptionalResult(message.Exception);
+        }
         class AnswerAwaiter
         {
-            public AnswerAwaiter()
+            private readonly int _cordId;
+            private readonly int _askId;
+            private Exception _exceptionalResult;
+
+            public AnswerAwaiter(int cordId, int askId)
             {
-                Event = new ManualResetEvent(false);
+                _cordId = cordId;
+                _askId = askId;
+                _event = new ManualResetEvent(false);
             }
 
+            public object WaitOrThrow(int msec)
+            {
+                if (!_event.WaitOne(msec))
+                    throw new CallTimeoutException(_cordId, _askId);
+                if (_exceptionalResult != null)
+                    throw _exceptionalResult;
+                return ReturnResult;
+            }
+
+            public void SetExceptionalResult(Exception ex)
+            {
+                ReturnResult = null;
+                _exceptionalResult = ex;
+                _event.Set();
+            }
             public void SetResult(object result)
             {
                 ReturnResult = result;
-                Event.Set();
+                _event.Set();
             }
-            public ManualResetEvent Event { get;}
+
+            private ManualResetEvent _event;
             public object ReturnResult { get; private set; }
         }
     }

@@ -2,7 +2,8 @@ namespace TNT.Exceptions
 {
     public class RemoteSideUnhandledException : RemoteCallException
     {
-        public RemoteSideUnhandledException(string message = null) :base(false, RemoteCallExceptionId.RemoteSideUnhandledException, message)
+        public RemoteSideUnhandledException(int? cordId, int? askId, string message = null ) 
+            :base(false, RemoteCallExceptionId.RemoteSideUnhandledException, message)
         {
         }
     }

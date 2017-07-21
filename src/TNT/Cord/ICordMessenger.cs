@@ -8,7 +8,7 @@ namespace TNT.Cord
         void Say(int id, object[] values);
         void Ans(short id, short askId, object value);
 
-        void HandleException(Exception ex);
+        void HandleCallException(Exception ex);
 
         event Action<ICordMessenger, int, int, object[]> OnAsk;
         event Action<ICordMessenger, int, int, object> OnAns;

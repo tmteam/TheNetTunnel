@@ -48,6 +48,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cord\Deserializers\ExceptionMessageDeserializer.cs" />
+    <Compile Include="Cord\ExceptionMessage.cs" />
+    <Compile Include="Cord\Serializers\ExceptionMessageSerializer.cs" />
+    <Compile Include="Exceptions\CallTimeoutException.cs" />
     <Compile Include="Exceptions\ConnectionIsNotEstablishedYet.cs" />
     <Compile Include="Exceptions\NetworkDeadLockException.cs" />
     <Compile Include="Presentation\ChannelServer.cs" />
@@ -125,7 +129,6 @@
     <Compile Include="Cord\Serializers\ProtoSerializer.cs" />
     <Compile Include="Cord\Serializers\SequenceSerializer.cs" />
     <Compile Include="Cord\Serializers\SerializerBase.cs" />
-    <Compile Include="Cord\Serializers\SerializersFactory.cs" />
     <Compile Include="Cord\Serializers\UnicodeSerializer.cs" />
     <Compile Include="Cord\Serializers\UTCFileTimeSerializer.cs" />
     <Compile Include="Tools.cs" />

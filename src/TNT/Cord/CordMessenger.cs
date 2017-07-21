@@ -73,8 +73,6 @@ namespace TNT.Cord
             }
             _inputSayMessageDeserializeInfos.Add(CordMessenger.ExceptionMessageId,
                 InputMessageDeserializeInfo.CreateForExceptionHandling());
-
-
         }
 
         public void HandleCallException(Exception ex)
@@ -86,7 +84,6 @@ namespace TNT.Cord
 
             if (message.Exception.IsFatal)
                 _channel.Disconnect();
-
         }
 
         public void Say(int id, object[] values)
@@ -113,8 +110,6 @@ namespace TNT.Cord
                 _channel.Write(stream);
             }
         }
-
-
 
         public void Ask(short id, short askId, object[] values)
         {
@@ -172,7 +167,7 @@ namespace TNT.Cord
             {
                 if (data.Length - data.Position < 2)
                 {
-                    HandleCallException(new RemoteSideSerializationException(id, null, "AskId missed"));
+                    HandleCallException(new RemoteSideSerializationException(id, null, "Ask Id missed"));
                     return;
                 }
                 askId = CordTools.ReadShort(data);
@@ -193,8 +188,7 @@ namespace TNT.Cord
             if (id < 0)
             {
                 //input answer message handling
-                OnAns?.Invoke(this, id, askId.Value, deserialized.Single()))
-                ;
+                OnAns?.Invoke(this, id, askId.Value, deserialized.Single());
             }
             else if (sayDeserializer.HasReturnType)
             {

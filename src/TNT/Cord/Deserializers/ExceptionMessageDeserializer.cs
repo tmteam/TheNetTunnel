@@ -26,8 +26,13 @@ namespace TNT.Cord.Deserializers
         public override ExceptionMessage DeserializeT(Stream stream, int size)
         {
             var deserialized = _deserializer.DeserializeT(stream, size);
-
-            return null;
+            return new ExceptionMessage
+            {
+                CordId = (short)deserialized[0],
+                AskId = (short) deserialized[1],
+                ExceptionType = (RemoteCallExceptionId)deserialized[2],
+                AdditionalExceptionInformation = (string)deserialized[3]
+            };
         }
     }
 }
