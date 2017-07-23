@@ -15,20 +15,19 @@ namespace TNT.Presentation
         public const short ExceptionMessageTypeId = 30400;
         public const short GeneralExceptionMessageTypeId = 0;
 
+        private readonly Sender _sender;
 
         private readonly Transporter _channel;
 
-        private readonly Dictionary<int, ISerializer> _outputSayMessageSerializes
-            = new Dictionary<int, ISerializer>();
+     
 
         private readonly Dictionary<int, InputMessageDeserializeInfo> _inputSayMessageDeserializeInfos
             = new Dictionary<int, InputMessageDeserializeInfo>();
-
-
-
+        
         public event Action<IMessenger, short, short, object> OnAns;
         public event Action<IMessenger, ExceptionMessage> OnException;
         public event Action<IMessenger> ChannelIsDisconnected;
+        public event Action<IMessenger, RequestMessage> OnRequest;
 
         public Messenger(
             Transporter channel,
@@ -40,13 +39,17 @@ namespace TNT.Presentation
             _channel = channel;
             _channel.OnReceive += _channel_OnReceive;
             _channel.OnDisconnect += (c) => ChannelIsDisconnected?.Invoke(this);
+
+
+            var outputSayMessageSerializes = new Dictionary<int, ISerializer>();
+
             foreach (var messageSayInfo in outputMessages)
             {
                 var serializer = serializerFactory.Create(messageSayInfo.ArgumentTypes);
 
                 var hasReturnType = messageSayInfo.ReturnType != typeof(void);
 
-                _outputSayMessageSerializes.Add(messageSayInfo.messageId, serializer);
+                outputSayMessageSerializes.Add(messageSayInfo.messageId, serializer);
                 if (hasReturnType)
                 {
                     _inputSayMessageDeserializeInfos.Add(
@@ -65,86 +68,41 @@ namespace TNT.Presentation
                         deserializer));
 
                 if (hasReturnType) {
-                    _outputSayMessageSerializes.Add(-messageSayInfo.messageId,
+                    outputSayMessageSerializes.Add(-messageSayInfo.messageId,
                         serializerFactory.Create(messageSayInfo.ReturnType));
                 }
             }
             _inputSayMessageDeserializeInfos.Add(Messenger.ExceptionMessageTypeId,
                 InputMessageDeserializeInfo.CreateForExceptionHandling());
+
+            _sender = new Sender(_channel, outputSayMessageSerializes);
         }
 
      
 
         public void HandleCallException( RemoteExceptionBase rcException)
         {
-            Say(Messenger.ExceptionMessageTypeId,
-                new object[] { new ExceptionMessage(rcException) },
-                new ExceptionMessageSerializer());
+            _sender.SendException(rcException);
 
             if (rcException.IsFatal)
                 _channel.Disconnect();
         }
 
-        public event Action<IMessenger, RequestMessage> OnRequest;
 
-        public void Say(int id, object[] values)
-        {
-            if (id < 0)
-                throw new InvalidOperationException("say id < 0");
-
-            var info = _outputSayMessageSerializes[id];
-            Say(id, values, info);
+        public void Say(int id, object[] values) {
+            _sender.Say(id,values);
         }
 
-        public void Ans(short id, short askId, object value)
-        {
-            if (id >= 0)
-                throw new InvalidOperationException("ans id >= 0");
-            var serializer = _outputSayMessageSerializes[id];
-
-            using (var stream = new MemoryStream())
-            {
-                Tools.WriteShort(id, to: stream);
-                Tools.WriteShort(askId, to: stream);
-                serializer.Serialize(value, stream);
-                stream.Position = 0;
-                _channel.Write(stream);
-            }
+        public void Ans(short id, short askId, object value) {
+           _sender.Ans(id,askId,value);
         }
 
-        public void Ask(short id, short askId, object[] values)
-        {
-            if (id < 0)
-                throw new InvalidOperationException("ask id < 0");
-            var info = _outputSayMessageSerializes[id];
-
-            using (var stream = new MemoryStream())
-            {
-                Tools.WriteShort(id, to: stream);
-                Tools.WriteShort(askId, to: stream);
-                Write(values, info, stream);
-            }
-        }
-
-        private void Write(object[] values, ISerializer serializer, MemoryStream stream)
-        {
-            if (values.Length == 1)
-                serializer.Serialize(values[0], stream);
-            else if (values.Length > 1)
-                serializer.Serialize(values, stream);
-            stream.Position = 0;
-            _channel.Write(stream);
+        public void Ask(short id, short askId, object[] values) {
+            _sender.Ans(id, askId, values);
 
         }
 
-        private void Say(int id, object[] values, ISerializer serializer)
-        {
-            using (var stream = new MemoryStream())
-            {
-                Tools.WriteShort((short) id, to: stream);
-                Write(values, serializer, stream);
-            }
-        }
+      
 
         private void _channel_OnReceive(Transporter arg1, MemoryStream data)
         {
