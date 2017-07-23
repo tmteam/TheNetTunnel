@@ -247,8 +247,8 @@ namespace TNT.Tests.Presentation.Serialization
         private static T SerializeAndDeserializeBack<T>(T origin)
         {
             var type = typeof(T);
-            var serializer = SerializerFactory.CreateDefault().Create(type.GetType());
-            var deserializer = DeserializerFactory.CreateDefault().Create(type.GetType());
+            var serializer = SerializerFactory.CreateDefault().Create(type);
+            var deserializer = DeserializerFactory.CreateDefault().Create(type);
             var stream = new MemoryStream();
             serializer.Serialize(origin, stream);
             stream.Position = 0;

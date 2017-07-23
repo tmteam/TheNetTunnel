@@ -50,6 +50,8 @@
   <ItemGroup>
     <Compile Include="Api\PresentationBuilder.cs" />
     <Compile Include="Api\TntBuilder.cs" />
+    <Compile Include="Presentation\Deserializers\NullableDeserializer.cs" />
+    <Compile Include="Presentation\PresentationHelper.cs" />
     <Compile Include="Presentation\ReceiveDispatching\ConveyorDispatcher.cs" />
     <Compile Include="Presentation\ReceiveDispatching\NotThreadDispatcher.cs" />
     <Compile Include="Presentation\RequestMessage.cs" />
@@ -74,6 +76,7 @@
     <Compile Include="Api\ChannelServer.cs" />
     <Compile Include="Api\Connection.cs" />
     <Compile Include="Api\ConnectionBuilder.cs" />
+    <Compile Include="Presentation\Serializers\NullableSerializer.cs" />
     <Compile Include="Transport\IChannel.cs" />
     <Compile Include="Api\IChannelListener.cs" />
     <Compile Include="Api\IChannelServer.cs" />

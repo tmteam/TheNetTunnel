@@ -30,7 +30,11 @@ namespace TNT.Presentation.Serializers
             var gt = typeof(ValueTypeSerializer<>).MakeGenericType(valueType);
             return Activator.CreateInstance(gt) as ISerializer;
         }
-
+        private static ISerializer CreateDotNetNullableSerializer(Type valueType)
+        {
+            var gt = typeof(NullableSerializer<>).MakeGenericType(valueType.GenericTypeArguments.First());
+            return Activator.CreateInstance(gt) as ISerializer;
+        }
         public static SerializerFactory CreateDefault(params SerializationRule[] additionalRules)
         {
             var ans = new SerializerFactory();
@@ -45,10 +49,12 @@ namespace TNT.Presentation.Serializers
                 t => Attribute.IsDefined(t, typeof(ProtoBuf.ProtoContractAttribute)), CreateProtoSerializer));
             ans.AddRule(new SerializationRule(t => t.IsArray, CreateArraySerializer));
             ans.AddRule(new SerializationRule(t => t.IsEnum, CreateEnumSerializer));
+            ans.AddRule(new SerializationRule(PresentationHelper.IsNulable, CreateDotNetNullableSerializer));
             ans.AddRule(new SerializationRule(t => t.IsValueType, CreateDotNetValueTypeSerializer));
             return ans;
         }
 
+      
         private readonly List<SerializationRule> _rules = new List<SerializationRule>();
 
         public void AddRule(SerializationRule rule)

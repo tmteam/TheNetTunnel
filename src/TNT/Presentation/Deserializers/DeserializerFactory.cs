@@ -30,7 +30,12 @@ namespace TNT.Presentation.Deserializers
             var gt = typeof(ValueTypeDeserializer<>).MakeGenericType(valueType);
             return Activator.CreateInstance(gt) as IDeserializer;
         }
-        
+        private static IDeserializer CreateDotNetNullableSerializer(Type valueType)
+        {
+            var gt = typeof(NullableDeserializer<>).MakeGenericType(valueType.GenericTypeArguments.First());
+            return Activator.CreateInstance(gt) as IDeserializer;
+        }
+
         public static DeserializerFactory CreateDefault(params DeserializationRule[] additionalRules)
         {
             var ans = new DeserializerFactory();
@@ -45,6 +50,7 @@ namespace TNT.Presentation.Deserializers
                 t => Attribute.IsDefined(t, typeof(ProtoBuf.ProtoContractAttribute)), CreateProtoDeserializer));
             ans.AddRule(new DeserializationRule(t=>t.IsArray, CreateArrayDeserializer));
             ans.AddRule(new DeserializationRule(t=>t.IsEnum, CreateEnumDeserializer));
+            ans.AddRule(new DeserializationRule(PresentationHelper.IsNulable, CreateDotNetNullableSerializer));
             ans.AddRule(new DeserializationRule(t=>t.IsValueType, CreateDotNetValueTypeSerializer));
             return ans;
         }

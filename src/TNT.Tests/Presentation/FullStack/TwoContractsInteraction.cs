@@ -61,9 +61,9 @@ namespace TNT.Tests.Presentation.FullStack
             var received = ((TestContractImplementation)originConnection.Contract).SaySCalled.SingleOrDefault();
             Assert.AreEqual(received, sentMessage);
         }
-        [TestCase("Hey you")]
-        [TestCase("")]
-        [TestCase(null)]
+        [TestCase("Hey you",12,24)]
+        [TestCase("",234,0)]
+        [TestCase(null,0,long.MaxValue)]
         public void ProxyAskCall_ReturnsCorrectValue(string s, int i, long l)
         {
             var func = new Func<string,int,long,string>(( s1, i2, l3) => s1 + i2.ToString() + l3.ToString());
