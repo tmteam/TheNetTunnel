@@ -21,8 +21,6 @@ namespace TNT.Tests.Presentation.Serialization
             Assert.Less(Math.Abs((value.DateTime - deserialized.DateTime).TotalMilliseconds) , 1);
         }
 
-      
-
         [Test]
         public void DateTime_SerializeAndBack_ValuesAreEqual()
         {
@@ -51,11 +49,11 @@ namespace TNT.Tests.Presentation.Serialization
         {
             using (var result = new MemoryStream())
             {
-                var primitiveSerializator = new TSerializer();
-                primitiveSerializator.SerializeT(value, result);
+                var serializer = new TSerializer();
+                serializer.SerializeT(value, result);
 
                 result.Position = 0;
-                return new TDeserializer().DeserializeT(result, (int)primitiveSerializator.Size);
+                return new TDeserializer().DeserializeT(result, (int)result.Length);
             }
         }
     }

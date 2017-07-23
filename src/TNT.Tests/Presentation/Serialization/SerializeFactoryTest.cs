@@ -136,7 +136,8 @@ namespace TNT.Tests.Presentation.Serialization
         [Test]
         public void ArrayOfStrings_SerializeAndDeserializeBack_OriginAndDeserializedAreEqual()
         {
-            var origin = new[] { "lalala", "", "bububu", ""};
+            var emptyString = string.IsInterned("");
+            var origin = new[] { "lalala", emptyString, "bububu", null};
             var deserialized = (string[]) SerializeAndDeserializeBack(origin);
             CollectionAssert.AreEqual(origin, deserialized);
         }

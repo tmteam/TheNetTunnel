@@ -15,7 +15,7 @@ namespace TNT.Presentation.Deserializers
 			var arr = new byte[Size.Value];
 			stream.Read (arr, 0, Size.Value);
 			var lng = Tools.ToStruct<long> (arr, 0, Size.Value);
-			return DateTime.FromFileTimeUtc (lng).ToLocalTime ();
+			return DateTime.FromFileTimeUtc (lng);
 		}
 	}
 }
