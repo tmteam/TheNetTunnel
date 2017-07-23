@@ -4,7 +4,7 @@ using TNT.Exceptions;
 using TNT.Exceptions.ContractImplementation;
 using TNT.Presentation;
 using TNT.Testing;
-using TNT.Tests.Presentation.Proxy.ContractInterfaces;
+using TNT.Tests.Presentation.Contracts;
 
 namespace TNT.Tests.Presentation.FullStack
 {
@@ -99,7 +99,7 @@ namespace TNT.Tests.Presentation.FullStack
             var channel = new TestChannel();
             
             var proxyConnection = TntBuilder
-                .UseContract<ITestContract, TestContractImplementation>()
+                .UseContract<ITestContract, TestContractMock>()
                 .UseChannel(channel)
                 .Build();
             Assert.IsNotNull(proxyConnection.Contract);
@@ -108,7 +108,7 @@ namespace TNT.Tests.Presentation.FullStack
         public void OriginContract_CreatesByFactory_ContractCreated()
         {
             var proxyConnection = TntBuilder
-                .UseContract<ITestContract, TestContractImplementation>()
+                .UseContract<ITestContract, TestContractMock>()
                 .UseChannel(new TestChannel())
                 .Build();
 
@@ -118,7 +118,7 @@ namespace TNT.Tests.Presentation.FullStack
         public void OriginContractAsInterface_CreatesByFactory_ContractCreated()
         {
             var proxyConnection = TntBuilder
-                .UseContract<ITestContract, TestContractImplementation>()
+                .UseContract<ITestContract, TestContractMock>()
                 .UseChannel(new TestChannel())
                 .Build();
 
@@ -128,7 +128,7 @@ namespace TNT.Tests.Presentation.FullStack
         [Test]
         public void OriginContractAsSingleTone_CreatesByFactory_ContractCreated()
         {
-            var contract = new TestContractImplementation();
+            var contract = new TestContractMock();
             var proxyConnection = TntBuilder
                 .UseContract<ITestContract>(contract)
                 .UseChannel(new TestChannel())

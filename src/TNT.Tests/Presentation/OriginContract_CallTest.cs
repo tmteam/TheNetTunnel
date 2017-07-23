@@ -1,8 +1,8 @@
 ﻿using NUnit.Framework;
 using TNT.Contract.Origin;
-using TNT.Tests.Presentation.Origin.OriginContracts;
+using TNT.Tests.Presentation.Contracts;
 
-namespace TNT.Tests.Presentation.Origin
+namespace TNT.Tests.Presentation
 {
     [TestFixture]
     public class OriginContract_CallTest

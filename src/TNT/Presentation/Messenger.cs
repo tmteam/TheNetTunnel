@@ -90,7 +90,7 @@ namespace TNT.Presentation
         }
 
         public void Ask(short id, short askId, object[] values) {
-            _sender.Ans(id, askId, values);
+            _sender.Ask(id, askId, values);
         }
 
         private void _channel_OnReceive(Transporter arg1, MemoryStream data)

@@ -1,4 +1,4 @@
-﻿namespace TNT.Tests.Presentation.Origin.OriginContracts
+﻿namespace TNT.Tests.Presentation.Contracts
 {
     public class CallContract : ICallContract
     {

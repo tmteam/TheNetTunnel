@@ -14,7 +14,6 @@ using TNT.Presentation;
 using TNT.Presentation.ReceiveDispatching;
 using TNT.Testing;
 using TNT.Tests.Presentation.Contracts;
-using TNT.Tests.Presentation.Proxy.ContractInterfaces;
 
 namespace TNT.Tests.Presentation.FullStack
 {
@@ -131,7 +130,7 @@ namespace TNT.Tests.Presentation.FullStack
                 .Build();
 
             var originConnection = TntBuilder
-                .UseContract<ITestContract, TestContractImplementation>()
+                .UseContract<ITestContract, TestContractMock>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channelPair.ChannelB)
                 .Build();
@@ -195,7 +194,7 @@ namespace TNT.Tests.Presentation.FullStack
                 .Build();
 
             var originConnection = TntBuilder
-                .UseContract<ITestContract, TestContractImplementation>()
+                .UseContract<ITestContract, TestContractMock>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channelPair.ChannelB)
                 .Build();
@@ -221,7 +220,7 @@ namespace TNT.Tests.Presentation.FullStack
                 .Build();
 
             var originConnection = TntBuilder
-                .UseContract<ITestContract, TestContractImplementation>()
+                .UseContract<ITestContract, TestContractMock>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channelPair.ChannelB)
                 .Build();
@@ -241,7 +240,7 @@ namespace TNT.Tests.Presentation.FullStack
                 .Build();
 
             var originConnection = TntBuilder
-                .UseContract<ITestContract, TestContractImplementation>()
+                .UseContract<ITestContract, TestContractMock>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channelPair.ChannelB)
                 .Build();
@@ -258,7 +257,7 @@ namespace TNT.Tests.Presentation.FullStack
             var channelPair = TntTestHelper.CreateChannelPair();
 
             var originConnection = TntBuilder
-                .UseContract<ITestContract, TestContractImplementation>()
+                .UseContract<ITestContract, TestContractMock>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channelPair.ChannelB)
                 .Build();

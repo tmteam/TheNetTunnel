@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TNT.Contract;
-using TNT.Presentation;
 
-namespace TNT.Tests.Presentation.FullStack
+namespace TNT.Tests.Presentation.Contracts
 {
     public interface ITestContract
     {
@@ -21,9 +16,7 @@ namespace TNT.Tests.Presentation.FullStack
         [ContractMessage(5)]
         string Ask(string s);
         [ContractMessage(6)]
-        int Ask(string s, int i, long l);
-
-
+        string Ask(string s, int i, long l);
 
         [ContractMessage(101)]
         Action OnSay { get; set; }

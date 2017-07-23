@@ -1,8 +1,8 @@
 ﻿using NUnit.Framework;
 using TNT.Contract.Proxy;
-using TNT.Tests.Presentation.Proxy.ContractInterfaces;
+using TNT.Tests.Presentation.Contracts;
 
-namespace TNT.Tests.Presentation.Proxy
+namespace TNT.Tests.Presentation
 {
     [TestFixture]
     public class ProxyContractFactory_CallsTest

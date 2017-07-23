@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace TNT.Tests.Presentation.FullStack
+namespace TNT.Tests.Presentation.Contracts
 {
-    public class TestContractImplementation:ITestContract
+    public class TestContractMock:ITestContract
     {
         public const int AskReturns = 42;
 
@@ -36,9 +33,14 @@ namespace TNT.Tests.Presentation.FullStack
             return "not implemented";
         }
 
-        public int Ask(string s, int i, long l)
+        private Func<string, int, long, string> _whenAskSILCalled = (s, i, l) => "0";
+        public void WhenAskSILCalledCall(Func<string, int, long, string> whenAskSILCalled)
         {
-            return 0;
+            _whenAskSILCalled = whenAskSILCalled;
+        }
+        public string Ask(string s, int i, long l)
+        {
+            return _whenAskSILCalled(s,i,l);
         }
 
         public Action OnSay { get; set; }

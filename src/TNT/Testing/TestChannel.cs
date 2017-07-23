@@ -8,15 +8,24 @@ namespace TNT.Testing
 {
     public class TestChannel: IChannel
     {
+        private readonly bool _threadQueue;
         private bool _wasConnected;
         private bool _allowReceive;
         ConcurrentQueue<byte[]> _receiveQueue = new ConcurrentQueue<byte[]>();
         private Task _receiveQueueHandlerTask = new Task(() => { });
 
+        public TestChannel(bool threadQueue = true)
+        {
+            _threadQueue = threadQueue;
+        }
         public void ImmitateReceive(byte[] message)
         {
+            
             _receiveQueue.Enqueue(message);
-            _receiveQueueHandlerTask= _receiveQueueHandlerTask.ContinueWith((t) => HandleReceiveQueue());
+            if(_threadQueue)
+                _receiveQueueHandlerTask = _receiveQueueHandlerTask.ContinueWith((t) => HandleReceiveQueue());
+            else
+                HandleReceiveQueue();
         }
 
         void HandleReceiveQueue()
@@ -59,10 +68,14 @@ namespace TNT.Testing
                     return;
                 
                 _allowReceive = value;
-                if(_allowReceive)
-                    if (_receiveQueueHandlerTask.Status == TaskStatus.Created)
+
+                if (_allowReceive)
+                {
+                    if(!_threadQueue)
+                        HandleReceiveQueue();
+                    else if (_receiveQueueHandlerTask.Status == TaskStatus.Created)
                         _receiveQueueHandlerTask.Start();
-                                        
+                }
                 AllowReceiveChanged?.Invoke(this,value);
             }
         }

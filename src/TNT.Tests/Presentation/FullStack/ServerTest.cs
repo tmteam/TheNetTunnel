@@ -8,6 +8,7 @@ using NUnit.Framework;
 using TNT.Api;
 using TNT.Presentation;
 using TNT.Testing;
+using TNT.Tests.Presentation.Contracts;
 
 namespace TNT.Tests.Presentation.FullStack
 {
@@ -17,7 +18,7 @@ namespace TNT.Tests.Presentation.FullStack
         [Test]
         public void ServerAcceptConnection_BeforeConnectRaised()
         {
-            var server = new TestChannelServer<ITestContract>(TntBuilder.UseContract<ITestContract, TestContractImplementation>());
+            var server = new TestChannelServer<ITestContract>(TntBuilder.UseContract<ITestContract, TestContractMock>());
             server.IsListening = true;
             BeforeConnectEventArgs<ITestContract, TestChannel> connectionArgs = null;
             server.BeforeConnect  += (sender, args) => connectionArgs = args;
@@ -33,7 +34,7 @@ namespace TNT.Tests.Presentation.FullStack
         [Test]
         public void ServerAcceptConnection_AfterConnectRaised()
         {
-            var server = new TestChannelServer<ITestContract>(TntBuilder.UseContract<ITestContract,TestContractImplementation>());
+            var server = new TestChannelServer<ITestContract>(TntBuilder.UseContract<ITestContract,TestContractMock>());
             server.IsListening = true; 
             Connection<ITestContract, TestChannel> incomeContractConnection = null;
             server.AfterConnect += (sender, income) => incomeContractConnection = income;
@@ -47,7 +48,7 @@ namespace TNT.Tests.Presentation.FullStack
         [Test]
         public void ServerAcceptConnection_AllowReceiveEqualTrue()
         {
-            var server = new TestChannelServer<ITestContract>(TntBuilder.UseContract<ITestContract, TestContractImplementation>());
+            var server = new TestChannelServer<ITestContract>(TntBuilder.UseContract<ITestContract, TestContractMock>());
             server.IsListening = true;
             var clientChannel = new TestChannel();
             TntBuilder.UseContract<ITestContract>().UseChannel(clientChannel).Build();
@@ -58,7 +59,7 @@ namespace TNT.Tests.Presentation.FullStack
         [Test]
         public void ClientDisconnected_DisconnectedRaised()
         {
-            var server = new TestChannelServer<ITestContract>(TntBuilder.UseContract<ITestContract, TestContractImplementation>());
+            var server = new TestChannelServer<ITestContract>(TntBuilder.UseContract<ITestContract, TestContractMock>());
             server.IsListening = true;
             Connection<ITestContract, TestChannel> disconnectedConnection = null;
             server.Disconnected += (sender, income) => disconnectedConnection = income;

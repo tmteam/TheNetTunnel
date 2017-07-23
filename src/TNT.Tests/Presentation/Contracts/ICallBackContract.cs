@@ -1,8 +1,7 @@
 ﻿using System;
 using TNT.Contract;
-using TNT.Presentation;
 
-namespace TNT.Tests.Presentation.Origin.OriginContracts
+namespace TNT.Tests.Presentation.Contracts
 {
     public interface ICallBackContract
     {

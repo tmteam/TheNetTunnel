@@ -1,5 +1,5 @@
 ﻿
-namespace TNT.Tests.Presentation.Proxy.ContractInterfaces
+namespace TNT.Tests.Presentation.Contracts
 {
     public interface IEmptyContract
     {
