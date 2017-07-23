@@ -7,7 +7,7 @@ namespace TNT.Testing
         where TContract : class
     {
         public TestChannelListener TestListener { get;  }
-        public TestChannelServer(ConnectionBuilder<TContract> channelBuilder) : base(channelBuilder, new TestChannelListener())
+        public TestChannelServer(PresentationBuilder<TContract> channelBuilder) : base(channelBuilder, new TestChannelListener())
         {
             TestListener = this.Listener as TestChannelListener;
         }

@@ -8,14 +8,14 @@ namespace TNT.Transport
 {
     public class Transporter
     {
-        private readonly ISendMessageSequenceBehaviour _sendMessageSeparatorBehaviour;
-        private readonly ReceiveMessageQueue _receiveMessageAssembler;
+        private readonly ISendPduBehaviour _sendMessageSeparatorBehaviour;
+        private readonly ReceivePduQueue _receiveMessageAssembler;
 
         public Transporter(IChannel underlyingChannel, 
-            ISendMessageSequenceBehaviour sendMessageSequenceBehaviour)
+            ISendPduBehaviour sendMessageSequenceBehaviour)
         {
             _sendMessageSeparatorBehaviour = sendMessageSequenceBehaviour;
-            _receiveMessageAssembler = new ReceiveMessageQueue();
+            _receiveMessageAssembler = new ReceivePduQueue();
             Channel = underlyingChannel;
             underlyingChannel.OnDisconnect += (s) => OnDisconnect?.Invoke(this);
             underlyingChannel.OnReceive += UnderlyingChannel_OnReceive;

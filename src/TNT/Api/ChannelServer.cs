@@ -10,7 +10,7 @@ namespace TNT.Api
         where TChannel :  IChannel
         where TContract: class
     {
-        private readonly ConnectionBuilder<TContract> _connectionBuilder;
+        private readonly PresentationBuilder<TContract> _connectionBuilder;
         protected readonly IChannelListener<TChannel> Listener;
 
         readonly ConcurrentDictionary<IChannel, Connection<TContract, TChannel>> _connections
@@ -28,7 +28,7 @@ namespace TNT.Api
         public event Action<IChannelServer<TContract, TChannel>, Connection<TContract, TChannel>> 
             Disconnected;
 
-        public ChannelServer(ConnectionBuilder<TContract> channelBuilder, IChannelListener<TChannel> listener)
+        public ChannelServer(PresentationBuilder<TContract> channelBuilder, IChannelListener<TChannel> listener)
         {
             _connectionBuilder = channelBuilder;
             Listener = listener;

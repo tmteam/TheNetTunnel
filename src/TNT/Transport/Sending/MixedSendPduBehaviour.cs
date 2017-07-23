@@ -7,12 +7,12 @@ namespace TNT.Transport.Sending
     /// <summary>
     /// Separate Light messages into a quantum sequences
     /// </summary>
-    public class MixedSendMessageSequenceBehaviour : ISendMessageSequenceBehaviour
+    public class MixedSendPduBehaviour : ISendPduBehaviour
     {
         private const int maxQuantumSize = 1000;
         private int       _lastUsedId;
 
-        private readonly ConcurrentQueue<MessageSeparator> _messageQueue = new ConcurrentQueue<MessageSeparator>();
+        private readonly ConcurrentQueue<PacketSeparator> _messageQueue = new ConcurrentQueue<PacketSeparator>();
         
         /// <summary>
         /// Add a message for sending
@@ -21,7 +21,7 @@ namespace TNT.Transport.Sending
         public void Enqueue(MemoryStream lightMessage)
         {
             var id = Interlocked.Increment(ref _lastUsedId);
-            var separator = new MessageSeparator(lightMessage, id, maxQuantumSize);
+            var separator = new PacketSeparator(lightMessage, id, maxQuantumSize);
             _messageQueue.Enqueue(separator);
         }
 
@@ -35,7 +35,7 @@ namespace TNT.Transport.Sending
         {
             ConcurrentBag<int> q = new ConcurrentBag<int>();
 
-            MessageSeparator separator = null;
+            PacketSeparator separator = null;
             if (!_messageQueue.IsEmpty && _messageQueue.TryDequeue(out separator))
             {
                 separator.TryNext(out quantum);

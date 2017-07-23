@@ -5,7 +5,7 @@ using ProtoBuf;
 using TNT.Presentation.Deserializers;
 using TNT.Presentation.Serializers;
 
-namespace TNT.Tests.Cord.Serializers
+namespace TNT.Tests.Presentation.Serialization
 {
     [TestFixture]
     public class ProtoSerializerTest

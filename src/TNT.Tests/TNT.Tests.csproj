@@ -51,7 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Cord\Serializers\SerializeFactoryTest.cs" />
+    <Compile Include="Presentation\Serialization\SerializeFactoryTest.cs" />
     <Compile Include="Light\MessagesSequenceSeparateAndReceiveTest.cs" />
     <Compile Include="Light\MessageSeparateAndCollectTest.cs" />
     <Compile Include="Presentation\Contracts\ExceptionalContract.cs" />
@@ -78,10 +78,9 @@
     <Compile Include="Presentation\FullStack\TwoContractsInteraction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Presentation\ProxyContractFactory_SayAskContractTests.cs" />
-    <Compile Include="Cord\Serializers\ProtoSerializerTest.cs" />
-    <Compile Include="Cord\Serializers\DateTimeSerializationTest.cs" />
-    <Compile Include="Cord\Serializers\PrimitiveConvertSerializerTests.cs" />
-    <Compile Include="Cord\Serializers\PrimitiveSerializerTests.cs" />
+    <Compile Include="Presentation\Serialization\ProtoSerializerTest.cs" />
+    <Compile Include="Presentation\Serialization\GeneralSerializersTest.cs" />
+    <Compile Include="Presentation\Serialization\ValueTypeSerializerTests.cs" />
     <Compile Include="TestTools.cs" />
   </ItemGroup>
   <ItemGroup>

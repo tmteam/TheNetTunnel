@@ -7,12 +7,12 @@ namespace TNT.Transport.Sending
     /// <summary>
     /// Separate Light messages into a quantum sequences
     /// </summary>
-    public class FIFOSendMessageSequenceBehaviour : ISendMessageSequenceBehaviour
+    public class FIFOSendPduBehaviour : ISendPduBehaviour
     {
         private const int maxQuantumSize = 1000;
-        private readonly ConcurrentQueue<MessageSeparator> _messageQueue = new ConcurrentQueue<MessageSeparator>();
+        private readonly ConcurrentQueue<PacketSeparator> _messageQueue = new ConcurrentQueue<PacketSeparator>();
         private int _lastUsedId;
-        private MessageSeparator undoneMessage = null;
+        private PacketSeparator undoneMessage = null;
 
         /// <summary>
         /// Add a message for sending
@@ -21,7 +21,7 @@ namespace TNT.Transport.Sending
         public void Enqueue(MemoryStream lightMessage)
         {
             var id = Interlocked.Increment(ref _lastUsedId);
-            var separator = new MessageSeparator(lightMessage, id, maxQuantumSize);
+            var separator = new PacketSeparator(lightMessage, id, maxQuantumSize);
             _messageQueue.Enqueue(separator);
         }
 
@@ -33,7 +33,7 @@ namespace TNT.Transport.Sending
         /// <returns>true if quantum generated.</returns>
         public bool TryDequeue(out byte[] quantum, out int messageId)
         {
-            MessageSeparator separator = null;
+            PacketSeparator separator = null;
             if (undoneMessage == null)
                 _messageQueue.TryDequeue(out separator);
             else

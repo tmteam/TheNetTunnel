@@ -7,9 +7,9 @@ namespace TNT.Transport.Sending
     /// <summary>
     /// Separate lightMessage into sequence of quants
     /// </summary>
-    public class MessageSeparator
+    public class PacketSeparator
     {
-        private static readonly int DefaultHeadSize = Marshal.SizeOf(typeof(QuantumHead));
+        private static readonly int DefaultHeadSize = Marshal.SizeOf(typeof(PduHead));
 
         int dataLeft;
 
@@ -37,7 +37,7 @@ namespace TNT.Transport.Sending
         /// <param name="stream"></param>
         /// <param name="msgId"></param>
         /// <param name="maxQuantSize"></param>
-        public MessageSeparator(Stream stream, int msgId, int maxQuantSize)
+        public PacketSeparator(Stream stream, int msgId, int maxQuantSize)
         {
             _maxQuantSize = maxQuantSize;
             dataLeft = (int) (stream.Length - stream.Position);
@@ -62,11 +62,11 @@ namespace TNT.Transport.Sending
         {
             dataLeft = (int) (_currentStream.Length - _currentStream.Position);
             var actualHeadSize = got1Sended ? DefaultHeadSize : (DefaultHeadSize + 4);
-            var head = new QuantumHead
+            var head = new PduHead
             {
                 length = (ushort) Math.Min(actualHeadSize + dataLeft, _maxQuantSize),
                 msgId = msgId,
-                type = got1Sended ? QuantumType.Data : QuantumType.Start,
+                type = got1Sended ? PduType.Data : PduType.Start,
             };
 
             byte[] Quant = new byte[head.length];

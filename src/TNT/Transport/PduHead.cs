@@ -4,9 +4,9 @@ using System.Runtime.InteropServices;
 namespace TNT.Transport
 {
 	[StructLayout(LayoutKind.Explicit, Size= 7)]
-	public struct QuantumHead
+	public struct PduHead
 	{
-        public static readonly int DefaultHeadSize = Marshal.SizeOf(typeof(QuantumHead));
+        public static readonly int DefaultHeadSize = Marshal.SizeOf(typeof(PduHead));
 
         /// <summary>
         /// Full quantum lenght
@@ -19,7 +19,7 @@ namespace TNT.Transport
         /// <summary>
         /// Type of a quant
         /// </summary>
-		[FieldOffset(6)] public QuantumType type;
+		[FieldOffset(6)] public PduType type;
 	}
 }
 

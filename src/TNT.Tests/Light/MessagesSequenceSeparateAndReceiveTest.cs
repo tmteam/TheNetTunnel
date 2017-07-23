@@ -19,7 +19,7 @@ namespace TNT.Tests.Light
         public void FIFO_SeparateAndCollectEmptyArray_CollectedEqualToOrigin()
         {
             byte[] originArray = new byte[0];
-            var collectedArray = SeparateAndCollect(new FIFOSendMessageSequenceBehaviour(),  originArray);
+            var collectedArray = SeparateAndCollect(new FIFOSendPduBehaviour(),  originArray);
             Assert.IsNotNull(collectedArray);
             CollectionAssert.AreEqual(originArray,collectedArray);
         }
@@ -27,7 +27,7 @@ namespace TNT.Tests.Light
         public void FIFO_SeparateAndCollectSmallArray_CollectedEqualToOrigin()
         {
             byte[] originArray = new byte[] {1,2,3,4};
-            var collectedArray = SeparateAndCollect(new FIFOSendMessageSequenceBehaviour(), originArray);
+            var collectedArray = SeparateAndCollect(new FIFOSendPduBehaviour(), originArray);
             Assert.IsNotNull(collectedArray);
             CollectionAssert.AreEqual(originArray, collectedArray);
         }
@@ -35,7 +35,7 @@ namespace TNT.Tests.Light
         public void FIFO_SeparateAndCollectBigArray_CollectedEqualToOrigin()
         {
             byte[] originArray = Enumerable.Range(1, 10000).Select(s => (byte)(s % 255)).ToArray();
-            var collectedArray = SeparateAndCollect(new FIFOSendMessageSequenceBehaviour(), originArray);
+            var collectedArray = SeparateAndCollect(new FIFOSendPduBehaviour(), originArray);
             Assert.IsNotNull(collectedArray);
             CollectionAssert.AreEqual(originArray, collectedArray);
         }
@@ -44,7 +44,7 @@ namespace TNT.Tests.Light
         public void Mix_SeparateAndCollectEmptyArray_CollectedEqualToOrigin()
         {
             byte[] originArray = new byte[0];
-            var collectedArray = SeparateAndCollect(new MixedSendMessageSequenceBehaviour(), originArray);
+            var collectedArray = SeparateAndCollect(new MixedSendPduBehaviour(), originArray);
             Assert.IsNotNull(collectedArray);
             CollectionAssert.AreEqual(originArray, collectedArray);
         }
@@ -52,7 +52,7 @@ namespace TNT.Tests.Light
         public void Mix_SeparateAndCollectSmallArray_CollectedEqualToOrigin()
         {
             byte[] originArray = new byte[] { 1, 2, 3, 4 };
-            var collectedArray = SeparateAndCollect(new MixedSendMessageSequenceBehaviour(), originArray);
+            var collectedArray = SeparateAndCollect(new MixedSendPduBehaviour(), originArray);
             Assert.IsNotNull(collectedArray);
             CollectionAssert.AreEqual(originArray, collectedArray);
         }
@@ -60,7 +60,7 @@ namespace TNT.Tests.Light
         public void Mix_SeparateAndCollectBigArray_CollectedEqualToOrigin()
         {
             byte[] originArray = Enumerable.Range(1, 10000).Select(s => (byte)(s % 255)).ToArray();
-            var collectedArray = SeparateAndCollect(new MixedSendMessageSequenceBehaviour(), originArray);
+            var collectedArray = SeparateAndCollect(new MixedSendPduBehaviour(), originArray);
             Assert.IsNotNull(collectedArray);
             CollectionAssert.AreEqual(originArray, collectedArray);
         }
@@ -75,8 +75,8 @@ namespace TNT.Tests.Light
                 new byte[] {1, 2, 3, 4},
             };
 
-            var separator = new FIFOSendMessageSequenceBehaviour();
-            var collector = new ReceiveMessageQueue();
+            var separator = new FIFOSendPduBehaviour();
+            var collector = new ReceivePduQueue();
 
             foreach (var origin in originMessages.Select(o => new MemoryStream(o)))
             {
@@ -108,8 +108,8 @@ namespace TNT.Tests.Light
                 Enumerable.Range(1, 5000).Select(s => (byte) (s % 255)).ToArray(),
             };
 
-            var separator = new MixedSendMessageSequenceBehaviour();
-            var collector = new ReceiveMessageQueue();
+            var separator = new MixedSendPduBehaviour();
+            var collector = new ReceivePduQueue();
 
             foreach (var origin in originMessages.Select(o => new MemoryStream(o)))
             {
@@ -150,11 +150,11 @@ namespace TNT.Tests.Light
             return true;
         }
 
-        private static byte[] SeparateAndCollect(ISendMessageSequenceBehaviour separator, byte[] originArray)
+        private static byte[] SeparateAndCollect(ISendPduBehaviour separator, byte[] originArray)
         {
             var stream = new MemoryStream(originArray);
 
-            var collector = new ReceiveMessageQueue();
+            var collector = new ReceivePduQueue();
 
             separator.Enqueue(stream);
 

@@ -11,6 +11,7 @@ using TNT.Exceptions.ContractImplementation;
 using TNT.Exceptions.Local;
 using TNT.Exceptions.Remote;
 using TNT.Presentation;
+using TNT.Presentation.ReceiveDispatching;
 using TNT.Testing;
 using TNT.Tests.Presentation.Contracts;
 using TNT.Tests.Presentation.Proxy.ContractInterfaces;
@@ -24,7 +25,7 @@ namespace TNT.Tests.Presentation.FullStack
         public void ProxyConnectionIsNotEstablishedYet_SayCallThrows()
         {
             var channel = new TestChannel();
-            var proxyConnection = ConnectionBuilder
+            var proxyConnection = TntBuilder
                 .UseContract<ITestContract>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channel)
@@ -38,7 +39,7 @@ namespace TNT.Tests.Presentation.FullStack
         public void ProxyConnectionIsNotEstablishedYet_AskCallThrows()
         {
             var channel = new TestChannel();
-            var proxyConnection = ConnectionBuilder
+            var proxyConnection = TntBuilder
                 .UseContract<ITestContract>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channel)
@@ -51,7 +52,7 @@ namespace TNT.Tests.Presentation.FullStack
         public void ProxyConnectionIsLost_SayCallThrows()
         {
             var channel = new TestChannel();
-            var proxyConnection = ConnectionBuilder
+            var proxyConnection = TntBuilder
                 .UseContract<ITestContract>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channel)
@@ -65,7 +66,7 @@ namespace TNT.Tests.Presentation.FullStack
         public void ProxyConnectionIsLost_AskCallThrows()
         {
             var channel = new TestChannel();
-            var proxyConnection = ConnectionBuilder
+            var proxyConnection = TntBuilder
                 .UseContract<ITestContract>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channel)
@@ -83,13 +84,13 @@ namespace TNT.Tests.Presentation.FullStack
         public void Proxy_AskMissingCord_Throws()
         {
             var channelPair = TntTestHelper.CreateChannelPair();
-            var proxyConnection = ConnectionBuilder
+            var proxyConnection = TntBuilder
                 .UseContract<ITestContract>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channelPair.CahnnelA)
                 .Build();
 
-            var originConnection = ConnectionBuilder
+            var originConnection = TntBuilder
                 .UseContract<IEmptyContract, EmptyContract>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channelPair.ChannelB)
@@ -103,13 +104,13 @@ namespace TNT.Tests.Presentation.FullStack
         public void Proxy_SayMissingCord_NotThrows()
         {
             var channelPair = TntTestHelper.CreateChannelPair();
-            var proxyConnection = ConnectionBuilder
+            var proxyConnection = TntBuilder
                 .UseContract<ITestContract>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channelPair.CahnnelA)
                 .Build();
 
-            var originConnection = ConnectionBuilder
+            var originConnection = TntBuilder
                 .UseContract<IEmptyContract, EmptyContract>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channelPair.ChannelB)
@@ -123,13 +124,13 @@ namespace TNT.Tests.Presentation.FullStack
         {
             var channelPair = TntTestHelper.CreateChannelPair();
 
-            var proxyConnection = ConnectionBuilder
+            var proxyConnection = TntBuilder
                 .UseContract<IEmptyContract>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channelPair.CahnnelA)
                 .Build();
 
-            var originConnection = ConnectionBuilder
+            var originConnection = TntBuilder
                 .UseContract<ITestContract, TestContractImplementation>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channelPair.ChannelB)
@@ -142,13 +143,13 @@ namespace TNT.Tests.Presentation.FullStack
         public void Proxy_SayWithException_CallNotThrows()
         {
             var channelPair = TntTestHelper.CreateChannelPair();
-            var proxyConnection = ConnectionBuilder
+            var proxyConnection = TntBuilder
                 .UseContract<IExceptionalContract>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channelPair.CahnnelA)
                 .Build();
 
-            var originConnection = ConnectionBuilder
+            var originConnection = TntBuilder
                 .UseContract<IExceptionalContract, ExceptionalContract>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channelPair.ChannelB)
@@ -161,13 +162,13 @@ namespace TNT.Tests.Presentation.FullStack
         public void Proxy_AskWithException_Throws()
         {
             var channelPair = TntTestHelper.CreateChannelPair();
-            var proxyConnection = ConnectionBuilder
+            var proxyConnection = TntBuilder
                 .UseContract<IExceptionalContract>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channelPair.CahnnelA)
                 .Build();
 
-            var originConnection = ConnectionBuilder
+            var originConnection = TntBuilder
                 .UseContract<IExceptionalContract, ExceptionalContract>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channelPair.ChannelB)
@@ -182,7 +183,7 @@ namespace TNT.Tests.Presentation.FullStack
         {
             var channelPair = TntTestHelper.CreateChannelPair();
 
-            var proxyConnection = ConnectionBuilder
+            var proxyConnection = TntBuilder
                 .UseContract<ITestContract>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseContractInitalization((c, _) =>
@@ -193,7 +194,7 @@ namespace TNT.Tests.Presentation.FullStack
                 .UseChannel(channelPair.CahnnelA)
                 .Build();
 
-            var originConnection = ConnectionBuilder
+            var originConnection = TntBuilder
                 .UseContract<ITestContract, TestContractImplementation>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channelPair.ChannelB)
@@ -209,7 +210,7 @@ namespace TNT.Tests.Presentation.FullStack
         {
             var channelPair = TntTestHelper.CreateChannelPair();
 
-            var proxyConnection = ConnectionBuilder
+            var proxyConnection = TntBuilder
                 .UseContract<ITestContract>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseContractInitalization((c, _) =>
@@ -219,7 +220,7 @@ namespace TNT.Tests.Presentation.FullStack
                 .UseChannel(channelPair.CahnnelA)
                 .Build();
 
-            var originConnection = ConnectionBuilder
+            var originConnection = TntBuilder
                 .UseContract<ITestContract, TestContractImplementation>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channelPair.ChannelB)
@@ -233,13 +234,13 @@ namespace TNT.Tests.Presentation.FullStack
         {
             var channelPair = TntTestHelper.CreateChannelPair();
 
-            var proxyConnection = ConnectionBuilder
+            var proxyConnection = TntBuilder
                 .UseContract<ITestContract>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channelPair.CahnnelA)
                 .Build();
 
-            var originConnection = ConnectionBuilder
+            var originConnection = TntBuilder
                 .UseContract<ITestContract, TestContractImplementation>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channelPair.ChannelB)
@@ -256,13 +257,13 @@ namespace TNT.Tests.Presentation.FullStack
         {
             var channelPair = TntTestHelper.CreateChannelPair();
 
-            var originConnection = ConnectionBuilder
+            var originConnection = TntBuilder
                 .UseContract<ITestContract, TestContractImplementation>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(channelPair.ChannelB)
                 .Build();
 
-            var proxyConnection = ConnectionBuilder
+            var proxyConnection = TntBuilder
                 .UseContract<ITestContract>()
                 .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseContractInitalization((c, _) =>

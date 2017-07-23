@@ -19,7 +19,7 @@ namespace TNT.Tests.Presentation.FullStack
         [ContractMessage(4)]
         int Ask();
         [ContractMessage(5)]
-        int Ask(string s);
+        string Ask(string s);
         [ContractMessage(6)]
         int Ask(string s, int i, long l);
 
@@ -34,8 +34,8 @@ namespace TNT.Tests.Presentation.FullStack
         [ContractMessage(104)]
         Func<int> OnAsk { get; set; }
         [ContractMessage(105)]
-        Func<string, int> OnAskS { get; set; }
+        Func<string, string> OnAskS { get; set; }
         [ContractMessage(106)]
-        Func<string,int, long, int> OnAskSIL { get; set; }
+        Func<string,int, long, string> OnAskSIL { get; set; }
     }
 }

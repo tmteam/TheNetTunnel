@@ -10,7 +10,7 @@ namespace TNT.Tcp
         public IPEndPoint EndPoint { get; }
 
         public TcpChannelServer(
-            ConnectionBuilder<TContract> connectionBuilder, 
+            PresentationBuilder<TContract> connectionBuilder, 
             IPEndPoint endPoint 
         ) : base(connectionBuilder, new TcpChanelListener(endPoint))
         {

@@ -54,13 +54,13 @@ namespace TNT.Tests.Light
             using (var stream = new MemoryStream(originArray))
             {
                 byte[] quant = null;
-                var separator = new MessageSeparator(stream, 42, 1024);
+                var separator = new PacketSeparator(stream, 42, 1024);
                 while (separator.TryNext(out quant))
                 {
                     quants.Add(quant);
                 }
             }
-            var collector = new MessageCollector();
+            var collector = new PacketCollector();
 
             foreach (var quant in quants)
             {

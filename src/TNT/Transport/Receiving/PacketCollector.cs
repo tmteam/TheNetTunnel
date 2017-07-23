@@ -7,9 +7,9 @@ namespace TNT.Transport.Receiving
     /// <summary>
     /// Collect single light message from quants
     /// </summary>
-    public class MessageCollector
+    public class PacketCollector
     {
-        private static readonly int DefaultHeadSize = Marshal.SizeOf(typeof(QuantumHead));
+        private static readonly int DefaultHeadSize = Marshal.SizeOf(typeof(PduHead));
 
         //public DateTime LastTimeSet { get; private set; }
 
@@ -27,14 +27,14 @@ namespace TNT.Transport.Receiving
         {
             //LastTimeSet = DateTime.Now;
 
-            var head = packetFromAStream.ToStruct<QuantumHead>(offset, QuantumHead.DefaultHeadSize);
+            var head = packetFromAStream.ToStruct<PduHead>(offset, PduHead.DefaultHeadSize);
 
 
             int bodyStart = offset + DefaultHeadSize;
             int bodyLen = head.length - DefaultHeadSize;
             if (_stream == null)
             {
-                if (head.type == QuantumType.Start)
+                if (head.type == PduType.Start)
                 {
                     lenght = BitConverter.ToInt32(packetFromAStream, bodyStart);
                     _stream = new MemoryStream(lenght);
@@ -45,7 +45,7 @@ namespace TNT.Transport.Receiving
                     throw new InvalidOperationException("Invalid quant order");
                 }
             }
-            else if (head.type == QuantumType.Data)
+            else if (head.type == PduType.Data)
             {
                 _stream.Write(packetFromAStream, bodyStart, bodyLen);
             }

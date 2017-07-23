@@ -16,10 +16,7 @@ namespace TNT.Presentation
         public const short GeneralExceptionMessageTypeId = 0;
 
         private readonly Sender _sender;
-
         private readonly Transporter _channel;
-
-     
 
         private readonly Dictionary<int, InputMessageDeserializeInfo> _inputSayMessageDeserializeInfos
             = new Dictionary<int, InputMessageDeserializeInfo>();
@@ -46,29 +43,27 @@ namespace TNT.Presentation
             foreach (var messageSayInfo in outputMessages)
             {
                 var serializer = serializerFactory.Create(messageSayInfo.ArgumentTypes);
-
                 var hasReturnType = messageSayInfo.ReturnType != typeof(void);
 
-                outputSayMessageSerializes.Add(messageSayInfo.messageId, serializer);
+                outputSayMessageSerializes.Add(messageSayInfo.MessageId, serializer);
                 if (hasReturnType)
                 {
                     _inputSayMessageDeserializeInfos.Add(
-                        -messageSayInfo.messageId,
+                        -messageSayInfo.MessageId,
                         InputMessageDeserializeInfo.CreateForAnswer(deserializerFactory.Create(messageSayInfo.ReturnType)));
                 }
             }
             foreach (var messageSayInfo in inputMessages)
             {
                 var hasReturnType = messageSayInfo.ReturnType != typeof(void);
-
                 var deserializer = deserializerFactory.Create(messageSayInfo.ArgumentTypes);
                 _inputSayMessageDeserializeInfos.Add(
-                    messageSayInfo.messageId,
+                    messageSayInfo.MessageId,
                     InputMessageDeserializeInfo.CreateForAsk(messageSayInfo.ArgumentTypes.Length, hasReturnType,
                         deserializer));
 
                 if (hasReturnType) {
-                    outputSayMessageSerializes.Add(-messageSayInfo.messageId,
+                    outputSayMessageSerializes.Add(-messageSayInfo.MessageId,
                         serializerFactory.Create(messageSayInfo.ReturnType));
                 }
             }
@@ -78,12 +73,9 @@ namespace TNT.Presentation
             _sender = new Sender(_channel, outputSayMessageSerializes);
         }
 
-     
-
         public void HandleCallException( RemoteExceptionBase rcException)
         {
             _sender.SendException(rcException);
-
             if (rcException.IsFatal)
                 _channel.Disconnect();
         }
@@ -99,10 +91,7 @@ namespace TNT.Presentation
 
         public void Ask(short id, short askId, object[] values) {
             _sender.Ans(id, askId, values);
-
         }
-
-      
 
         private void _channel_OnReceive(Transporter arg1, MemoryStream data)
         {
@@ -157,7 +146,6 @@ namespace TNT.Presentation
                 {
                     HandleCallException(e);
                 }
-               
             }
             else if(id == Messenger.ExceptionMessageTypeId)
             {
@@ -179,7 +167,7 @@ namespace TNT.Presentation
     {
         public Type[] ArgumentTypes;
         public Type ReturnType;
-        public short messageId;
+        public short MessageId;
     }
 
 

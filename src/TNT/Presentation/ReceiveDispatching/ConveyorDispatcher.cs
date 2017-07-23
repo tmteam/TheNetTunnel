@@ -2,7 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Threading;
 
-namespace TNT.Presentation
+namespace TNT.Presentation.ReceiveDispatching
 {
     public class ConveyorDispatcher : IDispatcher
     {

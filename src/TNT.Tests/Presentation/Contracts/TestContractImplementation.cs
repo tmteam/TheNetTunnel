@@ -31,9 +31,9 @@ namespace TNT.Tests.Presentation.FullStack
             return AskReturns;
         }
 
-        public int Ask(string s)
+        public string Ask(string s)
         {
-            return 0;
+            return "not implemented";
         }
 
         public int Ask(string s, int i, long l)
@@ -45,7 +45,7 @@ namespace TNT.Tests.Presentation.FullStack
         public Action<string> OnSayS { get; set; }
         public Action<string, int, long> OnSaySIL { get; set; }
         public Func<int> OnAsk { get; set; }
-        public Func<string, int> OnAskS { get; set; }
-        public Func<string, int, long, int> OnAskSIL { get; set; }
+        public Func<string, string> OnAskS { get; set; }
+        public Func<string, int, long, string> OnAskSIL { get; set; }
     }
 }

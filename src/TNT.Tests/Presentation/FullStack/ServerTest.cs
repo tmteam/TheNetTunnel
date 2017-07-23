@@ -17,13 +17,13 @@ namespace TNT.Tests.Presentation.FullStack
         [Test]
         public void ServerAcceptConnection_BeforeConnectRaised()
         {
-            var server = new TestChannelServer<ITestContract>(ConnectionBuilder.UseContract<ITestContract, TestContractImplementation>());
+            var server = new TestChannelServer<ITestContract>(TntBuilder.UseContract<ITestContract, TestContractImplementation>());
             server.IsListening = true;
             BeforeConnectEventArgs<ITestContract, TestChannel> connectionArgs = null;
             server.BeforeConnect  += (sender, args) => connectionArgs = args;
 
             var clientChannel = new TestChannel();
-            var proxyConnection = ConnectionBuilder.UseContract<ITestContract>().UseChannel(clientChannel).Build();
+            var proxyConnection = TntBuilder.UseContract<ITestContract>().UseChannel(clientChannel).Build();
 
             server.TestListener.ImmitateAccept(clientChannel);
 
@@ -33,12 +33,12 @@ namespace TNT.Tests.Presentation.FullStack
         [Test]
         public void ServerAcceptConnection_AfterConnectRaised()
         {
-            var server = new TestChannelServer<ITestContract>(ConnectionBuilder.UseContract<ITestContract,TestContractImplementation>());
+            var server = new TestChannelServer<ITestContract>(TntBuilder.UseContract<ITestContract,TestContractImplementation>());
             server.IsListening = true; 
             Connection<ITestContract, TestChannel> incomeContractConnection = null;
             server.AfterConnect += (sender, income) => incomeContractConnection = income;
             var clientChannel = new TestChannel();
-            var proxyConnection = ConnectionBuilder.UseContract<ITestContract>().UseChannel(clientChannel).Build();
+            var proxyConnection = TntBuilder.UseContract<ITestContract>().UseChannel(clientChannel).Build();
             server.TestListener.ImmitateAccept(clientChannel);
             Assert.IsNotNull(incomeContractConnection, "AfterConnect not raised");
         }
@@ -47,10 +47,10 @@ namespace TNT.Tests.Presentation.FullStack
         [Test]
         public void ServerAcceptConnection_AllowReceiveEqualTrue()
         {
-            var server = new TestChannelServer<ITestContract>(ConnectionBuilder.UseContract<ITestContract, TestContractImplementation>());
+            var server = new TestChannelServer<ITestContract>(TntBuilder.UseContract<ITestContract, TestContractImplementation>());
             server.IsListening = true;
             var clientChannel = new TestChannel();
-            ConnectionBuilder.UseContract<ITestContract>().UseChannel(clientChannel).Build();
+            TntBuilder.UseContract<ITestContract>().UseChannel(clientChannel).Build();
             server.TestListener.ImmitateAccept(clientChannel);
             Assert.IsTrue(server.GetAllConnections().First().Channel.AllowReceive);
         }
@@ -58,12 +58,12 @@ namespace TNT.Tests.Presentation.FullStack
         [Test]
         public void ClientDisconnected_DisconnectedRaised()
         {
-            var server = new TestChannelServer<ITestContract>(ConnectionBuilder.UseContract<ITestContract, TestContractImplementation>());
+            var server = new TestChannelServer<ITestContract>(TntBuilder.UseContract<ITestContract, TestContractImplementation>());
             server.IsListening = true;
             Connection<ITestContract, TestChannel> disconnectedConnection = null;
             server.Disconnected += (sender, income) => disconnectedConnection = income;
             var clientChannel = new TestChannel();
-            var proxyConnection = ConnectionBuilder.UseContract<ITestContract>().UseChannel(clientChannel).Build();
+            var proxyConnection = TntBuilder.UseContract<ITestContract>().UseChannel(clientChannel).Build();
             var pair = server.TestListener.ImmitateAccept(clientChannel);
 
             pair.Disconnect();

@@ -7,13 +7,13 @@ namespace TNT.Tcp
     public static class TcpHelper
     {
       
-        public static TcpChannelServer<TContract> CreateTcpServer<TContract>(this ConnectionBuilder<TContract> builder, IPAddress ip, int port) 
+        public static TcpChannelServer<TContract> CreateTcpServer<TContract>(this PresentationBuilder<TContract> builder, IPAddress ip, int port) 
             where TContract : class
         {
             return new TcpChannelServer<TContract>(builder, new IPEndPoint(ip, port));
         }
 
-        public static Connection<TContract, TcpChannel> CreateTcpClientConnection<TContract>(this ConnectionBuilder<TContract> builder, IPAddress ip, int port)
+        public static Connection<TContract, TcpChannel> CreateTcpClientConnection<TContract>(this PresentationBuilder<TContract> builder, IPAddress ip, int port)
             where TContract : class
 
         {

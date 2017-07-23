@@ -17,7 +17,7 @@ namespace Experiments.Server
     {
         static void Main(string[] args)
         {
-            var tcpServer = ConnectionBuilder
+            var tcpServer = TntBuilder
                 .UseContract<ITestContract, TestContractImplementation>()
                 .CreateTcpServer(IPAddress.Loopback, 17171);
             tcpServer.BeforeConnect+= TcpServerOnBeforeConnect;

@@ -4,12 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using NUnit.Framework;
-using TNT.Exceptions;
 using TNT.Exceptions.ContractImplementation;
 using TNT.Presentation.Deserializers;
 using TNT.Presentation.Serializers;
 
-namespace TNT.Tests.Cord.Serializers
+namespace TNT.Tests.Presentation.Serialization
 {
     [TestFixture]
     public class SerializeFactoryTest
@@ -69,7 +68,6 @@ namespace TNT.Tests.Cord.Serializers
             var Deserializer = factory.Create(Deserializeable);
             Assert.IsInstanceOf(DeserializerType, Deserializer);
         }
-
         [TestCase(42)]
         [TestCase(42.0)]
         [TestCase(42.0f)]
@@ -118,6 +116,23 @@ namespace TNT.Tests.Cord.Serializers
             Assert.IsTrue(origin.IsSameTo((Team)deserialized));
         }
 
+        [Test]
+        public void NullableValuableInt_OriginAndDeserializedAreEqual()
+        {
+            int? origin = 42;
+            var deserialized = SerializeAndDeserializeBack(origin);
+            Assert.AreEqual(deserialized, origin);
+        }
+        [TestCase(42)]
+        [TestCase(0)]
+        [TestCase(int.MaxValue)]
+        [TestCase(int.MinValue)]
+        [TestCase(null)]
+        public void NullableIntNull_OriginAndDeserializedAreEqual(int? value)
+        {
+            var deserialized = SerializeAndDeserializeBack(value);
+            Assert.AreEqual(deserialized, value);
+        }
         [Test]
         public void ArrayOfStrings_SerializeAndDeserializeBack_OriginAndDeserializedAreEqual()
         {
@@ -229,7 +244,17 @@ namespace TNT.Tests.Cord.Serializers
             });
         }
 
-
+        private static T SerializeAndDeserializeBack<T>(T origin)
+        {
+            var type = typeof(T);
+            var serializer = SerializerFactory.CreateDefault().Create(type.GetType());
+            var deserializer = DeserializerFactory.CreateDefault().Create(type.GetType());
+            var stream = new MemoryStream();
+            serializer.Serialize(origin, stream);
+            stream.Position = 0;
+            var deserialized = (T)deserializer.Deserialize(stream, (int)stream.Length);
+            return deserialized;
+        }
         private static object SerializeAndDeserializeBack(object origin)
         {
             var serializer = SerializerFactory.CreateDefault().Create(origin.GetType());

@@ -60,6 +60,14 @@ namespace TNT.Presentation
             }
         }
 
+
+        public void SendException(RemoteExceptionBase rcException)
+        {
+            Say(Messenger.ExceptionMessageTypeId,
+              new object[] { new ExceptionMessage(rcException) },
+              new ExceptionMessageSerializer());
+        }
+
         private void Write(object[] values, ISerializer serializer, MemoryStream stream)
         {
             if (values.Length == 1)
@@ -70,12 +78,7 @@ namespace TNT.Presentation
             _channel.Write(stream);
 
         }
-
-        public void SendException(RemoteExceptionBase rcException)
-        {
-            
-        }
-        public void Say(int id, object[] values, ISerializer serializer)
+        private void Say(int id, object[] values, ISerializer serializer)
         {
             using (var stream = new MemoryStream())
             {

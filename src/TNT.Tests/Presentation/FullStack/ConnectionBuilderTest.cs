@@ -17,7 +17,7 @@ namespace TNT.Tests.Presentation.FullStack
             var channel = new TestChannel();
             channel.ImmitateConnect();
 
-            var proxyConnection = ConnectionBuilder
+            var proxyConnection = TntBuilder
                 .UseContract<ITestContract>()
                 .UseChannel(channel)
                 .Build();
@@ -33,7 +33,7 @@ namespace TNT.Tests.Presentation.FullStack
         public void ProxyBuilder_SayCalled_DataSent()
         {
             var channel = new TestChannel();
-            var proxyConnection = ConnectionBuilder
+            var proxyConnection = TntBuilder
                 .UseContract<ITestContract>()
                 .UseChannel(channel)
                 .Build();
@@ -49,7 +49,7 @@ namespace TNT.Tests.Presentation.FullStack
         public void ProxyBuilderCreatesWithCorrectConnection()
         {
             var channel = new TestChannel();
-            var proxyConnection = ConnectionBuilder
+            var proxyConnection = TntBuilder
                 .UseContract<ITestContract>()
                 .UseChannel(channel)
                 .Build();
@@ -60,7 +60,7 @@ namespace TNT.Tests.Presentation.FullStack
         {
             var channel = new TestChannel();
             channel.ImmitateConnect();
-            var proxyConnection = ConnectionBuilder
+            var proxyConnection = TntBuilder
                 .UseContract<ITestContract>()
                 .UseChannel(channel)
                 .Build();
@@ -73,7 +73,7 @@ namespace TNT.Tests.Presentation.FullStack
         {
             var channel = new TestChannel();
             ITestContract initializationArgument = null;
-            var proxyConnection = ConnectionBuilder.UseContract<ITestContract>()
+            var proxyConnection = TntBuilder.UseContract<ITestContract>()
                 .UseContractInitalization((i,c)=> initializationArgument = i)
                 .UseChannel(channel)
                 .Build();
@@ -85,7 +85,7 @@ namespace TNT.Tests.Presentation.FullStack
         public void ConnectionDisposes_channelBecomesDisconnected()
         {
             var channel = new TestChannel();
-            using (var proxyConnection = ConnectionBuilder.UseContract<ITestContract>()
+            using (var proxyConnection = TntBuilder.UseContract<ITestContract>()
                 .UseChannel(new TestChannel())
                 .Build())
             {
@@ -98,7 +98,7 @@ namespace TNT.Tests.Presentation.FullStack
         {
             var channel = new TestChannel();
             
-            var proxyConnection = ConnectionBuilder
+            var proxyConnection = TntBuilder
                 .UseContract<ITestContract, TestContractImplementation>()
                 .UseChannel(channel)
                 .Build();
@@ -107,7 +107,7 @@ namespace TNT.Tests.Presentation.FullStack
         [Test]
         public void OriginContract_CreatesByFactory_ContractCreated()
         {
-            var proxyConnection = ConnectionBuilder
+            var proxyConnection = TntBuilder
                 .UseContract<ITestContract, TestContractImplementation>()
                 .UseChannel(new TestChannel())
                 .Build();
@@ -117,7 +117,7 @@ namespace TNT.Tests.Presentation.FullStack
         [Test]
         public void OriginContractAsInterface_CreatesByFactory_ContractCreated()
         {
-            var proxyConnection = ConnectionBuilder
+            var proxyConnection = TntBuilder
                 .UseContract<ITestContract, TestContractImplementation>()
                 .UseChannel(new TestChannel())
                 .Build();
@@ -129,7 +129,7 @@ namespace TNT.Tests.Presentation.FullStack
         public void OriginContractAsSingleTone_CreatesByFactory_ContractCreated()
         {
             var contract = new TestContractImplementation();
-            var proxyConnection = ConnectionBuilder
+            var proxyConnection = TntBuilder
                 .UseContract<ITestContract>(contract)
                 .UseChannel(new TestChannel())
                 .Build();
@@ -139,7 +139,7 @@ namespace TNT.Tests.Presentation.FullStack
         [Test]
         public void UnserializeableContract_CreateT_throwsException()
         {
-            var builder = ConnectionBuilder
+            var builder = TntBuilder
                 .UseContract<IUnserializeableContract>()
                 .UseChannel(new TestChannel());
          
@@ -148,7 +148,7 @@ namespace TNT.Tests.Presentation.FullStack
         [Test]
         public void UnDeserializeableContract_CreateT_throwsException()
         {
-            var builder = ConnectionBuilder
+            var builder = TntBuilder
                 .UseContract<IUnDeserializeableContract>()
                 .UseChannel(new TestChannel());
 

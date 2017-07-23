@@ -22,7 +22,7 @@ namespace TNT.Presentation.Serializers
         public override void SerializeT(ExceptionMessage obj, MemoryStream stream)
         {
              _serializer.SerializeT(
-                    new object[] {obj.messageId, obj.AskId, obj.ExceptionType, obj.AdditionalExceptionInformation}, stream);
+                    new object[] {obj.MessageId, obj.AskId, obj.ExceptionType, obj.AdditionalExceptionInformation}, stream);
 
         }
     }

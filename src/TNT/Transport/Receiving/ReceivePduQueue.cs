@@ -4,11 +4,11 @@ using System.IO;
 
 namespace TNT.Transport.Receiving
 {
-    public class ReceiveMessageQueue
+    public class ReceivePduQueue
     {
         readonly Queue<MemoryStream> _queue = new Queue<MemoryStream>();
 
-        readonly Dictionary<int, MessageCollector> collectors = new Dictionary<int, MessageCollector>();
+        readonly Dictionary<int, PacketCollector> collectors = new Dictionary<int, PacketCollector>();
 
         byte[] qBuff = new byte[0];
 
@@ -30,14 +30,14 @@ namespace TNT.Transport.Receiving
             int offset = 0;
             while (true)
             {
-                if (qBuff.Length <  QuantumHead.DefaultHeadSize + offset)
+                if (qBuff.Length <  PduHead.DefaultHeadSize + offset)
                 {
                     if (offset > 0)
                         qBuff = saveUndone(qBuff, offset);
                     return;
                 }
 
-                var head = qBuff.ToStruct<QuantumHead>(offset, QuantumHead.DefaultHeadSize);
+                var head = qBuff.ToStruct<PduHead>(offset, PduHead.DefaultHeadSize);
 
                 if (offset + head.length == qBuff.Length)
                 {
@@ -79,15 +79,15 @@ namespace TNT.Transport.Receiving
             return res;
         }
 
-        private void handle(QuantumHead head, byte[] msgFromStream, int quantBeginOffset)
+        private void handle(PduHead head, byte[] msgFromStream, int quantBeginOffset)
         {
 
-            MessageCollector c = null;
+            PacketCollector c = null;
             if (collectors.ContainsKey(head.msgId))
                 c = collectors[head.msgId];
             else
             {
-                c = new MessageCollector();
+                c = new PacketCollector();
                 collectors.Add(head.msgId, c);
             }
 

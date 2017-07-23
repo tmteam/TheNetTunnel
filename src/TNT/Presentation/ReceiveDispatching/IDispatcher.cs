@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TNT.Presentation
+namespace TNT.Presentation.ReceiveDispatching
 {
     public interface IDispatcher
     {

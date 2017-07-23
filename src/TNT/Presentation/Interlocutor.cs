@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using TNT.Exceptions.Local;
 using TNT.Exceptions.Remote;
+using TNT.Presentation.ReceiveDispatching;
 
 namespace TNT.Presentation
 {

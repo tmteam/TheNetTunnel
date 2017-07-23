@@ -16,7 +16,7 @@ namespace Expirements
         static void Main(string[] args)
         {
             Thread.Sleep(500);
-            var connection = ConnectionBuilder
+            var connection = TntBuilder
                 .UseContract<ITestContract>()
                 .UseContractInitalization((c,t) =>
                 {

@@ -48,11 +48,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Presentation\ConveyorDispatcher.cs" />
-    <Compile Include="Presentation\NotThreadDispatcher.cs" />
+    <Compile Include="Api\PresentationBuilder.cs" />
+    <Compile Include="Api\TntBuilder.cs" />
+    <Compile Include="Presentation\ReceiveDispatching\ConveyorDispatcher.cs" />
+    <Compile Include="Presentation\ReceiveDispatching\NotThreadDispatcher.cs" />
     <Compile Include="Presentation\RequestMessage.cs" />
     <Compile Include="Presentation\Deserializers\ExceptionMessageDeserializer.cs" />
     <Compile Include="Presentation\ExceptionMessage.cs" />
+    <Compile Include="Presentation\Sender.cs" />
     <Compile Include="Presentation\Serializers\ExceptionMessageSerializer.cs" />
     <Compile Include="Exceptions\ContractImplementation\ContractCordIdDuplicateException.cs" />
     <Compile Include="Exceptions\ContractImplementation\ContractMemberAttributeMissingException.cs" />
@@ -74,7 +77,7 @@
     <Compile Include="Transport\IChannel.cs" />
     <Compile Include="Api\IChannelListener.cs" />
     <Compile Include="Api\IChannelServer.cs" />
-    <Compile Include="Presentation\IDispatcher.cs" />
+    <Compile Include="Presentation\ReceiveDispatching\IDispatcher.cs" />
     <Compile Include="Tcp\TcpChanelListener.cs" />
     <Compile Include="Tcp\TcpChannel.cs" />
     <Compile Include="Tcp\TcpChannelServer.cs" />
@@ -94,14 +97,14 @@
     <Compile Include="Exceptions\ContractImplementation\TypeCannotBeDeserializedException.cs" />
     <Compile Include="Exceptions\ContractImplementation\TypeCannotBeSerializedException.cs" />
     <Compile Include="Transport\Transporter.cs" />
-    <Compile Include="Transport\Receiving\MessageCollector.cs" />
-    <Compile Include="Transport\Receiving\ReceiveMessageQueue.cs" />
-    <Compile Include="Transport\Sending\MixedSendMessageSequenceBehaviour.cs" />
-    <Compile Include="Transport\Sending\ISendMessageSequenceBehaviour.cs" />
-    <Compile Include="Transport\Sending\FIFOSendMessageSequenceBehaviour.cs" />
-    <Compile Include="Transport\Sending\MessageSeparator.cs" />
-    <Compile Include="Transport\QuantumHead.cs" />
-    <Compile Include="Transport\QuantumType.cs" />
+    <Compile Include="Transport\Receiving\PacketCollector.cs" />
+    <Compile Include="Transport\Receiving\ReceivePduQueue.cs" />
+    <Compile Include="Transport\Sending\MixedSendPduBehaviour.cs" />
+    <Compile Include="Transport\Sending\ISendPduBehaviour.cs" />
+    <Compile Include="Transport\Sending\FIFOSendPduBehaviour.cs" />
+    <Compile Include="Transport\Sending\PacketSeparator.cs" />
+    <Compile Include="Transport\PduHead.cs" />
+    <Compile Include="Transport\PduType.cs" />
     <Compile Include="Contract\ContractAttribute.cs" />
     <Compile Include="Contract\ContractInfo.cs" />
     <Compile Include="Contract\Origin\OriginCallbackDelegatesHandlerFactory.cs" />
