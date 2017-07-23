@@ -16,19 +16,19 @@ namespace TNT.Contract
         }
         public Dictionary<int, MemberInfo> Memebers { get; } = new Dictionary<int, MemberInfo>();
 
-        public void ThrowIfAlreadyContainsId(int cordId,  MemberInfo memberInfo)
+        public void ThrowIfAlreadyContainsId(int messageTypeId,  MemberInfo memberInfo)
         {
-            if (Memebers.ContainsKey(cordId))
-                throw new ContractCordIdDuplicateException(
-                    cordId,
+            if (Memebers.ContainsKey(messageTypeId))
+                throw new ContractMessageIdDuplicateException(
+                    messageTypeId,
                     ContractInterfaceType, 
-                    Memebers[cordId].Name, 
+                    Memebers[messageTypeId].Name, 
                     memberInfo.Name);
         }
 
-        public void AddInfo(int cordId, MemberInfo info)
+        public void AddInfo(int messageTypeId, MemberInfo info)
         {
-            Memebers.Add(cordId, info);
+            Memebers.Add(messageTypeId, info);
         }
 
         public IEnumerable<KeyValuePair<int, PropertyInfo>> GetProperties()

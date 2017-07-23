@@ -6,8 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using NUnit.Framework.Internal;
-using TNT.Light.Receiving;
-using TNT.Light.Sending;
+using TNT.Transport.Receiving;
+using TNT.Transport.Sending;
 
 namespace TNT.Tests.Light
 {

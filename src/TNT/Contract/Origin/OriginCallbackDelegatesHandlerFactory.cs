@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading;
+using TNT.Api;
 using TNT.Exceptions.ContractImplementation;
 using TNT.Presentation;
 
@@ -16,9 +17,9 @@ namespace TNT.Contract.Origin
          * 
          * public class CallbackDelegatesHandler_123
          * {
-         *     private readonly ICordInterlocutor _interlocutor;
+         *     private readonly IInterlocutor _interlocutor;
          * 
-         *     public CallbackDelegatesHandler_123(ICordInterlocutor interlocutor)
+         *     public CallbackDelegatesHandler_123(IInterlocutor interlocutor)
          *     {
          *         _interlocutor = interlocutor;
          *     }
@@ -40,7 +41,7 @@ namespace TNT.Contract.Origin
         private static int _exemmplarCounter;
 
         public static void CreateFor(ContractInfo contractMembers, object contractObject,
-            ICordInterlocutor interlocutor)
+            IInterlocutor interlocutor)
         {
             Dictionary<PropertyInfo, string> delegateToMethodsMap;
             Type type;
@@ -57,7 +58,7 @@ namespace TNT.Contract.Origin
 
         public static void CreateHandlerType(ContractInfo contractMembers, out Dictionary<PropertyInfo, string> delegateToMethodsMap, out Type generatedType)
         {
-            var interlocutorType = typeof(ICordInterlocutor);
+            var interlocutorType = typeof(IInterlocutor);
             var typeCount = Interlocked.Increment(ref _exemmplarCounter);
 
             var typeBuilder =  EmitHelper.CreateTypeBuilder(contractMembers.ContractInterfaceType.Name + "_" + typeCount);
@@ -66,7 +67,7 @@ namespace TNT.Contract.Origin
             const string interlocutorFieldName = "_interlocutor";
             var outputApiFieldInfo = typeBuilder.DefineField(
                                         interlocutorFieldName,
-                                        typeof(ICordInterlocutor),
+                                        typeof(IInterlocutor),
                                         FieldAttributes.Private);
 
             EmitHelper.ImplementPublicConstructor(typeBuilder,new[] { outputApiFieldInfo });
@@ -112,7 +113,7 @@ namespace TNT.Contract.Origin
                      .MakeGenericMethod(returnType);
                 }
                 EmitHelper.GenerateSayOrAskMethodBody(
-                    cordId: property.Key,
+                    messageTypeId: property.Key,
                     interlocutorSayOrAskMethodInfo: askOrSayMethodInfo,
                     interlocutorFieldInfo: outputApiFieldInfo,
                     methodBuilder: metbuilder,

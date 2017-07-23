@@ -4,10 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using NUnit.Framework;
-using TNT.Cord.Deserializers;
-using TNT.Cord.Serializers;
 using TNT.Exceptions;
 using TNT.Exceptions.ContractImplementation;
+using TNT.Presentation.Deserializers;
+using TNT.Presentation.Serializers;
 
 namespace TNT.Tests.Cord.Serializers
 {

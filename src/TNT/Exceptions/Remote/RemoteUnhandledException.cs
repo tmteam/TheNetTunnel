@@ -4,11 +4,11 @@ namespace TNT.Exceptions.Remote
 {
     public class RemoteUnhandledException : RemoteExceptionBase
     {
-        public RemoteUnhandledException(short? cordId, short? askId,Exception innerException,  string message = null ) 
+        public RemoteUnhandledException(short? messageId, short? askId,Exception innerException,  string message = null ) 
             :base(RemoteExceptionId.RemoteSideUnhandledException, message, innerException)
         {
             IsFatal = false;
-            CordId = cordId;
+            MessageId = messageId;
             AskId = askId;
         }
     }

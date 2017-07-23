@@ -10,19 +10,19 @@ namespace TNT.Exceptions.Local
     {
         public LocalException(
             bool isFatal, 
-            short? cordId, 
+            short? messageId, 
             short? askId, 
             string message,
             Exception innerException  = null)
             :base(message, innerException)
         {
             IsFatal = isFatal;
-            CordId = cordId;
+            MessageId = messageId;
             AskId = askId;
         }
 
         public bool IsFatal { get; }
-        public short? CordId { get; }
+        public short? MessageId { get; }
         public short? AskId { get; }
     }
 }

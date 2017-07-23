@@ -1,13 +1,11 @@
-using TNT.Exceptions.Remote;
-
-namespace TNT.Exceptions.ContractImplementation
+namespace TNT.Exceptions.Remote
 {
     public class RemoteContractImplementationException : RemoteExceptionBase
     {
-        public RemoteContractImplementationException(short cordId, short? askId, bool isFatal,   string message = null) 
+        public RemoteContractImplementationException(short messageId, short? askId, bool isFatal,   string message = null) 
             : base(RemoteExceptionId.RemoteContractImplementationException, message)
         {
-            CordId = cordId;
+            MessageId = messageId;
             AskId = askId;
             IsFatal = isFatal;
         }

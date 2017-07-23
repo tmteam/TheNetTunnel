@@ -7,8 +7,8 @@ namespace TNT.Exceptions.Local
     {
         public ConnectionIsLostException(
            
-            string message = null, short? cordId = null, short? askId = null, Exception innerException = null)
-            :base(true, cordId,askId,  message, innerException)
+            string message = null, short? messageId = null, short? askId = null, Exception innerException = null)
+            :base(true, messageId,askId,  message, innerException)
         {
 
         }

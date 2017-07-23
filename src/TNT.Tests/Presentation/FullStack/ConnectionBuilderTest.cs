@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using TNT.Api;
 using TNT.Exceptions;
 using TNT.Exceptions.ContractImplementation;
 using TNT.Presentation;

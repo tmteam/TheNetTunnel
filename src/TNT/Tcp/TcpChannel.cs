@@ -3,7 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using TNT.Exceptions.Local;
-using TNT.Light;
+using TNT.Transport;
 
 namespace TNT.Tcp
 {

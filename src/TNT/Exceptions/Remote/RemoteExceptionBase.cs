@@ -20,7 +20,7 @@ namespace TNT.Exceptions.Remote
             :base($"[{id}]"+ (message??(" tnt call exception")), innerException)
         {
             IsFatal = false;
-            CordId = null;
+            MessageId = null;
             AskId = null;
             Id = id;
         }
@@ -29,20 +29,20 @@ namespace TNT.Exceptions.Remote
 
         public bool IsFatal { get; protected set; }
 
-        public short? CordId { get; protected set; }
+        public short? MessageId { get; protected set; }
         public short? AskId { get; protected set; }
 
-        public static RemoteExceptionBase Create(RemoteExceptionId type, string additionalInfo, short? cordId,
+        public static RemoteExceptionBase Create(RemoteExceptionId type, string additionalInfo, short? messageId,
             short? askId, bool isFatal = false)
         {
             switch (type)
             {
               case RemoteExceptionId.RemoteSideUnhandledException:
-                    return new RemoteUnhandledException(cordId,askId, null, additionalInfo);
+                    return new RemoteUnhandledException(messageId,askId, null, additionalInfo);
                 case RemoteExceptionId.RemoteSideSerializationException:
-                    return new RemoteSerializationException(cordId.Value, askId, isFatal, additionalInfo);
+                    return new RemoteSerializationException(messageId.Value, askId, isFatal, additionalInfo);
                 case RemoteExceptionId.RemoteContractImplementationException:
-                    return new RemoteContractImplementationException(cordId.Value, askId, isFatal, additionalInfo);
+                    return new RemoteContractImplementationException(messageId.Value, askId, isFatal, additionalInfo);
                 default:
                     throw new InvalidOperationException(
                         $"Exception type {type} is unknown. Exception message: {additionalInfo}"); 

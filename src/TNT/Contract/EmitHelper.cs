@@ -147,7 +147,7 @@ namespace TNT.Contract
 
 
         public static void GenerateSayOrAskMethodBody(
-            int cordId,
+            int messageTypeId,
             FieldInfo interlocutorFieldInfo,
             MethodInfo interlocutorSayOrAskMethodInfo,
             MethodBuilder methodBuilder,
@@ -159,7 +159,7 @@ namespace TNT.Contract
              * 
              *  public void ContractMessage(int intParameter, /.../ double doubleParameter)
              *  {
-             *      _interlocutor.Say({CordId} , new object []{ intParameter,/.../ doubleParameter });
+             *      _interlocutor.Say({messageTypeId} , new object []{ intParameter,/.../ doubleParameter });
              *  }
              *  
              *  
@@ -167,7 +167,7 @@ namespace TNT.Contract
              *  
              *  public int ContractMessage(int intParameter, /.../ double doubleParameter)
              *  {
-             *     return _interlocutor.Ask<int>({CordId} , new object []{ intParameter,/.../ doubleParameter });
+             *     return _interlocutor.Ask<int>({messageTypeId} , new object []{ intParameter,/.../ doubleParameter });
              *  }
              *  
              */
@@ -179,7 +179,7 @@ namespace TNT.Contract
             ilGen.Emit(OpCodes.Ldfld, interlocutorFieldInfo);
             // готовимся к вызову _interlocutor.Say(id, object[])
             // ставим на стек id:
-            ilGen.Emit(OpCodes.Ldc_I4, cordId);
+            ilGen.Emit(OpCodes.Ldc_I4, messageTypeId);
 
             // ставим на стек размер массива:
             ilGen.Emit(OpCodes.Ldc_I4, callParameters.Length);

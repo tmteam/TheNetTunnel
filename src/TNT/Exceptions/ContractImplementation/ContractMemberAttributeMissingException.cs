@@ -9,7 +9,7 @@ namespace TNT.Exceptions.ContractImplementation
 
         public ContractMemberAttributeMissingException(Type contractType, string memberName)
             : base(
-                string.Format("Contract \"{0}\" member \"{1}\" has no cord message id attribute", contractType.Name,
+                string.Format("Contract \"{0}\" member \"{1}\" has no  message id attribute", contractType.Name,
                     memberName))
         {
             _contractType = contractType;

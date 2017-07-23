@@ -21,7 +21,7 @@ namespace TNT.Tests.Presentation.Proxy
         public void SayCordIdDuplicated_CreateT_throwsException()
         {
             var stub = new CordInterlocutorMock();
-            Assert.Throws<ContractCordIdDuplicateException>(
+            Assert.Throws<ContractMessageIdDuplicateException>(
                 ()=> ProxyContractFactory.CreateProxyContract<IContractWithSameSayId>(stub));
         }
 
@@ -29,7 +29,7 @@ namespace TNT.Tests.Presentation.Proxy
         public void EventCordIdDuplicated_CreateT_throwsException()
         {
             var stub = new CordInterlocutorMock();
-            Assert.Throws<ContractCordIdDuplicateException>(
+            Assert.Throws<ContractMessageIdDuplicateException>(
                 () => ProxyContractFactory.CreateProxyContract<IContractWithSameEventId>(stub));
         }
 
@@ -37,7 +37,7 @@ namespace TNT.Tests.Presentation.Proxy
         public void AskAndEventCordIdDuplicated_CreateT_throwsException()
         {
             var stub = new CordInterlocutorMock();
-            Assert.Throws<ContractCordIdDuplicateException>(
+            Assert.Throws<ContractMessageIdDuplicateException>(
                 () => ProxyContractFactory.CreateProxyContract<IContractWithSameAskAndEventId>(stub));
         }
 

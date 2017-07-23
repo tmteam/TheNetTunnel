@@ -2,8 +2,8 @@
 using System.Linq;
 using NUnit.Framework;
 using ProtoBuf;
-using TNT.Cord.Deserializers;
-using TNT.Cord.Serializers;
+using TNT.Presentation.Deserializers;
+using TNT.Presentation.Serializers;
 
 namespace TNT.Tests.Cord.Serializers
 {

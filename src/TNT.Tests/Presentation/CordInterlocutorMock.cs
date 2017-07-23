@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using TNT.Api;
 using TNT.Presentation;
 using TNT.Tcp;
 
 namespace TNT.Tests.Presentation
 {
-    public class CordInterlocutorMock : ICordInterlocutor
+    public class CordInterlocutorMock : IInterlocutor
     {
         public const int AskMessage1Id                = 400;
         public const int AskSomethingWithArrayId      = 800;

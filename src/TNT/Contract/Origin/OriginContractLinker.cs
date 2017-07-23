@@ -1,4 +1,5 @@
 ﻿using System;
+using TNT.Api;
 using TNT.Exceptions.ContractImplementation;
 using TNT.Presentation;
 
@@ -6,7 +7,7 @@ namespace TNT.Contract.Origin
 {
     public static class OriginContractLinker
     {
-        public static ContractInfo Link<TInterface>(TInterface contract, ICordInterlocutor interlocutor)
+        public static ContractInfo Link<TInterface>(TInterface contract, IInterlocutor interlocutor)
         {
             var contractType = contract.GetType();
             var interfaceType = typeof(TInterface);

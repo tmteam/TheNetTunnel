@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading;
+using TNT.Api;
 using TNT.Exceptions.ContractImplementation;
 using TNT.Presentation;
 
@@ -13,7 +14,7 @@ namespace TNT.Contract.Proxy
     {
         private static int _exemmplarCounter;
 
-        public static T CreateProxyContract<T>(ICordInterlocutor interlocutor)
+        public static T CreateProxyContract<T>(IInterlocutor interlocutor)
         {
             var interfaceType = typeof(T);
             TypeBuilder typeBuilder =  CreateProxyTypeBuilder<T>();
@@ -23,7 +24,7 @@ namespace TNT.Contract.Proxy
             const string interlocutorFieldName = "_interlocutor";
             var outputApiFieldInfo = typeBuilder.DefineField(
                                         interlocutorFieldName, 
-                                        typeof(ICordInterlocutor),
+                                        typeof(IInterlocutor),
                                         FieldAttributes.Private);
             
             var sayMehodInfo = interlocutor.GetType().GetMethod("Say", new[] {typeof(int), typeof(object[])});
@@ -55,7 +56,7 @@ namespace TNT.Contract.Proxy
 
                 }
                 EmitHelper.GenerateSayOrAskMethodBody(
-                    cordId: method.Key,
+                    messageTypeId: method.Key,
                     interlocutorSayOrAskMethodInfo: askOrSayMethodInfo,
                     interlocutorFieldInfo: outputApiFieldInfo,
                     methodBuilder: methodBuilder,
@@ -271,9 +272,9 @@ namespace TNT.Contract.Proxy
         private static void GenerateEventSubscribtion(
             ILGenerator methodIlGenerator, 
             FieldInfo rawContractFieldInfo,
-            int cordId, MethodInfo handleMethod)
+            int messageTypeId, MethodInfo handleMethod)
         {
-            // Код в конструкторе
+            // Ctor code:
             // 
             // Ask:
             //_rawContract.Subscribe<string>(71, HandleOnTick); //HandleOnTick - метод обработки
@@ -293,7 +294,7 @@ namespace TNT.Contract.Proxy
             var il = methodIlGenerator;
             il.Emit(OpCodes.Ldarg_0);
             il.Emit(OpCodes.Ldfld, rawContractFieldInfo);
-            il.Emit(OpCodes.Ldc_I4, cordId);
+            il.Emit(OpCodes.Ldc_I4, messageTypeId);
             il.Emit(OpCodes.Ldarg_0);
             il.Emit(OpCodes.Ldftn, handleMethod);
 
@@ -302,7 +303,7 @@ namespace TNT.Contract.Proxy
                 var actionType = typeof(Action<>).MakeGenericType(typeof(object[]));
                 var actionConstructor = actionType.GetConstructor(new[] {typeof(object), typeof(IntPtr)});
                 il.Emit(OpCodes.Newobj, actionConstructor);
-                var subscribeMethod = typeof(ICordInterlocutor).GetMethod("SaySubscribe", new[] {typeof(int), actionType});
+                var subscribeMethod = typeof(IInterlocutor).GetMethod("SaySubscribe", new[] {typeof(int), actionType});
                 il.Emit(OpCodes.Callvirt, subscribeMethod);
             }
             else
@@ -311,7 +312,7 @@ namespace TNT.Contract.Proxy
                 var funcConstructor = funkType.GetConstructor(new[] {typeof(object), typeof(IntPtr)});
 
                 il.Emit(OpCodes.Newobj, funcConstructor);
-                var subscribeMethodInfo = typeof(ICordInterlocutor).GetMethod("AskSubscribe");
+                var subscribeMethodInfo = typeof(IInterlocutor).GetMethod("AskSubscribe");
 
                 var subscribeMethodGenericInfo = subscribeMethodInfo.MakeGenericMethod(handleMethod.ReturnType);
                 il.Emit(OpCodes.Callvirt, subscribeMethodGenericInfo);

@@ -2,19 +2,19 @@
 
 namespace TNT.Exceptions.ContractImplementation
 {
-    public class ContractCordIdDuplicateException : Exception
+    public class ContractMessageIdDuplicateException : Exception
     {
         private readonly int _duplicateId;
         private readonly Type _contractInterfaceType;
         private readonly string _member1Name;
         private readonly string _member2Name;
 
-        public ContractCordIdDuplicateException(
+        public ContractMessageIdDuplicateException(
             int duplicateId, 
             Type contractInterfaceType, 
             string member1Name,
             string member2Name)
-            : base(string.Format("Members \"{0}\" and \"{1}\" of contract \"{2}\" has duplicated cord id \"{3}\".",
+            : base(string.Format("Members \"{0}\" and \"{1}\" of contract \"{2}\" has duplicated message id \"{3}\".",
                 member1Name, member2Name, contractInterfaceType.Name, duplicateId))
         {
             _duplicateId = duplicateId;

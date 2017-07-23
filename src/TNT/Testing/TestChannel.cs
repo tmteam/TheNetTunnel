@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using TNT.Exceptions.Local;
-using TNT.Light;
+using TNT.Transport;
 
 namespace TNT.Testing
 {

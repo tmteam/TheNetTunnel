@@ -7,6 +7,61 @@ namespace TNT
 {
     public static class Tools
     {
+        public static void SetToArray<T>(this T str, byte[] array, int dest, int size = -1)
+        {
+            if (size == -1)
+                size = Marshal.SizeOf(str);
+            IntPtr ptr = Marshal.AllocHGlobal(size);
+            Marshal.StructureToPtr(str, ptr, true);
+            Marshal.Copy(ptr, array, dest, size);
+            Marshal.FreeHGlobal(ptr);
+        }
+
+        public static T ToStruct<T>(this byte[] array, int src, int size = -1)
+        {
+            if (size == -1)
+                size = Marshal.SizeOf(typeof(T));
+            IntPtr p = Marshal.AllocHGlobal(size);
+            Marshal.Copy(array, src, p, size);
+            T ans = (T) Marshal.PtrToStructure(p, typeof(T));
+            Marshal.FreeHGlobal(p);
+            return ans;
+        }
+
+        public static void WriteShort(short outputMessageId, MemoryStream to)
+        {
+            //Write first byte
+            to.WriteByte((byte)(outputMessageId & 0xFF));
+            //Write second byte
+            to.WriteByte((byte)(outputMessageId >> 8));
+        }
+
+        public static short? TryReadShort(this MemoryStream from)
+        {
+            if (@from.Length - @from.Position < sizeof(short))
+                return null;
+            return @from.ReadShort();
+        }
+
+        public static bool TryReadShort(this MemoryStream from, out short value)
+        {
+            value = 0;
+            if (@from.Length - @from.Position < sizeof(short))
+                return false;
+            value = @from.ReadShort();
+            return true;
+        }
+
+        public static short ReadShort(this MemoryStream from)
+        {
+            if (@from.Length - @from.Position < 2)
+                throw new EndOfStreamException();
+            byte[] arr = new byte[2];
+            @from.Read(arr, 0, 2);
+
+            return BitConverter.ToInt16(arr, 0);
+        }
+
         public static void CopyToAnotherStream(this Stream stream, Stream targetStream, int lenght)
         {
             int lasts = lenght;
@@ -29,41 +84,6 @@ namespace TNT
             Marshal.Copy(ptr, arr, 0, size);
             Marshal.FreeHGlobal(ptr);
             stream.Write(arr, 0, size);
-        }
-
-        public static void SetToArray<T>(this T str, byte[] array, int dest, int size = -1)
-        {
-            if (size == -1)
-                size = Marshal.SizeOf(str);
-            IntPtr ptr = Marshal.AllocHGlobal(size);
-            Marshal.StructureToPtr(str, ptr, true);
-            Marshal.Copy(ptr, array, dest, size);
-            Marshal.FreeHGlobal(ptr);
-        }
-
-        public static T ToStruct<T>(this byte[] array, int src, int size = -1)
-        {
-            if (size == -1)
-                size = Marshal.SizeOf(typeof(T));
-            IntPtr p = Marshal.AllocHGlobal(size);
-            Marshal.Copy(array, src, p, size);
-            T ans = (T) Marshal.PtrToStructure(p, typeof(T));
-            Marshal.FreeHGlobal(p);
-            return ans;
-        }
-
-        public static Delegate CreateFuncTTDelegate(Type inType, Type outType, Func<object, object> fnc)
-        {
-            var t = typeof(Tools);
-            var mi = t.GetMethod("ConvertFuncTT", BindingFlags.Static | BindingFlags.Public);
-            var miTT = mi.MakeGenericMethod(inType, outType);
-            return (Delegate) miTT.Invoke(null, new object[] {fnc});
-        }
-
-        public static Func<Tin, Tout> ConvertFuncTT<Tin, Tout>(Func<object, object> fnc)
-        {
-            Func<Tin, Tout> ans = (o) => (Tout) fnc(o);
-            return ans;
         }
     }
 }
