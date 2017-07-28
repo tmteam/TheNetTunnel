@@ -1,17 +1,14 @@
 namespace TNT.Exceptions.Remote
 {
-    public class RemoteSerializationException : RemoteExceptionBase
+    public class RemoteSerializationException : RemoteException
     {
         public RemoteSerializationException(
             short? messageId, 
             short? askId = null, 
             bool isFatal = true, 
             string message = null) 
-            : base(RemoteExceptionId.RemoteSideSerializationException, message)
+            : base(ErrorType.SerializationError, isFatal, messageId, askId, message)
         {
-            IsFatal = isFatal;
-            MessageId = messageId;
-            AskId = askId;
         }
     }
 }

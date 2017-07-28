@@ -10,7 +10,7 @@
 
         public override void SerializeT(T obj, System.IO.MemoryStream stream)
         {
-            ProtoBuf.Serializer.SerializeWithLengthPrefix<T>(stream, obj, ProtoBuf.PrefixStyle.Fixed32);
+            ProtoBuf.Serializer.SerializeWithLengthPrefix<T>(stream, obj, ProtoBuf.PrefixStyle.Fixed32 );
         }
 
         public override void Serialize(object obj, System.IO.MemoryStream stream)

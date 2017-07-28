@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using TNT.Exceptions.Local;
+using TNT.Presentation;
 using TNT.Transport.Receiving;
 using TNT.Transport.Sending;
 
@@ -17,7 +19,7 @@ namespace TNT.Transport
             _sendMessageSeparatorBehaviour = sendMessageSequenceBehaviour;
             _receiveMessageAssembler = new ReceivePduQueue();
             Channel = underlyingChannel;
-            underlyingChannel.OnDisconnect += (s) => OnDisconnect?.Invoke(this);
+            underlyingChannel.OnDisconnect += (s,e) => OnDisconnect?.Invoke(this,e);
             underlyingChannel.OnReceive += UnderlyingChannel_OnReceive;
         }
 
@@ -29,40 +31,49 @@ namespace TNT.Transport
 
       
         public event Action<Transporter, MemoryStream> OnReceive;
-        public event Action<Transporter> OnDisconnect;
+        public event Action<Transporter, ErrorMessage> OnDisconnect;
 
+        public void DisconnectBecauseOf(ErrorMessage error)
+        {
+            Channel.DisconnectBecauseOf(error);
+        }
+       
         public void Disconnect()
         {
             Channel.Disconnect();
         }
 
-        public async Task<bool>  TryWriteAsync(MemoryStream stream)
+        /// <summary>
+        /// Sends the stream as a packet
+        /// </summary>
+        /// <param name="packet"></param>
+        ///<exception cref="ConnectionIsLostException"></exception>
+        public void Write(MemoryStream packet)
         {
-            _sendMessageSeparatorBehaviour.Enqueue(stream);
+            _sendMessageSeparatorBehaviour.Enqueue(packet);
             int id;
             byte[] msg;
             while (_sendMessageSeparatorBehaviour.TryDequeue(out msg, out id))
             {
-                var result = await Channel.TryWriteAsync(msg);
-                if (!result)
-                    return false;
+                Channel.Write(msg);
             }
-            return true;
         }
 
-        public bool Write(MemoryStream stream)
+        /// <summary>
+        /// Sends the stream as a packet
+        /// </summary>
+        /// <param name="packet"></param>
+        ///<exception cref="ConnectionIsLostException"></exception>
+        public async Task WriteAsync(MemoryStream packet)
         {
-            _sendMessageSeparatorBehaviour.Enqueue(stream);
+            _sendMessageSeparatorBehaviour.Enqueue(packet);
             int id;
             byte[] msg;
             while (_sendMessageSeparatorBehaviour.TryDequeue(out msg, out id))
             {
-                  Channel.Write(msg);
+                await Channel.WriteAsync(msg);
             }
-            return true;
         }
-
-
         private void UnderlyingChannel_OnReceive(IChannel arg1, byte[] data)
         {
             _receiveMessageAssembler.Enqueue(data);

@@ -22,7 +22,7 @@ namespace TNT.Api
             _contractBuilder = contractBuilder;
             _channelFactory = channelFactory;
         }
-        public Connection<TContract, TChannel> Build()
+        public IConnection<TContract, TChannel> Build()
         {
             
             var sendSeparationBehaviour = _contractBuilder.SendMessageSequenceBehaviourFactory();
@@ -74,7 +74,7 @@ namespace TNT.Api
                 inputMessages: inputMessages.ToArray()
             );
 
-            var interlocutor = new Interlocutor(messenger, dispatcher);
+            var interlocutor = new Interlocutor(messenger, dispatcher, _contractBuilder.MaxAnswerTimeoutDelay);
 
             TContract contract = _contractBuilder.OriginContractFactory(light.Channel);
             OriginContractLinker.Link(contract, interlocutor);
@@ -107,7 +107,7 @@ namespace TNT.Api
                 inputMessages: inputMessages.ToArray()
             );
 
-            var interlocutor = new Interlocutor(messenger, dispatcher);
+            var interlocutor = new Interlocutor(messenger, dispatcher, _contractBuilder.MaxAnswerTimeoutDelay);
 
             var contract = ProxyContractFactory.CreateProxyContract<TContract>(interlocutor);
             return contract;

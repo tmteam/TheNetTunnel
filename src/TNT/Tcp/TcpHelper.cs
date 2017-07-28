@@ -13,14 +13,15 @@ namespace TNT.Tcp
             return new TcpChannelServer<TContract>(builder, new IPEndPoint(ip, port));
         }
 
-        public static Connection<TContract, TcpChannel> CreateTcpClientConnection<TContract>(this PresentationBuilder<TContract> builder, IPAddress ip, int port)
+        public static IConnection<TContract, TcpChannel> CreateTcpClientConnection<TContract>(
+            this PresentationBuilder<TContract> builder, IPAddress ip, int port)
             where TContract : class
 
         {
             return builder.UseChannel(() =>
                     {
                         var channel = new TcpChannel();
-                        channel.Connect(new IPEndPoint(IPAddress.Loopback, 17171));
+                        channel.Connect(new IPEndPoint(ip, port));
                         return channel;
                     }).Build();
         }

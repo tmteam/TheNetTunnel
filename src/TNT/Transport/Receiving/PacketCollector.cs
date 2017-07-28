@@ -28,8 +28,7 @@ namespace TNT.Transport.Receiving
             //LastTimeSet = DateTime.Now;
 
             var head = packetFromAStream.ToStruct<PduHead>(offset, PduHead.DefaultHeadSize);
-
-
+            
             int bodyStart = offset + DefaultHeadSize;
             int bodyLen = head.length - DefaultHeadSize;
             if (_stream == null)

@@ -1,28 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
+using TNT.Presentation;
 using TNT.Transport;
 
 namespace TNT.Api
 {
    public interface  IChannelServer<TContract,TChannel> where TChannel : IChannel
     {
-        event Action<IChannelServer<TContract, TChannel>, BeforeConnectEventArgs<TContract, TChannel>>  BeforeConnect;
-        event Action<IChannelServer<TContract, TChannel>, Connection<TContract, TChannel>> AfterConnect;
-        event Action<IChannelServer<TContract, TChannel>, Connection<TContract, TChannel>> Disconnected;
+        event Action<object, BeforeConnectEventArgs<TContract, TChannel>>  BeforeConnect;
+        event Action<object, IConnection<TContract, TChannel>> AfterConnect;
+        event Action<object, IConnection<TContract, TChannel>, ErrorMessage> Disconnected;
 	    bool IsListening { get; set; }
-        IEnumerable<Connection<TContract, TChannel>> GetAllConnections();
+        IEnumerable<IConnection<TContract, TChannel>> GetAllConnections();
         void Close();
     }
 
     public class BeforeConnectEventArgs<TContract, TChannel> : EventArgs where TChannel: IChannel
     {
-        public BeforeConnectEventArgs(Connection<TContract, TChannel> connection)
+        public BeforeConnectEventArgs(IConnection<TContract, TChannel> connection)
         {
             Connection = connection;
             AllowConnection = true;
         }
 
-        public Connection<TContract, TChannel> Connection { get; }
+        public IConnection<TContract, TChannel> Connection { get; }
         public bool AllowConnection { get; set; }
     }
 }

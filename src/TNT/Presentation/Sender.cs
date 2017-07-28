@@ -4,12 +4,16 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TNT.Exceptions.Local;
 using TNT.Exceptions.Remote;
 using TNT.Presentation.Serializers;
 using TNT.Transport;
 
 namespace TNT.Presentation
 {
+    /// <summary>
+    /// Implements ouput tnt operations
+    /// </summary>
     public class Sender
     {
         private readonly Transporter _channel;
@@ -20,54 +24,88 @@ namespace TNT.Presentation
             _channel = channel;
             _outputSayMessageSerializes = outputSayMessageSerializes;
         }
-
-        public void Say(int id, object[] values)
+        /// <summary>
+        /// Sends "Say" message with "values" arguments
+        /// </summary>
+        /// <exception cref="ArgumentException">wrong messageId</exception>
+        ///<exception cref="ConnectionIsLostException"></exception>
+        ///<exception cref="LocalSerializationException">specified serializer is missing or does not fit the arguments</exception>
+        public void Say(int messageId, object[] values)
         {
-            if (id < 0)
-                throw new InvalidOperationException("say id < 0");
+            if (messageId < 0)
+                throw new ArgumentException("Say id < 0");
+            ISerializer serializer;
+            _outputSayMessageSerializes.TryGetValue(messageId, out serializer);
+            if(serializer==null)
+                throw new ArgumentException($"Say-message id {messageId} is unknown");
 
-            var info = _outputSayMessageSerializes[id];
-            Say(id, values, info);
+            Say(messageId, values, serializer);
         }
-
-        public void Ans(short id, short askId, object value)
+        /// <summary>
+        /// 
+        /// </summary>
+        ///<exception cref="ConnectionIsLostException"></exception>
+        ///<exception cref="ArgumentException">Occurs when messageId is wrong</exception>
+        ///<exception cref="LocalSerializationException">argument type serializer is not implemented, or not the same as specified during the construction</exception>
+        public void Ans(short messageId, short askId, object value)
         {
-            if (id >= 0)
-                throw new InvalidOperationException("ans id >= 0");
-            var serializer = _outputSayMessageSerializes[id];
+            if (messageId >= 0)
+                throw new ArgumentException("Ans-messageId have to be < 0");
 
-            using (var stream = new MemoryStream())
-            {
-                Tools.WriteShort(id, to: stream);
-                Tools.WriteShort(askId, to: stream);
-                serializer.Serialize(value, stream);
-                stream.Position = 0;
-                _channel.Write(stream);
-            }
+            ISerializer serializer;
+            _outputSayMessageSerializes.TryGetValue(messageId, out serializer);
+            if (serializer == null)
+                throw new ArgumentException($"Ans-messageId {messageId} is unknown");
+
+
+            var stream = new MemoryStream();
+            Tools.WriteShort(messageId, to: stream);
+            Tools.WriteShort(askId, to: stream);
+            serializer.Serialize(value, stream);
+            stream.Position = 0;
+            _channel.Write(stream);
         }
-
+        /// <summary>
+        /// Sends error message
+        /// </summary>
+        ///<exception cref="ConnectionIsLostException"></exception>
+        ///<exception cref="LocalSerializationException">one of the argument type serializers is not implemented, or not the same as specified during the construction</exception>
+        ///<exception cref="ArgumentException">Occurs when messageId is wrong</exception>
         public void Ask(short id, short askId, object[] values)
         {
             if (id < 0)
-                throw new InvalidOperationException("ask id < 0");
-            var info = _outputSayMessageSerializes[id];
+                throw new ArgumentException("Ask-messageId has to be positive");
 
-            using (var stream = new MemoryStream())
-            {
-                Tools.WriteShort(id, to: stream);
-                Tools.WriteShort(askId, to: stream);
-                Write(values, info, stream);
-            }
+            ISerializer serializer;
+            _outputSayMessageSerializes.TryGetValue(id, out serializer);
+            if (serializer == null)
+                throw new ArgumentException($"Ask-messageId {id} is unknown");
+
+            var stream = new MemoryStream();
+            Tools.WriteShort(id, to: stream);
+            Tools.WriteShort(askId, to: stream);
+            Write(values, serializer, stream);
+            
         }
 
-
-        public void SendException(RemoteExceptionBase rcException)
+        /// <summary>
+        /// Sends error message
+        /// </summary>
+        ///<exception cref="ConnectionIsLostException"></exception>
+        ///<exception cref="LocalSerializationException">specified serializer does not fit the arguments</exception>
+        public void SendError(ErrorMessage errorInfo)
         {
-            Say(Messenger.ExceptionMessageTypeId,
-              new object[] { new ExceptionMessage(rcException) },
-              new ExceptionMessageSerializer());
+            var stream = new MemoryStream();
+            Tools.WriteShort((short)Messenger.ExceptionMessageTypeId, to: stream);
+            new ErrorMessageSerializer().SerializeT(errorInfo, stream);
+            stream.Position = 0;
+            _channel.WriteAsync(stream).Wait();
         }
-
+        /// <summary>
+        /// Serializes data to the stream and sends it 
+        /// </summary>
+        ///<exception cref="ConnectionIsLostException"></exception>
+        ///<exception cref="LocalSerializationException">specified serializer does not fit the arguments</exception>
         private void Write(object[] values, ISerializer serializer, MemoryStream stream)
         {
             if (values.Length == 1)
@@ -78,14 +116,14 @@ namespace TNT.Presentation
             _channel.Write(stream);
 
         }
+       
+        ///<exception cref="ConnectionIsLostException"></exception>
+        ///<exception cref="LocalSerializationException">specified serializer does not fit the arguments</exception>
         private void Say(int id, object[] values, ISerializer serializer)
         {
-            using (var stream = new MemoryStream())
-            {
-                Tools.WriteShort((short)id, to: stream);
-                Write(values, serializer, stream);
-            }
+            var stream = new MemoryStream();
+            Tools.WriteShort((short)id, to: stream);
+            Write(values, serializer, stream);
         }
-
     }
 }

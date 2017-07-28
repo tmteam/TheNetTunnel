@@ -1,14 +1,15 @@
 ﻿using System;
+using TNT.Presentation;
 using TNT.Transport;
 
 namespace TNT.Api
 {
-    public class Connection<TContract, TChannel>: IDisposable 
-        where TChannel: IChannel
-    {
-        private readonly Action<TContract, IChannel> _onContractDisconnected;
 
-        public Connection(TContract contract, TChannel channel, Action<TContract, IChannel> onContractDisconnected)
+    public class Connection<TContract, TChannel> : IDisposable, IConnection<TContract, TChannel> where TChannel: IChannel
+    {
+        private readonly Action<TContract, IChannel, ErrorMessage> _onContractDisconnected;
+
+        public Connection(TContract contract, TChannel channel, Action<TContract, IChannel, ErrorMessage> onContractDisconnected)
         {
             _onContractDisconnected = onContractDisconnected;
             Contract = contract;
@@ -16,9 +17,9 @@ namespace TNT.Api
             Channel.OnDisconnect += Channel_OnDisconnect;
         }
 
-        private void Channel_OnDisconnect(IChannel obj)
+        private void Channel_OnDisconnect(IChannel obj, ErrorMessage cause)
         {
-            _onContractDisconnected?.Invoke(Contract, obj);
+            _onContractDisconnected?.Invoke(Contract, obj, cause);
         }
 
         public TContract Contract { get; }

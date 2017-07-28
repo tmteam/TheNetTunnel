@@ -3,7 +3,7 @@ using TNT.Exceptions.Remote;
 
 namespace TNT.Exceptions.Local
 {
-    public class ConnectionIsLostException : LocalException
+    public class ConnectionIsLostException : TntCallException
     {
         public ConnectionIsLostException(
            

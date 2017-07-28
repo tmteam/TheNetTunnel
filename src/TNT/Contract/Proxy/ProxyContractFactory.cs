@@ -238,7 +238,7 @@ namespace TNT.Contract.Proxy
             ilGen.Emit(OpCodes.Ldloc, delegateFieldValue);
 
             int i = 0;
-            //наполняем стек списком аргументов вызова
+            //fill the stack with call-arguments
             foreach (var parameterType in delegatePropertyInfo.ParameterTypes)
             {
                 ilGen.Emit(OpCodes.Ldarg_1);
@@ -256,7 +256,7 @@ namespace TNT.Contract.Proxy
 
             if (hasReturnType)
             {
-                //выставляем в переменную returnValue результат вызова делегата
+                //set delegate call result to variable "returnValue"
                 ilGen.Emit(OpCodes.Stloc, returnValue);
             }
             ilGen.MarkLabel(finishLabel);
@@ -303,7 +303,7 @@ namespace TNT.Contract.Proxy
                 var actionType = typeof(Action<>).MakeGenericType(typeof(object[]));
                 var actionConstructor = actionType.GetConstructor(new[] {typeof(object), typeof(IntPtr)});
                 il.Emit(OpCodes.Newobj, actionConstructor);
-                var subscribeMethod = typeof(IInterlocutor).GetMethod("SaySubscribe", new[] {typeof(int), actionType});
+                var subscribeMethod = typeof(IInterlocutor).GetMethod("SetIncomeSayCallHandler", new[] {typeof(int), actionType});
                 il.Emit(OpCodes.Callvirt, subscribeMethod);
             }
             else
@@ -312,7 +312,7 @@ namespace TNT.Contract.Proxy
                 var funcConstructor = funkType.GetConstructor(new[] {typeof(object), typeof(IntPtr)});
 
                 il.Emit(OpCodes.Newobj, funcConstructor);
-                var subscribeMethodInfo = typeof(IInterlocutor).GetMethod("AskSubscribe");
+                var subscribeMethodInfo = typeof(IInterlocutor).GetMethod("SetIncomeAskCallHandler");
 
                 var subscribeMethodGenericInfo = subscribeMethodInfo.MakeGenericMethod(handleMethod.ReturnType);
                 il.Emit(OpCodes.Callvirt, subscribeMethodGenericInfo);

@@ -17,12 +17,12 @@ namespace TNT.Contract.Origin
                 if (method.Value.ReturnParameter.ParameterType == typeof(void))
                 {
                     //Say handler method:
-                    interlocutor.SaySubscribe(method.Key, (args) => method.Value.Invoke(contract, args));
+                    interlocutor.SetIncomeSayCallHandler(method.Key, (args) => method.Value.Invoke(contract, args));
                 }
                 else
                 {
                     //Ask handler method:
-                    interlocutor.AskSubscribe(method.Key, (args) => method.Value.Invoke(contract, args));
+                    interlocutor.SetIncomeAskCallHandler(method.Key, (args) => method.Value.Invoke(contract, args));
                 }
             }
             OriginCallbackDelegatesHandlerFactory.CreateFor(contractMemebers, contract, interlocutor);

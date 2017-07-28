@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using TNT.Exceptions.Local;
+using TNT.Presentation;
 using TNT.Transport;
 
 namespace TNT.Testing
@@ -51,11 +52,10 @@ namespace TNT.Testing
             if (!IsConnected)
                 throw new InvalidOperationException("Cannot to immitate disconnect while IsConnected = false");
             IsConnected = false;
-            OnDisconnect?.Invoke(this);
+            OnDisconnect?.Invoke(this, null);
         }
 
         public event Action<IChannel, byte[]> OnWrited;
-
 
         public bool IsConnected { get; private set; }
 
@@ -82,16 +82,19 @@ namespace TNT.Testing
 
         public event Action<IChannel, bool> AllowReceiveChanged; 
         public event Action<IChannel, byte[]> OnReceive;
-        public event Action<IChannel> OnDisconnect;
+        public event Action<IChannel, ErrorMessage> OnDisconnect;
         public void Disconnect()
+        {
+          DisconnectBecauseOf(null);
+        }
+        public void DisconnectBecauseOf(ErrorMessage error)
         {
             if (IsConnected)
             {
                 IsConnected = false;
-                OnDisconnect?.Invoke(this);
+                OnDisconnect?.Invoke(this, error);
             }
         }
-
         public Task<bool> TryWriteAsync(byte[] array)
         {
             return Task.Run(
@@ -110,6 +113,15 @@ namespace TNT.Testing
             if (!IsConnected)
                 throw new ConnectionIsLostException();
             OnWrited?.Invoke(this, array);
+        }
+
+        public int BytesReceived { get; }
+        public int BytesSent { get; }
+        public string RemoteEndpointName { get; }
+        public string LocalEndpointName { get; }
+        public Task WriteAsync(byte[] data)
+        {
+            return Task.Run(() => Write(data));
         }
     }
 }

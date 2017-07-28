@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using TNT.Presentation;
 
 namespace TNT.Transport
 {
@@ -21,14 +22,21 @@ namespace TNT.Transport
         /// <summary>
         /// Raising if connection is lost
         /// </summary>
-        event Action<IChannel> OnDisconnect;
+        event Action<IChannel, ErrorMessage> OnDisconnect;
         /// <summary>
         /// Close connection
         /// </summary>
         void Disconnect();
 
-        Task<bool> TryWriteAsync(byte[] array);
-
+        void DisconnectBecauseOf(ErrorMessage error);
+        Task WriteAsync(byte[] data);
         void Write(byte[] array);
+
+        int BytesReceived { get; }
+        int BytesSent { get; }
+
+        string RemoteEndpointName { get; }
+        string LocalEndpointName { get; }
+
     }
 }

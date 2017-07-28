@@ -43,6 +43,7 @@ namespace TNT.Presentation.Deserializers
             {
                 ans.AddRule(serializationRule);
             }
+            ans.AddRule(DeserializationRule.Create(new ByteEnumerableDeserializer()));
             ans.AddRule(DeserializationRule.Create(new UnicodeDeserializer()));
             ans.AddRule(DeserializationRule.Create(new UTCFileTimeDeserializer()));
             ans.AddRule(DeserializationRule.Create(new UTCFileTimeAndOffsetDeserializer()));

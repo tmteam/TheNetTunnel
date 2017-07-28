@@ -8,10 +8,14 @@ using TNT.Presentation.ReceiveDispatching;
 
 namespace TNT.Presentation
 {
+    /// <summary>
+    /// Implements interaction with remote contract via specified messenger
+    /// </summary>
     public class Interlocutor:IInterlocutor
     {
         private readonly IMessenger _messenger;
         private readonly IDispatcher _receiveDispatcher;
+        private readonly int _maxAnsDelay;
 
         private readonly ConcurrentDictionary<int, Action<object[]>> _saySubscribtion 
             = new ConcurrentDictionary<int, Action<object[]>>();
@@ -24,25 +28,36 @@ namespace TNT.Presentation
 
         public int lastUsedAskId = 0;
 
-        public Interlocutor(IMessenger messenger, IDispatcher receiveDispatcher)
+        public Interlocutor(IMessenger messenger, IDispatcher receiveDispatcher, int maxAnsDelay = 3000)
         {
             _messenger = messenger;
             _receiveDispatcher = receiveDispatcher;
+            _maxAnsDelay = maxAnsDelay;
             _receiveDispatcher.OnNewMessage += _receiveDispatcher_OnNewMessage;
             _messenger.OnRequest += (_, message)=> _receiveDispatcher.Set(message);
             _messenger.OnAns += _messenger_OnAns;
-            _messenger.OnException += _messenger_OnException;
+            _messenger.OnRemoteError += _messenger_OnException;
             _messenger.ChannelIsDisconnected += _messenger_ChannelIsDisconnected;
 
         }
 
-     
-
-        public void Say(int messageId, object[] values)
-        {
-            _messenger.Say(messageId, values);
+        /// <summary>
+        /// Sends "Say" message with "values" arguments
+        /// </summary>
+        ///<exception cref="LocalSerializationException"></exception>
+        ///<exception cref="ConnectionIsLostException"></exception>
+        ///<exception cref="ArgumentException">wrong message id</exception>
+        public void Say(int messageId, object[] values) {
+            _messenger.Say((short)messageId, values);
         }
-
+        /// <summary>
+        /// Remote method call. Blocking.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        ///<exception cref="ArgumentException">wrong message id</exception>
+        ///<exception cref="TntCallException"></exception>
+        ///<exception cref="LocalSerializationException">some of the argument type serializers or deserializers are not implemented, 
+        /// or not the same as specified in the contract</exception>
         public T Ask<T>(int messageId, object[] values)
         {
             short askId;
@@ -53,22 +68,31 @@ namespace TNT.Presentation
             var awaiter = new AnswerAwaiter((short)messageId,askId);
             _answerAwaiters.TryAdd(askId, awaiter);
             _messenger.Ask((short)messageId, askId, values);
-            var result = awaiter.WaitOrThrow(10000);
+            var result = awaiter.WaitOrThrow(_maxAnsDelay);
             return (T)result;
         }
 
-        public void SaySubscribe(int messageId, Action<object[]> callback)
+        /// <summary>
+        /// Set income Say message Handler
+        /// </summary>
+        ///<exception cref="ArgumentException">already contains say messageId handler</exception>
+        public void SetIncomeSayCallHandler(int messageId, Action<object[]> callback)
         {
             if (!_saySubscribtion.TryAdd(messageId, callback))
-                throw new InvalidOperationException($"say {messageId} already subscribed");
+                throw new ArgumentException($"say {messageId} already subscribed");
         }
-
-        public void AskSubscribe<T>(int messageId, Func<object[], T> callback)
+        /// <summary>
+        /// Set income Say message Handler
+        /// </summary>
+        ///<exception cref="ArgumentException">already contains ask messageId handler</exception>
+        public void SetIncomeAskCallHandler<T>(int messageId, Func<object[], T> callback)
         {
             if (!_askSubscribtion.TryAdd(messageId, (args)=> callback(args)))
-                throw new InvalidOperationException($"ask {messageId} already subscribed");
+                throw new ArgumentException($"ask {messageId} already subscribed");
         }
-
+        /// <summary>
+        /// Unsubscribes request handler
+        /// </summary>
         public void Unsubscribe(int messageId)
         {
             Action<object[]> fakeAction;
@@ -84,19 +108,25 @@ namespace TNT.Presentation
             AnswerAwaiter awaiter;
             _answerAwaiters.TryRemove((short) askId, out awaiter);
             //in case of timeoutException awaiter is still in dictionary
-            if(awaiter==null)
-                throw new RemoteSerializationException(messageId, askId, true,  $"answer {messageId} / {askId} not awaited");
+            if (awaiter == null)
+            {
+                _messenger.HandleRequestProcessingError(new ErrorMessage(
+                    messageId, 
+                    askId, 
+                    ErrorType.SerializationError, $"answer {messageId} / {askId} not awaited"),false);
+                return;
+            }
             //in case of timeoutException, do nothing:
-            awaiter.SetResult(answer);
+            awaiter.SetSuccesfullyResult(answer);
         }
     
 
-        private void _messenger_OnException(IMessenger arg1, ExceptionMessage message)
+        private void _messenger_OnException(IMessenger arg1, ErrorMessage message)
         {
             AnswerAwaiter awaiter;
             _answerAwaiters.TryRemove((short)message.AskId, out awaiter);
             //miss information if exception is general
-            awaiter?.SetExceptionalResult(message.Exception);
+            awaiter?.SetErrorResult(message);
         }
 
         private void _receiveDispatcher_OnNewMessage(IDispatcher arg1, RequestMessage message)
@@ -105,40 +135,53 @@ namespace TNT.Presentation
             {
                 if (message.AskId.HasValue)
                 {
-                    Func<object[], object> handler;
-                    _askSubscribtion.TryGetValue(message.TypeId, out handler);
-                    if (handler == null)
-                        throw new RemoteContractImplementationException(
-                            message.TypeId, message.AskId, false,
-                            $"ask {message.TypeId} not implemented");
+                    Func<object[], object> askHandler;
+                    _askSubscribtion.TryGetValue(message.TypeId, out askHandler);
+                    if (askHandler == null)
+                    {
+                        _messenger.HandleRequestProcessingError(
+                            new ErrorMessage(
+                                messageId: message.TypeId, 
+                                askId: message.AskId, 
+                                type: ErrorType.ContractSignatureError,
+                                additionalExceptionInformation: $"ask {message.TypeId} not implemented"), false);
+                        return;
+                    }
                     object answer = null;
-                    answer = handler.Invoke(message.Arguments);
+                    answer = askHandler.Invoke(message.Arguments);
                     _messenger.Ans((short)-message.TypeId, (short)message.AskId.Value, answer);
                 }
                 else
                 {
-                    Action<object[]> handler;
-                    _saySubscribtion.TryGetValue(message.TypeId, out handler);
-                    handler?.Invoke(message.Arguments);
+                    Action<object[]> sayHandler;
+                    _saySubscribtion.TryGetValue(message.TypeId, out sayHandler);
+                    sayHandler?.Invoke(message.Arguments);
                 }
             }
             catch (Exception e)
             {
-                _messenger.HandleCallException(new RemoteUnhandledException(message.TypeId, message.AskId, e,
-                    $"UnhandledException: {e.ToString()}"));
+                _messenger.HandleRequestProcessingError(
+                    new ErrorMessage(
+                        message.TypeId, 
+                        message.AskId, 
+                        ErrorType.UnhandledUserExceptionError, 
+                        $"UnhandledException: {e.ToString()}"), false);
             }
         }
 
-        private void _messenger_ChannelIsDisconnected(IMessenger obj)
+        private void _messenger_ChannelIsDisconnected(IMessenger obj, ErrorMessage cause)
         {
             _receiveDispatcher.Release();
             while (!_answerAwaiters.IsEmpty)
             {
                 AnswerAwaiter awaiter;
                 _answerAwaiters.TryRemove(_answerAwaiters.ToArray().First().Key, out awaiter);
-                if(awaiter==null)
+                if (awaiter == null)
                     return;
-                awaiter.SetExceptionalResult(new ConnectionIsLostException("Connection is lost during the transaction"));
+                if (cause == null)
+                    awaiter.SetConnectionIsLostResult();
+                else
+                    awaiter.SetErrorResult(cause);
             }
         }
         class AnswerAwaiter
@@ -156,7 +199,12 @@ namespace TNT.Presentation
                 _askId = askId;
                 _event = new ManualResetEvent(false);
             }
-
+            /// <summary>
+            /// Waits for the operation result
+            /// </summary>
+            ///<exception cref="CallTimeoutException"></exception>
+            ///<exception cref="RemoteException"></exception>
+            ///<exception cref="ConnectionIsLostException"></exception>
             public object WaitOrThrow(int msec)
             {
                 if (!_event.WaitOne(msec))
@@ -166,13 +214,21 @@ namespace TNT.Presentation
                 return _returnResult;
             }
 
-            public void SetExceptionalResult(Exception ex)
+            public void SetConnectionIsLostResult()
             {
                 _returnResult = null;
-                _exceptionalResult = ex;
+                _exceptionalResult = new ConnectionIsLostException($"Connection is lost during the transaction. MessageId: {_messageId}, AskId: {_askId}", _messageId, _askId);
                 _event.Set();
             }
-            public void SetResult(object result)
+
+            public void SetErrorResult(ErrorMessage error)
+            {
+                _returnResult = null;
+                _exceptionalResult = error.Exception;
+                _event.Set();
+            }
+            
+            public void SetSuccesfullyResult(object result)
             {
                 _returnResult = result;
                 _event.Set();

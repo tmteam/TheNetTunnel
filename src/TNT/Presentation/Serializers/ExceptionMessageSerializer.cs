@@ -3,26 +3,32 @@ using TNT.Exceptions.Remote;
 
 namespace TNT.Presentation.Serializers
 {
-    public class ExceptionMessageSerializer: SerializerBase<ExceptionMessage>
+    public class ErrorMessageSerializer: SerializerBase<ErrorMessage>
     {
         private  readonly SequenceSerializer _serializer;
 
-        public ExceptionMessageSerializer()
+        public ErrorMessageSerializer()
         {
             this.Size = null;
             _serializer = new SequenceSerializer(
                    new ISerializer[]
                    {
-                        new ValueTypeSerializer<short>(),
-                        new ValueTypeSerializer<short>(),
-                        new EnumSerializer<RemoteExceptionId>(),
+                        new NullableSerializer<short>(),
+                        new NullableSerializer<short>(),
+                        new EnumSerializer<ErrorType>(),
                         new UnicodeSerializer()
                    });
         }
-        public override void SerializeT(ExceptionMessage obj, MemoryStream stream)
+        public override void SerializeT(ErrorMessage obj, MemoryStream stream)
         {
              _serializer.SerializeT(
-                    new object[] {obj.MessageId, obj.AskId, obj.ExceptionType, obj.AdditionalExceptionInformation}, stream);
+                    new object[]
+                    {
+                        obj.MessageId,
+                        obj.AskId,
+                        obj.ErrorType,
+                        obj.AdditionalExceptionInformation
+                    }, stream);
 
         }
     }

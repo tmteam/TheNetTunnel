@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TNT.Presentation;
 using TNT.Presentation.Deserializers;
 using TNT.Presentation.ReceiveDispatching;
 using TNT.Presentation.Serializers;
@@ -15,9 +16,10 @@ namespace TNT.Api
         public Func<IDispatcher> ReceiveDispatcherFactory { get; private set; } = ()=>new ConveyorDispatcher();
 
         public Action<TContract, IChannel> ContractInitializer { get; private set; } = (contract, channel) => { };
-        public Action<TContract, IChannel> ContractFinalizer   { get; private set; } = (contract, channel) => { };
+        public Action<TContract, IChannel, ErrorMessage> ContractFinalizer   { get; private set; } = (contract, channel, cause) => { };
 
-        
+        int _maxAnsDelay = 30000;
+        public int MaxAnswerTimeoutDelay => _maxAnsDelay;
         public List<DeserializationRule> UserDeserializationRules { get; } = new List<DeserializationRule>();
 
         public List<SerializationRule> UserSerializationRules { get; } = new List<SerializationRule>();
@@ -55,6 +57,12 @@ namespace TNT.Api
             where TDispatcher : IDispatcher, new()
         {
             return this.UseReceiveDispatcher(() => new TDispatcher());
+        }
+
+        public PresentationBuilder<TContract> SetMaxAnsDelay(int delay)
+        {
+            _maxAnsDelay = delay;
+            return this;
         }
         public PresentationBuilder<TContract> UseReceiveDispatcher(Func<IDispatcher> dispatcherFactory)
         {
@@ -101,12 +109,16 @@ namespace TNT.Api
             ContractInitializer = initializer;
             return this;
         }
-        public PresentationBuilder<TContract> UseContractFinalization(Action<TContract, IChannel> finalizer)
+        public PresentationBuilder<TContract> UseContractFinalization(Action<TContract, IChannel, ErrorMessage> finalizer)
         {
-            if(finalizer == null)
-                throw  new ArgumentNullException(nameof(finalizer));
+            if (finalizer == null)
+                throw new ArgumentNullException(nameof(finalizer));
             ContractFinalizer = finalizer;
             return this;
+        }
+        public PresentationBuilder<TContract> UseContractFinalization(Action<TContract, IChannel> finalizer)
+        {
+            return UseContractFinalization((ch, co, ca) => finalizer(ch, co));
         }
 
         public ConnectionBuilder<TContract, TChannel> UseChannel<TChannel>() 

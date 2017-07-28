@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using TNT.Exceptions.ContractImplementation;
+using TNT.Exceptions.Local;
 using TNT.Exceptions.Remote;
 using TNT.Presentation.Deserializers;
 using TNT.Presentation.Serializers;
@@ -10,6 +11,9 @@ using TNT.Transport;
 
 namespace TNT.Presentation
 {
+    /// <summary>
+    /// Incapsulates basic Tnt IO operations 
+    /// </summary>
     public class Messenger : IMessenger
     {
         public const short ExceptionMessageTypeId = 30400;
@@ -22,8 +26,8 @@ namespace TNT.Presentation
             = new Dictionary<int, InputMessageDeserializeInfo>();
         
         public event Action<IMessenger, short, short, object> OnAns;
-        public event Action<IMessenger, ExceptionMessage> OnException;
-        public event Action<IMessenger> ChannelIsDisconnected;
+        public event Action<IMessenger, ErrorMessage> OnRemoteError;
+        public event Action<IMessenger, ErrorMessage> ChannelIsDisconnected;
         public event Action<IMessenger, RequestMessage> OnRequest;
 
         public Messenger(
@@ -35,7 +39,7 @@ namespace TNT.Presentation
         {
             _channel = channel;
             _channel.OnReceive += _channel_OnReceive;
-            _channel.OnDisconnect += (c) => ChannelIsDisconnected?.Invoke(this);
+            _channel.OnDisconnect += (c,e) => ChannelIsDisconnected?.Invoke(this,e);
 
 
             var outputSayMessageSerializes = new Dictionary<int, ISerializer>();
@@ -72,23 +76,60 @@ namespace TNT.Presentation
 
             _sender = new Sender(_channel, outputSayMessageSerializes);
         }
-
-        public void HandleCallException( RemoteExceptionBase rcException)
+        /// <summary>
+        /// Handles the error, occured during the input message handling.
+        /// try to send an error message to remote side
+        /// </summary>
+        ///<exception cref="InvalidOperationException">Critical implementation exception</exception>
+        public void HandleRequestProcessingError(ErrorMessage errorInfo, bool isFatal)
         {
-            _sender.SendException(rcException);
-            if (rcException.IsFatal)
+            if (!_channel.IsConnected)
+                return;
+            try
+            {
+                _sender.SendError(errorInfo);
+                if (isFatal)
+                    _channel.DisconnectBecauseOf(errorInfo);
+            }
+            catch (LocalSerializationException e)
+            {
+                throw new InvalidOperationException("Error-serializer exception", e);
+            }
+            catch (ConnectionIsNotEstablishedYet)
+            {
+                throw new InvalidOperationException("Channel implementation error. Chanel " + _channel.GetType().Name +
+                                                    " throws ConnectionIsNotEstablishedYet when it was connected");
+            }
+            catch (ConnectionIsLostException)
+            {
                 _channel.Disconnect();
+            }
         }
 
-
-        public void Say(int id, object[] values) {
-            _sender.Say(id,values);
+        /// <summary>
+        /// Sends "Say" message with "values" arguments
+        /// </summary>
+        ///<exception cref="ArgumentException"></exception>
+        ///<exception cref="ConnectionIsLostException"></exception>
+        ///<exception cref="LocalSerializationException">one of the argument type serializers is not implemented, or not the same as specified in the contract</exception>
+        public void Say(short messageId, object[] values) {
+            _sender.Say(messageId, values);
         }
-
+        /// <summary>
+        /// Sends "ans value" message 
+        /// </summary>
+        ///<exception cref="ArgumentException"></exception>
+        ///<exception cref="ConnectionIsLostException"></exception>
+        ///<exception cref="LocalSerializationException">answer type serializer is not implemented, or  not the same as specified in the contract</exception>
         public void Ans(short id, short askId, object value) {
            _sender.Ans(id,askId,value);
         }
-
+        /// <summary>
+        /// Sends "Say" message with "values" arguments
+        /// </summary>
+        ///<exception cref="ArgumentException"></exception>
+        ///<exception cref="ConnectionIsLostException"></exception>
+        ///<exception cref="LocalSerializationException">one of the argument type serializers is not implemented, or not the same as specified in the contract</exception>
         public void Ask(short id, short askId, object[] values) {
             _sender.Ask(id, askId, values);
         }
@@ -98,17 +139,22 @@ namespace TNT.Presentation
             short id;
             if (!data.TryReadShort(out id))
             {
-                HandleCallException(new RemoteSerializationException(
-                    null, null, true, "Messae tyoe id missed"));
+                HandleRequestProcessingError(
+                    new ErrorMessage(
+                        null,null, 
+                        ErrorType.SerializationError, 
+                        "Messae type id missed"),true);
+                 
                 return;
             }
             InputMessageDeserializeInfo sayDeserializer;
             _inputSayMessageDeserializeInfos.TryGetValue(id, out sayDeserializer);
             if (sayDeserializer == null)
             {
-                HandleCallException(new
-                    RemoteContractImplementationException(
-                    id, data.TryReadShort(), false, $"Message type id {id} is not implemented"));
+                HandleRequestProcessingError(
+                    new ErrorMessage(id, data.TryReadShort(),
+                        ErrorType.ContractSignatureError,
+                        $"Message type id {id} is not implemented"), false);
                 return;
             }
 
@@ -118,7 +164,11 @@ namespace TNT.Presentation
                 askId = data.TryReadShort();
                 if(!askId.HasValue)
                 {
-                    HandleCallException(new RemoteSerializationException(id, null, true, "Ask Id missed"));
+                    HandleRequestProcessingError(
+                         new ErrorMessage(
+                            id, null,
+                            ErrorType.SerializationError,
+                            "Ask Id missed"), true);
                     return;
                 }
             }
@@ -130,29 +180,26 @@ namespace TNT.Presentation
             }
             catch (Exception ex)
             {
-                HandleCallException(new RemoteSerializationException(id, askId, true,
-                    $"Message type id{id} with could not be deserialized. InnerException: {ex.ToString()}"));
+                HandleRequestProcessingError(
+                        new ErrorMessage(
+                           id, askId,
+                           ErrorType.SerializationError,
+                           $"Message type id{id} with could not be deserialized. InnerException: {ex.ToString()}"), true);
                 return;
             }
 
             if (id < 0)
             {
-                try
-                {
-                    //input answer message handling
-                    OnAns?.Invoke(this, id, askId.Value, deserialized.Single());
-                }
-                catch (RemoteExceptionBase e)
-                {
-                    HandleCallException(e);
-                }
+                //input answer message handling
+                OnAns?.Invoke(this, id, askId.Value, deserialized.Single());
+                
             }
             else if(id == Messenger.ExceptionMessageTypeId)
             {
-                var exceptionMessage = (ExceptionMessage)deserialized.First();
+                var exceptionMessage = (ErrorMessage)deserialized.First();
                 if (exceptionMessage.Exception.IsFatal)
-                    _channel.Disconnect();
-                OnException?.Invoke(this, exceptionMessage);
+                    _channel.DisconnectBecauseOf(exceptionMessage);
+                OnRemoteError?.Invoke(this, exceptionMessage);
             }
             else
             {
@@ -160,7 +207,8 @@ namespace TNT.Presentation
                 OnRequest?.Invoke(this, new RequestMessage(id, askId, deserialized));  
             }
         }
-    
+
+      
     }
 
     public class MessageTypeInfo
@@ -186,7 +234,7 @@ namespace TNT.Presentation
 
         public static InputMessageDeserializeInfo CreateForExceptionHandling()
         {
-            return new InputMessageDeserializeInfo(1, false, new ExceptionMessageDeserializer());
+            return new InputMessageDeserializeInfo(1, false, new ErrorMessageDeserializer());
         }
 
         private InputMessageDeserializeInfo(int argumentsCount, bool hasReturnType, IDeserializer deserializer)

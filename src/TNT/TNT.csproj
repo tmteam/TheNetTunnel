@@ -30,12 +30,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nunit.framework, Version=3.7.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnit.3.7.1\lib\net45\nunit.framework.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="protobuf-net, Version=2.2.1.0, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
-      <HintPath>..\packages\protobuf-net.2.2.1\lib\net40\protobuf-net.dll</HintPath>
+      <HintPath>..\..\packages\protobuf-net.2.2.1\lib\net40\protobuf-net.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -48,8 +44,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Api\IConnection.cs" />
     <Compile Include="Api\PresentationBuilder.cs" />
     <Compile Include="Api\TntBuilder.cs" />
+    <Compile Include="Presentation\Deserializers\ByteEnumerableDeserializer.cs" />
     <Compile Include="Presentation\Deserializers\NullableDeserializer.cs" />
     <Compile Include="Presentation\PresentationHelper.cs" />
     <Compile Include="Presentation\ReceiveDispatching\ConveyorDispatcher.cs" />
@@ -58,19 +56,19 @@
     <Compile Include="Presentation\Deserializers\ExceptionMessageDeserializer.cs" />
     <Compile Include="Presentation\ExceptionMessage.cs" />
     <Compile Include="Presentation\Sender.cs" />
+    <Compile Include="Presentation\Serializers\ByteEnumerableSerializer.cs" />
     <Compile Include="Presentation\Serializers\ExceptionMessageSerializer.cs" />
     <Compile Include="Exceptions\ContractImplementation\ContractCordIdDuplicateException.cs" />
     <Compile Include="Exceptions\ContractImplementation\ContractMemberAttributeMissingException.cs" />
     <Compile Include="Exceptions\ContractImplementation\InvalidContractMemeberException.cs" />
-    <Compile Include="Exceptions\Local\LocalException.cs" />
+    <Compile Include="Exceptions\Local\TntCallException.cs" />
     <Compile Include="Exceptions\Remote\RemoteContractImplementationException.cs" />
-    <Compile Include="Exceptions\ITntCallException.cs" />
     <Compile Include="Exceptions\Local\CallTimeoutException.cs" />
     <Compile Include="Exceptions\Local\ConnectionIsLostException.cs" />
     <Compile Include="Exceptions\Local\ConnectionIsNotEstablishedYet.cs" />
     <Compile Include="Exceptions\Local\LocalSerializationException.cs" />
-    <Compile Include="Exceptions\Remote\RemoteExceptionId.cs" />
-    <Compile Include="Exceptions\Remote\RemoteExceptionBase.cs" />
+    <Compile Include="Exceptions\Remote\ErrorType.cs" />
+    <Compile Include="Exceptions\Remote\RemoteException.cs" />
     <Compile Include="Exceptions\Remote\RemoteSerializationException.cs" />
     <Compile Include="Exceptions\Remote\RemoteUnhandledException.cs" />
     <Compile Include="Api\ChannelServer.cs" />

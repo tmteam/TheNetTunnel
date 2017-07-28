@@ -2,12 +2,17 @@
 
 namespace TNT.Exceptions.Local
 {
-    public class CallTimeoutException: LocalException
+    public class CallTimeoutException: Exception
     {
+        public short MessageId { get; }
+        public short AskId { get; }
+
         public CallTimeoutException(short messageId, short askId)
-            : base(false, messageId, askId, "Anwer timeout elasped", null)
+            : base("Anwer timeout elasped", null)
         {
-            
+            MessageId = messageId;
+            AskId = askId;
         }
+
     }
 }

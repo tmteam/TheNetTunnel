@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using TNT.Presentation;
 using TNT.Transport;
 
 namespace TNT.Api
@@ -13,19 +14,19 @@ namespace TNT.Api
         private readonly PresentationBuilder<TContract> _connectionBuilder;
         protected readonly IChannelListener<TChannel> Listener;
 
-        readonly ConcurrentDictionary<IChannel, Connection<TContract, TChannel>> _connections
-            = new ConcurrentDictionary<IChannel, Connection<TContract, TChannel>>();
+        readonly ConcurrentDictionary<IChannel, IConnection<TContract, TChannel>> _connections
+            = new ConcurrentDictionary<IChannel, IConnection<TContract, TChannel>>();
 
         public bool IsListening {
             get { return Listener.IsListening; }
             set { Listener.IsListening = value; }
         }
 
-        public event Action<IChannelServer<TContract, TChannel>, BeforeConnectEventArgs<TContract, TChannel>> 
+        public event Action<object, BeforeConnectEventArgs<TContract, TChannel>> 
             BeforeConnect;
-        public event Action<IChannelServer<TContract, TChannel>, Connection<TContract, TChannel>> 
+        public event Action<object, IConnection<TContract, TChannel>> 
             AfterConnect;
-        public event Action<IChannelServer<TContract, TChannel>, Connection<TContract, TChannel>> 
+        public event Action<object, IConnection<TContract, TChannel>, ErrorMessage> 
             Disconnected;
 
         public ChannelServer(PresentationBuilder<TContract> channelBuilder, IChannelListener<TChannel> listener)
@@ -54,16 +55,16 @@ namespace TNT.Api
             AfterConnect?.Invoke(this, connection);
         }
 
-        public IEnumerable<Connection<TContract, TChannel>> GetAllConnections() {
+        public IEnumerable<IConnection<TContract, TChannel>> GetAllConnections() {
             return _connections.Values.ToArray();
         }
 
-        private void Channel_OnDisconnect(IChannel obj)
+        private void Channel_OnDisconnect(IChannel obj, ErrorMessage cause)
         {
-            Connection<TContract, TChannel> connection;
+            IConnection<TContract, TChannel> connection;
             _connections.TryRemove(obj, out connection);
             if (connection != null)
-                Disconnected?.Invoke(this, connection);
+                Disconnected?.Invoke(this, connection, cause);
         }
 
         public void Close()
