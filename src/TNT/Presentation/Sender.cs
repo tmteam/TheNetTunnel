@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using TNT.Exceptions.Local;
@@ -108,13 +109,20 @@ namespace TNT.Presentation
         ///<exception cref="LocalSerializationException">specified serializer does not fit the arguments</exception>
         private void Write(object[] values, ISerializer serializer, MemoryStream stream)
         {
-            if (values.Length == 1)
-                serializer.Serialize(values[0], stream);
-            else if (values.Length > 1)
-                serializer.Serialize(values, stream);
+            try
+            {
+                if (values.Length == 1)
+                    serializer.Serialize(values[0], stream);
+                else if (values.Length > 1)
+                    serializer.Serialize(values, stream);
+            }
+            catch (Exception e)
+            {
+                throw new LocalSerializationException(null,null,"Serialization failed", e);
+            }
+          
             stream.Position = 0;
             _channel.Write(stream);
-
         }
        
         ///<exception cref="ConnectionIsLostException"></exception>

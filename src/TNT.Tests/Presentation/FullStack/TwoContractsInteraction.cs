@@ -74,11 +74,12 @@ namespace TNT.Tests.Presentation.FullStack
             var originResult = func(s, i, l);
             Assert.AreEqual(originResult, proxyResult);
         }
-
+        [TestCase("Hey you")]
+        [TestCase("")]
+        [TestCase(null)]
         public void ProxyAskCall_ReturnsSettedValue(string returnedValue)
         {
-            var func = new Func<string, int, long, string>((s1, i2, l3) => s1 + i2.ToString() + l3.ToString());
-
+          
             var channelPair = TntTestHelper.CreateChannelPair();
 
             var proxyConnection = TntBuilder
@@ -95,8 +96,10 @@ namespace TNT.Tests.Presentation.FullStack
                 .Build();
 
             channelPair.ConnectAndStartReceiving();
-
-            var proxyResult = proxyConnection.Contract.Ask(returnedValue);
+            //set 'echo' handler
+            proxyConnection.Contract.OnAskS += (arg) => arg;
+            //call
+            var proxyResult = originConnection.Contract.OnAskS(returnedValue);
             Assert.AreEqual(returnedValue, proxyResult);
         }
         [Test]

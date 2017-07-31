@@ -17,8 +17,10 @@ namespace TNT.Tests.Presentation.Contracts
         public void Say(string s)
         {
             SaySCalled.Add(s);
+            SayMethodWasCalled?.Invoke(this, s);
         }
 
+        public event Action<object, string> SayMethodWasCalled;
         public void Say(string s, int i, long l)
         {
         }

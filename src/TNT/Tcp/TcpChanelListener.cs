@@ -15,6 +15,7 @@ namespace TNT.Tcp
 
         public TcpChanelListener(IPEndPoint endpoint)
         {
+            
             _endpoint = endpoint;
         }
 
@@ -33,8 +34,8 @@ namespace TNT.Tcp
                 }
                 else
                 {
+                    //_listener.EndAcceptTcpClient(_listenResults);
                     _listener.Stop();
-                    _listener.EndAcceptTcpClient(_listenResults);
                     _listener = null;
                     _listenResults = null;
                 }
@@ -57,5 +58,7 @@ namespace TNT.Tcp
                 listener.BeginAcceptTcpClient(EndAcceptTcpClient, listener);
             }
         }
+
+     
     }
 }

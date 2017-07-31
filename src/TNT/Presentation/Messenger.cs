@@ -180,6 +180,12 @@ namespace TNT.Presentation
             }
             catch (Exception ex)
             {
+                if (id < 0)
+                {
+                    //Answer deserialization failed. Send LocalSerializerException to upper layer as result of the ASK call
+                    throw  new NotImplementedException();
+                    return;
+                }
                 HandleRequestProcessingError(
                         new ErrorMessage(
                            id, askId,

@@ -42,17 +42,17 @@ namespace Experiments.Server
             Console.ReadLine();
         }
 
-        private static void TcpServer_Disconnected(IChannelServer<ITestContract, TcpChannel> arg1, Connection<ITestContract, TcpChannel> arg2)
+        private static void TcpServer_Disconnected(object sender, IConnection<ITestContract, TcpChannel> arg2, ErrorMessage error)
         {
             Console.WriteLine("Disconnected");
         }
 
-        private static void TcpServer_AfterConnect(IChannelServer<ITestContract, TcpChannel> arg1, Connection<ITestContract, TcpChannel> arg2)
+        private static void TcpServer_AfterConnect(object sender, IConnection<ITestContract, TcpChannel> arg2)
         {
             Console.WriteLine("Client connected");
         }
 
-        private static void TcpServerOnBeforeConnect(IChannelServer<ITestContract, TcpChannel> channelServer, BeforeConnectEventArgs<ITestContract, TcpChannel> beforeConnectEventArgs)
+        private static void TcpServerOnBeforeConnect(object sender, BeforeConnectEventArgs<ITestContract, TcpChannel> beforeConnectEventArgs)
         {
             Console.WriteLine("Before client connected");
         }

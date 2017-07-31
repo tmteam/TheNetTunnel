@@ -24,25 +24,21 @@ namespace TNT.Api
         }
         public IConnection<TContract, TChannel> Build()
         {
-            
             var sendSeparationBehaviour = _contractBuilder.SendMessageSequenceBehaviourFactory();
             var channel = _channelFactory();
 
             var light = new Transporter(
                 underlyingChannel: channel,
                 sendMessageSequenceBehaviour: sendSeparationBehaviour);
-
+            
             TContract contract = null;
             if (_contractBuilder.OriginContractFactory == null)
-            {
                 contract = CreateProxyContract(light);
-            }
             else
-            {
                 contract = CreateOriginContract(light);
-            }
 
             _contractBuilder.ContractInitializer(contract, channel);
+
             if(channel.IsConnected)
                 channel.AllowReceive = true;
 

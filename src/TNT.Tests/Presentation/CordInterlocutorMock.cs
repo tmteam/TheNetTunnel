@@ -66,21 +66,23 @@ namespace TNT.Tests.Presentation
         }
 
 
-        public void SaySubscribe(int cordId, Action<object[]> callback)
+        public void SetIncomeSayCallHandler(int messageId, Action<object[]> callback)
         {
-            subscribedSay.Add(cordId,callback);
-        }
-
-        public void AskSubscribe<T>(int cordId, Func<object[], T> callback)
-        {
-            subscribedAsk.Add(cordId, (arg)=>callback(arg));
+            subscribedSay.Add(messageId, callback);
 
         }
 
+        public void SetIncomeAskCallHandler<T>(int messageId, Func<object[], T> callback)
+        {
+            subscribedAsk.Add(messageId, (arg) => callback(arg));
+
+        }
         public void Unsubscribe(int cordId)
         {
             throw new NotImplementedException();
         }
+
+    
 
         public class SayOrAskCall
         {
