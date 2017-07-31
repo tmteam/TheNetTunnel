@@ -44,7 +44,8 @@ namespace TNT.Presentation
 
         event Action<IMessenger, short, short, object> OnAns;
 
-        event Action<IMessenger, ErrorMessage> OnRemoteError;
+
+        event Action<IMessenger, Exception> OnException;
 
         event Action<IMessenger, ErrorMessage> ChannelIsDisconnected;
     }

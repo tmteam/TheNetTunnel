@@ -8,17 +8,6 @@ namespace TNT.IntegrationTests.TcpLocalhost
     [TestFixture]
     public class TwoContractsInteraction
     {
-
-        [Test]
-        public void TcpClientConnectsToTcpServer()
-        {
-            using (var tcpPair = new TcpConnectionPair())
-            {
-                Assert.IsNotNull(tcpPair.OriginConnection);
-            }
-        }
-
-
         [TestCase("Hey you")]
         [TestCase("")]
         [TestCase(null)]

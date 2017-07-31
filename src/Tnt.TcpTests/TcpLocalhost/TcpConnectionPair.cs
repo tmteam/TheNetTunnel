@@ -1,12 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Net;
+using System.Threading;
 using NUnit.Framework;
 using TNT.Api;
+using TNT.Exceptions.Local;
 using TNT.Presentation.Deserializers;
 using TNT.Presentation.ReceiveDispatching;
 using TNT.Presentation.Serializers;
 using TNT.Tcp;
+using TNT.Tests;
 using TNT.Tests.Presentation.Contracts;
 
 namespace TNT.IntegrationTests.TcpLocalhost
@@ -65,12 +70,40 @@ namespace TNT.IntegrationTests.TcpLocalhost
         public void Disconnect()
         {
             OriginConnection.Channel.Disconnect();
+            ProxyConnection.Channel.Disconnect();
+        }
+
+        public void DisconnectAndClose()
+        {
+            Disconnect();
             Server.Close();
         }
         public void Dispose()
         {
-            Disconnect();
+            DisconnectAndClose();
         }
+        public void AssertPairIsConnected()
+        {
+            Assert.IsTrue( ProxyConnection.Channel.IsConnected, "Client connection has to be connected");
+            Assert.IsTrue(OriginConnection.Channel.IsConnected, "Server connection has to be connected");
+            Assert.AreEqual(1, Server.GetAllConnections().Count(), "Server connections list has to have 1 connection");
+            Assert.IsTrue(Server.IsListening, "Server has to continue listening");
+        }
+        public void AssertPairIsDisconnected()
+        {
+            //Some disconnection subroutine could be asynchronous.
+            TestTools.AssertTrue(() => !ProxyConnection.Channel.IsConnected, 1000, "Client connection has to be disconnected");
+            TestTools.AssertTrue(() => !OriginConnection.Channel.IsConnected, 1000, "Server connection has to be disconnected");
+            TestTools.AssertTrue(() => !Server.GetAllConnections().Any(), 1000, "Server connections list has to be empty");
+            TestTools.AssertTrue(() =>  Server.IsListening, 1000, "Server has to continue listening");
+            /*
+            Assert.IsFalse(ProxyConnection.Channel.IsConnected, "Client connection has to be disconnected");
+            Assert.IsFalse(OriginConnection.Channel.IsConnected, "Server connection has to be disconnected");
+            Assert.AreEqual(0, Server.GetAllConnections().Count(), "Server connections list has to be empty");
+            Assert.IsTrue(Server.IsListening, "Server has to continue listening");*/
+        }
+
+      
     }
     public class TcpConnectionPair: TcpConnectionPair<ITestContract, ITestContract, TestContractMock>
     {

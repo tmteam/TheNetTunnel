@@ -3,18 +3,13 @@ using TNT.Exceptions.Remote;
 
 namespace TNT.Exceptions.Local
 {
-    public class LocalSerializationException : Exception
+    public class LocalSerializationException : TntCallException
     {
         public LocalSerializationException(
              short? messageId, short? askId,
              string message = null, Exception innerException = null)
-            :base(  message, innerException)
+            :base(false, messageId, askId, message, innerException)
         {
-            MessageId = messageId;
-            AskId = askId;
         }
-        public bool IsFatal => true;
-        public short? MessageId { get; }
-        public short? AskId { get; }
     }
 }

@@ -26,7 +26,7 @@ namespace TNT.Presentation
             = new Dictionary<int, InputMessageDeserializeInfo>();
         
         public event Action<IMessenger, short, short, object> OnAns;
-        public event Action<IMessenger, ErrorMessage> OnRemoteError;
+        public event Action<IMessenger, Exception> OnException; 
         public event Action<IMessenger, ErrorMessage> ChannelIsDisconnected;
         public event Action<IMessenger, RequestMessage> OnRequest;
 
@@ -122,7 +122,8 @@ namespace TNT.Presentation
         ///<exception cref="ConnectionIsLostException"></exception>
         ///<exception cref="LocalSerializationException">answer type serializer is not implemented, or  not the same as specified in the contract</exception>
         public void Ans(short id, short askId, object value) {
-           _sender.Ans(id,askId,value);
+
+            _sender.Ans(id,askId,value);
         }
         /// <summary>
         /// Sends "Say" message with "values" arguments
@@ -183,7 +184,9 @@ namespace TNT.Presentation
                 if (id < 0)
                 {
                     //Answer deserialization failed. Send LocalSerializerException to upper layer as result of the ASK call
-                    throw  new NotImplementedException();
+                    OnException?.Invoke(
+                        this, new LocalSerializationException(id, askId, "Answer deserialization failed: " + ex.Message, ex));
+                    _channel.Disconnect();
                     return;
                 }
                 HandleRequestProcessingError(
@@ -205,7 +208,7 @@ namespace TNT.Presentation
                 var exceptionMessage = (ErrorMessage)deserialized.First();
                 if (exceptionMessage.Exception.IsFatal)
                     _channel.DisconnectBecauseOf(exceptionMessage);
-                OnRemoteError?.Invoke(this, exceptionMessage);
+                OnException?.Invoke(this, exceptionMessage.Exception);
             }
             else
             {

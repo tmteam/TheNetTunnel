@@ -36,10 +36,12 @@ namespace TNT.Presentation
             _receiveDispatcher.OnNewMessage += _receiveDispatcher_OnNewMessage;
             _messenger.OnRequest += (_, message)=> _receiveDispatcher.Set(message);
             _messenger.OnAns += _messenger_OnAns;
-            _messenger.OnRemoteError += _messenger_OnException;
             _messenger.ChannelIsDisconnected += _messenger_ChannelIsDisconnected;
+            _messenger.OnException += _messenger_OnException1;
 
         }
+
+       
 
         /// <summary>
         /// Sends "Say" message with "values" arguments
@@ -119,15 +121,22 @@ namespace TNT.Presentation
             //in case of timeoutException, do nothing:
             awaiter.SetSuccesfullyResult(answer);
         }
-    
 
-        private void _messenger_OnException(IMessenger arg1, ErrorMessage message)
+        private void _messenger_OnException1(IMessenger arg1, Exception exception)
         {
-            AnswerAwaiter awaiter;
-            _answerAwaiters.TryRemove((short)message.AskId, out awaiter);
-            //miss information if exception is general
-            awaiter?.SetErrorResult(message);
+            var callException = exception as TntCallException;
+            if (callException != null && callException.AskId.HasValue)
+            {
+                AnswerAwaiter awaiter;
+                _answerAwaiters.TryRemove((short) callException.AskId, out awaiter);
+                awaiter?.SetExceptionalResult(exception);
+            }
+            else
+            {
+                // what shall we do?
+            }
         }
+     
 
         private void _receiveDispatcher_OnNewMessage(IDispatcher arg1, RequestMessage message)
         {
@@ -141,15 +150,15 @@ namespace TNT.Presentation
                     {
                         _messenger.HandleRequestProcessingError(
                             new ErrorMessage(
-                                messageId: message.TypeId, 
-                                askId: message.AskId, 
+                                messageId: message.TypeId,
+                                askId: message.AskId,
                                 type: ErrorType.ContractSignatureError,
                                 additionalExceptionInformation: $"ask {message.TypeId} not implemented"), false);
                         return;
                     }
                     object answer = null;
                     answer = askHandler.Invoke(message.Arguments);
-                    _messenger.Ans((short)-message.TypeId, (short)message.AskId.Value, answer);
+                    _messenger.Ans((short) -message.TypeId, (short) message.AskId.Value, answer);
                 }
                 else
                 {
@@ -157,6 +166,15 @@ namespace TNT.Presentation
                     _saySubscribtion.TryGetValue(message.TypeId, out sayHandler);
                     sayHandler?.Invoke(message.Arguments);
                 }
+            }
+            catch (LocalSerializationException serializationException)
+            {
+                _messenger.HandleRequestProcessingError(
+                    new ErrorMessage(
+                        message.TypeId,
+                        message.AskId,
+                        ErrorType.SerializationError,
+                        serializationException.ToString()), true);
             }
             catch (Exception e)
             {
@@ -220,12 +238,15 @@ namespace TNT.Presentation
                 _exceptionalResult = new ConnectionIsLostException($"Connection is lost during the transaction. MessageId: {_messageId}, AskId: {_askId}", _messageId, _askId);
                 _event.Set();
             }
-
-            public void SetErrorResult(ErrorMessage error)
+            public void SetExceptionalResult(Exception ex)
             {
                 _returnResult = null;
-                _exceptionalResult = error.Exception;
+                _exceptionalResult = ex;
                 _event.Set();
+            }
+            public void SetErrorResult(ErrorMessage error)
+            {
+                SetExceptionalResult(error.Exception);
             }
             
             public void SetSuccesfullyResult(object result)

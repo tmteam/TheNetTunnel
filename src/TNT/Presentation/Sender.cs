@@ -62,7 +62,14 @@ namespace TNT.Presentation
             var stream = new MemoryStream();
             Tools.WriteShort(messageId, to: stream);
             Tools.WriteShort(askId, to: stream);
-            serializer.Serialize(value, stream);
+            try
+            {
+                serializer.Serialize(value, stream);
+            }
+            catch (Exception e)
+            {
+                throw new LocalSerializationException(messageId,askId,"Serialization failed because of: "+ e.Message,e);
+            }
             stream.Position = 0;
             _channel.Write(stream);
         }
@@ -118,6 +125,7 @@ namespace TNT.Presentation
             }
             catch (Exception e)
             {
+                _channel.Disconnect();
                 throw new LocalSerializationException(null,null,"Serialization failed", e);
             }
           

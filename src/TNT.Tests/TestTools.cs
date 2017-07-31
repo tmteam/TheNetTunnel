@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 
@@ -9,6 +11,20 @@ namespace TNT.Tests
 {
     public static class TestTools
     {
+        public static void AssertTrue(Func<bool> condition, int maxAwaitIntervalMs, string message = null)
+        {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            while (!condition())
+            {
+                if (sw.ElapsedMilliseconds > maxAwaitIntervalMs)
+                {
+                    Assert.Fail(message);
+                    return;
+                }
+                Thread.Sleep(1);
+            }
+        }
         public static Task AssertNotBlocks(Action  action, int maxTimeout = 1000)
         {
             var task = Task.Factory.StartNew(action);
