@@ -50,6 +50,10 @@
       <HintPath>..\packages\NUnit.3.7.1\lib\net45\nunit.framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="protobuf-net, Version=2.2.1.0, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
+      <HintPath>..\packages\protobuf-net.2.2.1\lib\net40\protobuf-net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <Choose>
@@ -65,11 +69,16 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Serialization\Company.cs" />
+    <Compile Include="Serialization\ISingleMessageContract.cs" />
+    <Compile Include="Serialization\ProtobuffBigSerializationTest.cs" />
+    <Compile Include="Serialization\SingleMessageContract.cs" />
+    <Compile Include="Serialization\User.cs" />
     <Compile Include="TcpLocalhost\CallExceptionsTest.cs" />
     <Compile Include="TcpLocalhost\CallsTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TcpLocalhost\SerializationExceptionsTest.cs" />
-    <Compile Include="TcpLocalhost\TcpConnectionPair.cs" />
+    <Compile Include="TcpConnectionPair.cs" />
     <Compile Include="TcpLocalhost\TcpConnectionTest.cs" />
   </ItemGroup>
   <ItemGroup>

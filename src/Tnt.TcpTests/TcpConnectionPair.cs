@@ -1,20 +1,14 @@
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Net;
-using System.Threading;
 using NUnit.Framework;
 using TNT.Api;
-using TNT.Exceptions.Local;
-using TNT.Presentation.Deserializers;
 using TNT.Presentation.ReceiveDispatching;
-using TNT.Presentation.Serializers;
 using TNT.Tcp;
 using TNT.Tests;
 using TNT.Tests.Presentation.Contracts;
 
-namespace TNT.IntegrationTests.TcpLocalhost
+namespace TNT.IntegrationTests
 {
     public class TcpConnectionPair<TProxyContractInterface, TOriginContractInterface, TOriginContractType> : IDisposable
         where TProxyContractInterface: class
