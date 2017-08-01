@@ -69,6 +69,8 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="IntegrationTestsHelper.cs" />
+    <Compile Include="Serialization\BigProtobuffConcurentCallTest.cs" />
     <Compile Include="Serialization\Company.cs" />
     <Compile Include="Serialization\ISingleMessageContract.cs" />
     <Compile Include="Serialization\ProtobuffBigSerializationTest.cs" />

@@ -26,7 +26,7 @@ namespace TNT.Api
             BeforeConnect;
         public event Action<object, IConnection<TContract, TChannel>> 
             AfterConnect;
-        public event Action<object, IConnection<TContract, TChannel>, ErrorMessage> 
+        public event Action<object, ClientDisconnectEventArgs<TContract, TChannel>> 
             Disconnected;
 
         public ChannelServer(PresentationBuilder<TContract> channelBuilder, IChannelListener<TChannel> listener)
@@ -59,12 +59,12 @@ namespace TNT.Api
             return _connections.Values.ToArray();
         }
 
-        private void Channel_OnDisconnect(IChannel obj, ErrorMessage cause)
+        private void Channel_OnDisconnect(object obj, ErrorMessage cause)
         {
             IConnection<TContract, TChannel> connection;
-            _connections.TryRemove(obj, out connection);
+            _connections.TryRemove((IChannel)obj, out connection);
             if (connection != null)
-                Disconnected?.Invoke(this, connection, cause);
+                Disconnected?.Invoke(this, new ClientDisconnectEventArgs<TContract, TChannel>(connection, cause));
         }
 
         public void Close()

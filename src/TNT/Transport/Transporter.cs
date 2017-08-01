@@ -46,16 +46,14 @@ namespace TNT.Transport
         /// <summary>
         /// Sends the stream as a packet
         /// </summary>
-        /// <param name="packet"></param>
+        /// <param name="message"></param>
         ///<exception cref="ConnectionIsLostException"></exception>
-        public void Write(MemoryStream packet)
+        public void Write(MemoryStream message)
         {
-            _sendMessageSeparatorBehaviour.Enqueue(packet);
-            int id;
-            byte[] msg;
-            while (_sendMessageSeparatorBehaviour.TryDequeue(out msg, out id))
+            _sendMessageSeparatorBehaviour.Enqueue(message);
+            foreach (var pdu in _sendMessageSeparatorBehaviour.TryDequeue())
             {
-                Channel.Write(msg);
+                Channel.Write(pdu);
             }
         }
 
@@ -67,14 +65,12 @@ namespace TNT.Transport
         public async Task WriteAsync(MemoryStream packet)
         {
             _sendMessageSeparatorBehaviour.Enqueue(packet);
-            int id;
-            byte[] msg;
-            while (_sendMessageSeparatorBehaviour.TryDequeue(out msg, out id))
+            foreach (var pdu in _sendMessageSeparatorBehaviour.TryDequeue())
             {
-                await Channel.WriteAsync(msg);
+                await Channel.WriteAsync(pdu);
             }
         }
-        private void UnderlyingChannel_OnReceive(IChannel arg1, byte[] data)
+        private void UnderlyingChannel_OnReceive(object arg1, byte[] data)
         {
             _receiveMessageAssembler.Enqueue(data);
             while (true)

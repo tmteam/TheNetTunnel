@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EventAwaiter.cs" />
+    <Compile Include="Light\FIFOMessageSeparateAndCollectConcurentTest.cs" />
     <Compile Include="Presentation\Serialization\SerializeFactoryTest.cs" />
     <Compile Include="Light\MessagesSequenceSeparateAndReceiveTest.cs" />
     <Compile Include="Light\MessageSeparateAndCollectTest.cs" />

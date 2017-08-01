@@ -14,11 +14,10 @@ namespace TNT.IntegrationTests.Serialization
     [TestFixture]
     public class ProtobuffBigSerializationTest
     {
-
         [Test]
         public void PacketOf500Kb_Serialization_deserializesSame()
         {
-            Company company = CreateCompany(1000);
+            Company company = IntegrationTestsHelper.CreateCompany(1000);
             using (var stream = new MemoryStream())
             {
                 var serializer = new TNT.Presentation.Serializers.ProtoSerializer<Company>();
@@ -33,7 +32,7 @@ namespace TNT.IntegrationTests.Serialization
         [Test]
         public void PacketOf2mb_Serialization_deserializesSame()
         {
-            var company = CreateCompany(2000);
+            var company = IntegrationTestsHelper.CreateCompany(2000);
             using (var stream = new MemoryStream())
             {
                 var serializer = new TNT.Presentation.Serializers.ProtoSerializer<Company>();
@@ -48,7 +47,7 @@ namespace TNT.IntegrationTests.Serialization
         [Test]
         public void PacketOf10mb_Serialization_deserializesSame()
         {
-            var company = CreateCompany(5000);
+            var company = IntegrationTestsHelper.CreateCompany(5000);
             using (var stream = new MemoryStream())
             {
                 var serializer = new TNT.Presentation.Serializers.ProtoSerializer<Company>();
@@ -62,7 +61,7 @@ namespace TNT.IntegrationTests.Serialization
         [Test]
         public void PacketOf50mb_Serialization_deserializesSame()
         {
-            var company = CreateCompany(10000);
+            var company = IntegrationTestsHelper.CreateCompany(10000);
             using (var stream = new MemoryStream())
             {
                 var serializer = new TNT.Presentation.Serializers.ProtoSerializer<Company>();
@@ -84,7 +83,7 @@ namespace TNT.IntegrationTests.Serialization
             {
                 EventAwaiter<Company> callAwaiter = new EventAwaiter<Company>();
                 tcpPair.OriginContract.SayCalled += callAwaiter.EventRaised;
-                var company = CreateCompany(1000);
+                var company = IntegrationTestsHelper.CreateCompany(1000);
                 tcpPair.ProxyConnection.Contract.Ask(company);
                 var received = callAwaiter.WaitOneOrDefault(5000);
                 Assert.IsNotNull(received);
@@ -101,7 +100,7 @@ namespace TNT.IntegrationTests.Serialization
             {
                 EventAwaiter<Company> callAwaiter = new EventAwaiter<Company>();
                 tcpPair.OriginContract.SayCalled += callAwaiter.EventRaised;
-                var company = CreateCompany(2000);
+                var company = IntegrationTestsHelper.CreateCompany(2000);
                 tcpPair.ProxyConnection.Contract.Ask(company);
                 var received = callAwaiter.WaitOneOrDefault(5000);
                 Assert.IsNotNull(received);
@@ -118,7 +117,7 @@ namespace TNT.IntegrationTests.Serialization
             {
                 EventAwaiter<Company> callAwaiter = new EventAwaiter<Company>();
                 tcpPair.OriginContract.SayCalled += callAwaiter.EventRaised;
-                var company = CreateCompany(5000);
+                var company = IntegrationTestsHelper.CreateCompany(5000);
                 tcpPair.ProxyConnection.Contract.Ask(company);
                 var received = callAwaiter.WaitOneOrDefault(5000);
                 Assert.IsNotNull(received);
@@ -135,36 +134,14 @@ namespace TNT.IntegrationTests.Serialization
             {
                 EventAwaiter<Company> callAwaiter = new EventAwaiter<Company>();
                 tcpPair.OriginContract.SayCalled += callAwaiter.EventRaised;
-                var company = CreateCompany(10000);
+                var company = IntegrationTestsHelper.CreateCompany(10000);
                 tcpPair.ProxyConnection.Contract.Ask(company);
                 var received = callAwaiter.WaitOneOrDefault(5000);
                 Assert.IsNotNull(received);
                 received.AssertIsSameTo(company);
             }
         }
-        private static Company CreateCompany(int usersCount)
-        {
-            Random rnd = new Random();
-            List<User> users = new List<User>();
-            for (int i = 0; i < usersCount; i++)
-            {
-                var usr = new User
-                {
-                    Age = i,
-                    Name = "Some user with name of Masha#" + i,
-                    Payload = new byte[i],
-                };
-                rnd.NextBytes(usr.Payload);
-                users.Add(usr);
-            }
-            var company = new Company
-            {
-                Name = "Microzoft",
-                Id = 42,
-                Users = users.ToArray()
-            };
-            return company;
-        }
+      
 
       
     }

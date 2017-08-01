@@ -23,7 +23,7 @@ namespace TNT.Testing
                 WriteAll();
         }
 
-        private void CahnnelFrom_OnWrited(IChannel arg1, byte[] arg2)
+        private void CahnnelFrom_OnWrited(object arg1, byte[] arg2)
         {
             if (!ChannelTo.IsConnected)
                 throw new IOException("Remote Test Channel is Disconnected");

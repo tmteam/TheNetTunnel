@@ -17,9 +17,9 @@ namespace TNT.Api
             Channel.OnDisconnect += Channel_OnDisconnect;
         }
 
-        private void Channel_OnDisconnect(IChannel obj, ErrorMessage cause)
+        private void Channel_OnDisconnect(object obj, ErrorMessage cause)
         {
-            _onContractDisconnected?.Invoke(Contract, obj, cause);
+            _onContractDisconnected?.Invoke(Contract, Channel, cause);
         }
 
         public TContract Contract { get; }

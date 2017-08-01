@@ -39,12 +39,12 @@ namespace TNT.IntegrationTests
         {
             Server = TntBuilder
                 .UseContract<TOriginContractInterface, TOriginContractType>()
-                .UseReceiveDispatcher<NotThreadDispatcher>()
+              //  .UseReceiveDispatcher<NotThreadDispatcher>()
                 .CreateTcpServer(IPAddress.Loopback, 12345);
             ClientChannel = new TcpChannel();
             ProxyConnection = TntBuilder
                 .UseContract<TProxyContractInterface>()
-                .UseReceiveDispatcher<NotThreadDispatcher>()
+               // .UseReceiveDispatcher<NotThreadDispatcher>()
                 .UseChannel(ClientChannel)
                 .Build();
            

@@ -18,11 +18,11 @@ namespace TNT.Transport
         /// Raising on new channel message received.
         /// It is blocking operation (ICHannel cannot handle other messages, while OnReceive handling)
         /// </summary>
-        event Action<IChannel, byte[]> OnReceive;
+        event Action<object, byte[]> OnReceive;
         /// <summary>
         /// Raising if connection is lost
         /// </summary>
-        event Action<IChannel, ErrorMessage> OnDisconnect;
+        event Action<object, ErrorMessage> OnDisconnect;
         /// <summary>
         /// Close connection
         /// </summary>

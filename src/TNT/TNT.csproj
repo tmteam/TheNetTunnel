@@ -54,7 +54,7 @@
     <Compile Include="Presentation\ReceiveDispatching\NotThreadDispatcher.cs" />
     <Compile Include="Presentation\RequestMessage.cs" />
     <Compile Include="Presentation\Deserializers\ExceptionMessageDeserializer.cs" />
-    <Compile Include="Presentation\ExceptionMessage.cs" />
+    <Compile Include="Presentation\ErrorMessage.cs" />
     <Compile Include="Presentation\Sender.cs" />
     <Compile Include="Presentation\Serializers\ByteEnumerableSerializer.cs" />
     <Compile Include="Presentation\Serializers\ExceptionMessageSerializer.cs" />

@@ -228,7 +228,7 @@ namespace TNT.Presentation
                 if (!_event.WaitOne(msec))
                     throw new CallTimeoutException(_messageId, _askId);
                 if (_exceptionalResult != null)
-                    throw _exceptionalResult;
+                   throw _exceptionalResult;
                 return _returnResult;
             }
 

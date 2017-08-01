@@ -2,6 +2,7 @@
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 using System.Threading.Tasks;
 using TNT.Exceptions.Local;
 using TNT.Presentation;
@@ -14,7 +15,10 @@ namespace TNT.Tcp
         private bool _wasConnected = false;
 
         private bool allowReceive = false;
-        private bool disconnectMsgWasSended = false;
+        /// <summary>
+        /// Actualy bool type. 
+        /// </summary>
+        private int disconnectIsHandled = 0;
         private bool readWasStarted = false;
         private  int _bytesReceived;
         private  int _bytesSent;
@@ -78,8 +82,8 @@ namespace TNT.Tcp
 
         public TcpClient Client { get; }
         
-        public event Action<IChannel, byte[]> OnReceive;
-        public event Action<IChannel, ErrorMessage> OnDisconnect;
+        public event Action<object, byte[]> OnReceive;
+        public event Action<object, ErrorMessage> OnDisconnect;
 
         public void Connect(IPEndPoint endPoint)
         {
@@ -88,8 +92,16 @@ namespace TNT.Tcp
             AllowReceive = true;
             SetEndPoints();
         }
-        public void DisconnectBecauseOf(ErrorMessage error)
+        public void DisconnectBecauseOf(ErrorMessage errorOrNull)
         {
+            //Thread race state. 
+            //AsyncWrite, AsyncRead and main disconnect reason are in concurrence
+            
+            //if(disconnectIsHandled==0) disconnectIsHandled = 1; 
+            //else return;
+            if (Interlocked.CompareExchange(ref disconnectIsHandled, 1, 0) == 1)
+                return;
+
             allowReceive = false;
 
             if (Client.Connected)
@@ -98,15 +110,9 @@ namespace TNT.Tcp
                 {
                     Client.Close();
                 }
-                catch
-                {
-                    // ignored
-                }
+                catch { /* ignored*/ }
             }
-            if (disconnectMsgWasSended) return;
-            disconnectMsgWasSended = true;
-
-            OnDisconnect?.Invoke(this, error);
+            OnDisconnect?.Invoke(this, errorOrNull);
         }
         public void Disconnect()
         {

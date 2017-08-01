@@ -46,6 +46,7 @@ namespace TNT.Tcp
 
         private void EndAcceptTcpClient(IAsyncResult state)
         {
+            bool needAccept = true;
             var listener = (TcpListener)state.AsyncState;
             try
             {
@@ -53,9 +54,15 @@ namespace TNT.Tcp
                 var channel = new TcpChannel(client);
                 Accepted?.Invoke(this, channel);
             }
+            catch (ObjectDisposedException)
+            {
+                needAccept = false;
+                return;
+            }
             finally
             {
-                listener.BeginAcceptTcpClient(EndAcceptTcpClient, listener);
+                if(needAccept)
+                    listener.BeginAcceptTcpClient(EndAcceptTcpClient, listener);
             }
         }
 

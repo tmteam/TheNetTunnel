@@ -1,4 +1,6 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 
@@ -9,10 +11,9 @@ namespace TNT.Transport.Sending
     /// </summary>
     public class FIFOSendPduBehaviour : ISendPduBehaviour
     {
-        private const int maxQuantumSize = 1000;
+        private const int MaxQuantumSize = ushort.MaxValue;
         private readonly ConcurrentQueue<PacketSeparator> _messageQueue = new ConcurrentQueue<PacketSeparator>();
         private int _lastUsedId;
-        private PacketSeparator undoneMessage = null;
 
         /// <summary>
         /// Add a message for sending
@@ -21,38 +22,25 @@ namespace TNT.Transport.Sending
         public void Enqueue(MemoryStream lightMessage)
         {
             var id = Interlocked.Increment(ref _lastUsedId);
-            var separator = new PacketSeparator(lightMessage, id, maxQuantumSize);
+            var separator = new PacketSeparator(lightMessage, id, MaxQuantumSize);
             _messageQueue.Enqueue(separator);
         }
 
-        /// <summary>
-        /// Generate next quantum
-        /// </summary>
-        /// <param name="quantum"></param>
-        /// <param name="messageId"></param>
-        /// <returns>true if quantum generated.</returns>
-        public bool TryDequeue(out byte[] quantum, out int messageId)
+        public IEnumerable<byte[]> TryDequeue()
         {
-            PacketSeparator separator = null;
-            if (undoneMessage == null)
-                _messageQueue.TryDequeue(out separator);
-            else
-                separator = undoneMessage;
-
-            if (separator != null)
+            while (true)
             {
-                if (separator.TryNext(out quantum))
+                PacketSeparator separator = null;
+                if (!_messageQueue.TryDequeue(out separator))
+                    yield break;
+
+                byte[] pdu = null;
+                while (separator.TryNext(out pdu))
                 {
-                    messageId = separator.MessageId;
-                    undoneMessage = separator.DataLeft <= 0 ? null : separator; 
-                    return true;
+                    yield return pdu;
                 }
             }
-
-            undoneMessage = null;
-            quantum = null;
-            messageId = 0;
-            return false;
+          
         }
     }
 }

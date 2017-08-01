@@ -9,12 +9,23 @@ namespace TNT.Api
     {
         event Action<object, BeforeConnectEventArgs<TContract, TChannel>>  BeforeConnect;
         event Action<object, IConnection<TContract, TChannel>> AfterConnect;
-        event Action<object, IConnection<TContract, TChannel>, ErrorMessage> Disconnected;
+        event Action<object, ClientDisconnectEventArgs<TContract, TChannel>> Disconnected;
 	    bool IsListening { get; set; }
         IEnumerable<IConnection<TContract, TChannel>> GetAllConnections();
         void Close();
     }
 
+    public class ClientDisconnectEventArgs<TContract, TChannel>: EventArgs where TChannel : IChannel
+    {
+        public ClientDisconnectEventArgs(IConnection<TContract, TChannel> connection, ErrorMessage errorMessageOrNull)
+        {
+            Connection = connection;
+            ErrorMessageOrNull = errorMessageOrNull;
+        }
+
+        public IConnection<TContract, TChannel> Connection { get; }
+        public ErrorMessage ErrorMessageOrNull { get; }
+    }
     public class BeforeConnectEventArgs<TContract, TChannel> : EventArgs where TChannel: IChannel
     {
         public BeforeConnectEventArgs(IConnection<TContract, TChannel> connection)

@@ -22,11 +22,11 @@ namespace TNT.IntegrationTests.TcpLocalhost
         [Test]
         public void LocalProxySerializationFails_throws()
         {
-            var proxyContractBuilder = GetProxyBuilder()
-                .UseSerializer(GetThrowsSerializationRuleFor<string>());
+            var proxyContractBuilder = IntegrationTestsHelper.GetProxyBuilder()
+                .UseSerializer(IntegrationTestsHelper.GetThrowsSerializationRuleFor<string>());
 
             using (var tcpPair = new TcpConnectionPair<ITestContract, ITestContract, TestContractMock>
-                (GetOriginBuilder(), proxyContractBuilder))
+                (IntegrationTestsHelper.GetOriginBuilder(), proxyContractBuilder))
             {
                 //local string serializer throws.
                 Assert.Multiple(() =>
@@ -40,11 +40,11 @@ namespace TNT.IntegrationTests.TcpLocalhost
         [Test]
         public void LocalOriginSerializationFails_throws()
         {
-            var originContractBuilder = GetOriginBuilder()
-                .UseSerializer(GetThrowsSerializationRuleFor<string>());
+            var originContractBuilder = IntegrationTestsHelper.GetOriginBuilder()
+                .UseSerializer(IntegrationTestsHelper.GetThrowsSerializationRuleFor<string>());
 
             using (var tcpPair = new TcpConnectionPair<ITestContract, ITestContract, TestContractMock>
-                (originContractBuilder, GetProxyBuilder()))
+                (originContractBuilder, IntegrationTestsHelper.GetProxyBuilder()))
             {
                 //local origin serializer fails
                 Assert.Multiple(() =>
@@ -58,10 +58,12 @@ namespace TNT.IntegrationTests.TcpLocalhost
         [Test]
         public void RemoteProxySeserializationFails_throws()
         {
-            var originContractBuilder = GetOriginBuilder().UseSerializer(GetThrowsSerializationRuleFor<string>());
+            var originContractBuilder = IntegrationTestsHelper
+                .GetOriginBuilder()
+                .UseSerializer(IntegrationTestsHelper.GetThrowsSerializationRuleFor<string>());
 
             using (var tcpPair = new TcpConnectionPair<ITestContract, ITestContract, TestContractMock>
-                (originContractBuilder, GetProxyBuilder()))
+                (originContractBuilder, IntegrationTestsHelper.GetProxyBuilder()))
             {
                 //origin contract uses failed string serializer, when it returns answer
                 Assert.Multiple(() =>
@@ -75,10 +77,12 @@ namespace TNT.IntegrationTests.TcpLocalhost
         [Test]
         public void RemoteOriginSeserializationFails_throws()
         {
-            var proxyContractBuilder = GetProxyBuilder().UseSerializer(GetThrowsSerializationRuleFor<string>());
+            var proxyContractBuilder = IntegrationTestsHelper
+                .GetProxyBuilder()
+                .UseSerializer(IntegrationTestsHelper.GetThrowsSerializationRuleFor<string>());
 
             using (var tcpPair = new TcpConnectionPair<ITestContract, ITestContract, TestContractMock>
-                (GetOriginBuilder(), proxyContractBuilder))
+                (IntegrationTestsHelper.GetOriginBuilder(), proxyContractBuilder))
             {
                 //proxy contract uses failed string serializer, when it returns answer
                 Assert.Multiple(() =>
@@ -92,10 +96,12 @@ namespace TNT.IntegrationTests.TcpLocalhost
         [Test]
         public void LocalProxyDeserializationFails_throws()
         {
-            var proxyContractBuilder =GetProxyBuilder().UseDeserializer(GetThrowsDeserializationRuleFor<string>());
+            var proxyContractBuilder = IntegrationTestsHelper
+                .GetProxyBuilder()
+                .UseDeserializer(IntegrationTestsHelper.GetThrowsDeserializationRuleFor<string>());
 
             using (var tcpPair = new TcpConnectionPair<ITestContract, ITestContract, TestContractMock>
-                (GetOriginBuilder(), proxyContractBuilder))
+                (IntegrationTestsHelper.GetOriginBuilder(), proxyContractBuilder))
             {
                 //proxy contract uses failed string deserializer, when it accepts answer
                 Assert.Multiple(() =>
@@ -109,11 +115,12 @@ namespace TNT.IntegrationTests.TcpLocalhost
         [Test]
         public void LocalOriginDeserializationFails_throws()
         {
-            var originContractBuilder = GetOriginBuilder()
-                .UseDeserializer(GetThrowsDeserializationRuleFor<string>());
+            var originContractBuilder = IntegrationTestsHelper
+                .GetOriginBuilder()
+                .UseDeserializer(IntegrationTestsHelper.GetThrowsDeserializationRuleFor<string>());
 
             using (var tcpPair = new TcpConnectionPair<ITestContract, ITestContract, TestContractMock>
-                (originContractBuilder, GetProxyBuilder()))
+                (originContractBuilder, IntegrationTestsHelper.GetProxyBuilder()))
             {
                 tcpPair.ProxyContract.OnAskS += (s) => s;
                 //origin contract uses failed string deserializer, when it accepts answer
@@ -128,10 +135,12 @@ namespace TNT.IntegrationTests.TcpLocalhost
         [Test]
         public void RemoteProxyDeseserializationFails_throws()
         {
-            var originContractBuilder = GetOriginBuilder().UseDeserializer(GetThrowsDeserializationRuleFor<string>());
+            var originContractBuilder = IntegrationTestsHelper
+                .GetOriginBuilder().UseDeserializer(
+                IntegrationTestsHelper.GetThrowsDeserializationRuleFor<string>());
             
             using (var tcpPair = new TcpConnectionPair<ITestContract, ITestContract, TestContractMock>
-                (originContractBuilder, GetProxyBuilder()))
+                (originContractBuilder, IntegrationTestsHelper.GetProxyBuilder()))
             {
                 //origin contract uses failed string deserializer, when it returns answer
                 Assert.Multiple(() =>
@@ -146,10 +155,12 @@ namespace TNT.IntegrationTests.TcpLocalhost
         [Test]
         public void RemoteOriginDeserializationFails_throws()
         {
-            var proxyContractBuilder = GetProxyBuilder().UseDeserializer(GetThrowsDeserializationRuleFor<string>());
+            var proxyContractBuilder = IntegrationTestsHelper
+                .GetProxyBuilder()
+                .UseDeserializer(IntegrationTestsHelper.GetThrowsDeserializationRuleFor<string>());
 
             using (var tcpPair = new TcpConnectionPair<ITestContract, ITestContract, TestContractMock>
-                (GetOriginBuilder(), proxyContractBuilder))
+                (IntegrationTestsHelper.GetOriginBuilder(), proxyContractBuilder))
             {
                 //proxy contract uses failed string deserializer, when it returns answer
                 Assert.Multiple(() =>
@@ -164,7 +175,7 @@ namespace TNT.IntegrationTests.TcpLocalhost
         public void SerializationThrowsRule_throws()
         {
             //Just check the Moq generator behaves as expected
-            var rule = GetThrowsSerializationRuleFor<string>();
+            var rule = IntegrationTestsHelper.GetThrowsSerializationRuleFor<string>();
             var serializer = rule.GetSerializer(typeof(string), SerializerFactory.CreateDefault());
             Assert.Throws<Exception>(() => serializer.Serialize(new object(), new MemoryStream()));
         }
@@ -173,42 +184,12 @@ namespace TNT.IntegrationTests.TcpLocalhost
         public void DeserializationThrowsRule_throws()
         {
             //Just check the Moq generator behaves as expected
-            var rule = GetThrowsDeserializationRuleFor<string>();
+            var rule = IntegrationTestsHelper.GetThrowsDeserializationRuleFor<string>();
             var deserializer = rule.GetDeserializer(typeof(string), DeserializerFactory.CreateDefault());
             Assert.Throws<Exception>(() => deserializer.Deserialize(new MemoryStream(), 0));
         }
 
-        private PresentationBuilder<ITestContract> GetOriginBuilder()
-        {
-            return TntBuilder
-                .UseContract<ITestContract, TestContractMock>();
-        }
-        private PresentationBuilder<ITestContract> GetProxyBuilder()
-        {
-            return TntBuilder
-                .UseContract<ITestContract>();
-        }
-        private SerializationRule GetThrowsSerializationRuleFor<T>()
-        {
-            var fakeSerializer = new Mock<ISerializer>();
-
-            fakeSerializer
-                .Setup(s => s.Serialize(It.IsAny<object>(), It.IsAny<MemoryStream>()))
-                .Callback(() => { throw new Exception("Fake exception"); });
-            var throwsRule = new SerializationRule((t) => t == typeof(T), (t) => fakeSerializer.Object);
-            return throwsRule;
-        }
-
-        private DeserializationRule GetThrowsDeserializationRuleFor<T>()
-        {
-            var fakeDeserializer = new Mock<IDeserializer>();
-
-            fakeDeserializer
-                .Setup(s => s.Deserialize(It.IsAny<Stream>(), It.IsAny<int>()))
-                .Callback(() => { throw new Exception(); });
-            var throwsRule = new DeserializationRule((t) => t == typeof(T), (t) => fakeDeserializer.Object);
-            return throwsRule;
-        }
+      
 
     }
 }

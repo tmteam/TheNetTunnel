@@ -55,7 +55,7 @@ namespace TNT.Testing
             OnDisconnect?.Invoke(this, null);
         }
 
-        public event Action<IChannel, byte[]> OnWrited;
+        public event Action<object, byte[]> OnWrited;
 
         public bool IsConnected { get; private set; }
 
@@ -81,8 +81,8 @@ namespace TNT.Testing
         }
 
         public event Action<IChannel, bool> AllowReceiveChanged; 
-        public event Action<IChannel, byte[]> OnReceive;
-        public event Action<IChannel, ErrorMessage> OnDisconnect;
+        public event Action<object, byte[]> OnReceive;
+        public event Action<object, ErrorMessage> OnDisconnect;
         public void Disconnect()
         {
           DisconnectBecauseOf(null);
