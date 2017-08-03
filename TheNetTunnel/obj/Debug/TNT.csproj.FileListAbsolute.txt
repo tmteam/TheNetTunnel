@@ -1,8 +1,0 @@
-E:\Code\pluton\src\Frameworks\TheNetTunnel\bin\Debug\TNT.dll
-E:\Code\pluton\src\Frameworks\TheNetTunnel\bin\Debug\TNT.pdb
-E:\Code\pluton\src\Frameworks\TheNetTunnel\bin\Debug\protobuf-net.dll
-E:\Code\pluton\src\Frameworks\TheNetTunnel\bin\Debug\SmartThreadPool.dll
-E:\Code\pluton\src\Frameworks\TheNetTunnel\bin\Debug\SmartThreadPool.pdb
-E:\Code\pluton\src\Frameworks\TheNetTunnel\obj\Debug\TNT.dll
-E:\Code\pluton\src\Frameworks\TheNetTunnel\obj\Debug\TNT.pdb
-E:\Code\pluton\src\Frameworks\TheNetTunnel\obj\Debug\TNT.csprojResolveAssemblyReference.cache

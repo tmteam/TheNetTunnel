@@ -1,0 +1,156 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{E1613910-06B6-4C28-8900-87F0C9793DFF}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TNT</RootNamespace>
+    <AssemblyName>TNT</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="protobuf-net, Version=2.3.1.0, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\protobuf-net.2.3.1\lib\net40\protobuf-net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Api\IConnection.cs" />
+    <Compile Include="Api\PresentationBuilder.cs" />
+    <Compile Include="Api\TntBuilder.cs" />
+    <Compile Include="Presentation\Deserializers\ByteEnumerableDeserializer.cs" />
+    <Compile Include="Presentation\Deserializers\NullableDeserializer.cs" />
+    <Compile Include="Presentation\PresentationHelper.cs" />
+    <Compile Include="Presentation\ReceiveDispatching\ConveyorDispatcher.cs" />
+    <Compile Include="Presentation\ReceiveDispatching\NotThreadDispatcher.cs" />
+    <Compile Include="Presentation\RequestMessage.cs" />
+    <Compile Include="Presentation\Deserializers\ExceptionMessageDeserializer.cs" />
+    <Compile Include="Presentation\ErrorMessage.cs" />
+    <Compile Include="Presentation\Sender.cs" />
+    <Compile Include="Presentation\Serializers\ByteEnumerableSerializer.cs" />
+    <Compile Include="Presentation\Serializers\ExceptionMessageSerializer.cs" />
+    <Compile Include="Exceptions\ContractImplementation\ContractCordIdDuplicateException.cs" />
+    <Compile Include="Exceptions\ContractImplementation\ContractMemberAttributeMissingException.cs" />
+    <Compile Include="Exceptions\ContractImplementation\InvalidContractMemeberException.cs" />
+    <Compile Include="Exceptions\Local\TntCallException.cs" />
+    <Compile Include="Exceptions\Remote\RemoteContractImplementationException.cs" />
+    <Compile Include="Exceptions\Local\CallTimeoutException.cs" />
+    <Compile Include="Exceptions\Local\ConnectionIsLostException.cs" />
+    <Compile Include="Exceptions\Local\ConnectionIsNotEstablishedYet.cs" />
+    <Compile Include="Exceptions\Local\LocalSerializationException.cs" />
+    <Compile Include="Exceptions\Remote\ErrorType.cs" />
+    <Compile Include="Exceptions\Remote\RemoteException.cs" />
+    <Compile Include="Exceptions\Remote\RemoteSerializationException.cs" />
+    <Compile Include="Exceptions\Remote\RemoteUnhandledException.cs" />
+    <Compile Include="Api\ChannelServer.cs" />
+    <Compile Include="Api\Connection.cs" />
+    <Compile Include="Api\ConnectionBuilder.cs" />
+    <Compile Include="Presentation\Serializers\NullableSerializer.cs" />
+    <Compile Include="Transport\IChannel.cs" />
+    <Compile Include="Api\IChannelListener.cs" />
+    <Compile Include="Api\IChannelServer.cs" />
+    <Compile Include="Presentation\ReceiveDispatching\IDispatcher.cs" />
+    <Compile Include="Tcp\TcpChanelListener.cs" />
+    <Compile Include="Tcp\TcpChannel.cs" />
+    <Compile Include="Tcp\TcpChannelServer.cs" />
+    <Compile Include="Tcp\TcpHelper.cs" />
+    <Compile Include="Testing\IOneSideConnection.cs" />
+    <Compile Include="Testing\OneSideConnection.cs" />
+    <Compile Include="Testing\TestChannel.cs" />
+    <Compile Include="Testing\TestChannelListener.cs" />
+    <Compile Include="Testing\TestChannelPair.cs" />
+    <Compile Include="Testing\TestChannelServer.cs" />
+    <Compile Include="Testing\TntTestHelper.cs" />
+    <Compile Include="Presentation\Messenger.cs" />
+    <Compile Include="Presentation\Deserializers\DeserializerFactory.cs" />
+    <Compile Include="Presentation\Deserializers\EnumDeserializer.cs" />
+    <Compile Include="Presentation\Deserializers\DeserializationRule.cs" />
+    <Compile Include="Presentation\Deserializers\UTCFileTimeAndOffsetDeserializer.cs" />
+    <Compile Include="Exceptions\ContractImplementation\TypeCannotBeDeserializedException.cs" />
+    <Compile Include="Exceptions\ContractImplementation\TypeCannotBeSerializedException.cs" />
+    <Compile Include="Transport\Transporter.cs" />
+    <Compile Include="Transport\Receiving\PacketCollector.cs" />
+    <Compile Include="Transport\Receiving\ReceivePduQueue.cs" />
+    <Compile Include="Transport\Sending\MixedSendPduBehaviour.cs" />
+    <Compile Include="Transport\Sending\ISendPduBehaviour.cs" />
+    <Compile Include="Transport\Sending\FIFOSendPduBehaviour.cs" />
+    <Compile Include="Transport\Sending\PacketSeparator.cs" />
+    <Compile Include="Transport\PduHead.cs" />
+    <Compile Include="Transport\PduType.cs" />
+    <Compile Include="Contract\ContractAttribute.cs" />
+    <Compile Include="Contract\ContractInfo.cs" />
+    <Compile Include="Contract\Origin\OriginCallbackDelegatesHandlerFactory.cs" />
+    <Compile Include="Contract\Origin\OriginContractLinker.cs" />
+    <Compile Include="Contract\ContractMessageAttribute.cs" />
+    <Compile Include="Presentation\Interlocutor.cs" />
+    <Compile Include="Contract\DelegatePropertyInfo.cs" />
+    <Compile Include="Contract\EmitHelper.cs" />
+    <Compile Include="Presentation\IInterlocutor.cs" />
+    <Compile Include="Presentation\IMessenger.cs" />
+    <Compile Include="Contract\Proxy\ProxyContractFactory.cs" />
+    <Compile Include="Contract\ReflectionHelper.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Presentation\Deserializers\ArrayDeserializer.cs" />
+    <Compile Include="Presentation\Deserializers\DeserializerBase.cs" />
+    <Compile Include="Presentation\Deserializers\IDeserializer.cs" />
+    <Compile Include="Presentation\Deserializers\ValueTypeDeserializer.cs" />
+    <Compile Include="Presentation\Deserializers\ProtoDeserializer.cs" />
+    <Compile Include="Presentation\Deserializers\SequenceDeserializer.cs" />
+    <Compile Include="Presentation\Deserializers\UnicodeDeserializer.cs" />
+    <Compile Include="Presentation\Deserializers\UTCFileTimeDeserializer.cs" />
+    <Compile Include="Presentation\Serializers\ArraySerializer.cs" />
+    <Compile Include="Presentation\Serializers\ISerializer.cs" />
+    <Compile Include="Presentation\Serializers\EnumSerializer.cs" />
+    <Compile Include="Presentation\Serializers\SerializationRule.cs" />
+    <Compile Include="Presentation\Serializers\SerializerFactory.cs" />
+    <Compile Include="Presentation\Serializers\UTCFileTimeAndOffsetSerializer.cs" />
+    <Compile Include="Presentation\Serializers\ValueTypeSerializer.cs" />
+    <Compile Include="Presentation\Serializers\ProtoSerializer.cs" />
+    <Compile Include="Presentation\Serializers\SequenceSerializer.cs" />
+    <Compile Include="Presentation\Serializers\SerializerBase.cs" />
+    <Compile Include="Presentation\Serializers\UnicodeSerializer.cs" />
+    <Compile Include="Presentation\Serializers\UTCFileTimeSerializer.cs" />
+    <Compile Include="Tools.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

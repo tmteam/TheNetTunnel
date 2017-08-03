@@ -1,7 +1,0 @@
-E:\Code\pluton\src\Frameworks\TheNetTunnel\bin\Release\TNT.dll
-E:\Code\pluton\src\Frameworks\TheNetTunnel\bin\Release\TNT.pdb
-E:\Code\pluton\src\Frameworks\TheNetTunnel\bin\Release\protobuf-net.dll
-E:\Code\pluton\src\Frameworks\TheNetTunnel\bin\Release\SmartThreadPool.dll
-E:\Code\pluton\src\Frameworks\TheNetTunnel\bin\Release\SmartThreadPool.pdb
-E:\Code\pluton\src\Frameworks\TheNetTunnel\obj\Release\TNT.dll
-E:\Code\pluton\src\Frameworks\TheNetTunnel\obj\Release\TNT.pdb

@@ -1,0 +1,123 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using NUnit.Framework;
+using NUnit.Framework.Internal;
+using TNT.Transport.Receiving;
+using TNT.Transport.Sending;
+
+namespace TNT.Tests.Light
+{
+
+    [TestFixture()]
+    public class MessagesSequenceSeparateAndReceiveTest
+    {
+        [Test]
+        public void FIFO_SeparateAndCollectEmptyArray_CollectedEqualToOrigin()
+        {
+            byte[] originArray = new byte[0];
+            var collectedArray = SeparateAndCollect(new FIFOSendPduBehaviour(),  originArray);
+            Assert.IsNotNull(collectedArray);
+            CollectionAssert.AreEqual(originArray,collectedArray);
+        }
+        [Test]
+        public void FIFO_SeparateAndCollectSmallArray_CollectedEqualToOrigin()
+        {
+            byte[] originArray = new byte[] {1,2,3,4};
+            var collectedArray = SeparateAndCollect(new FIFOSendPduBehaviour(), originArray);
+            Assert.IsNotNull(collectedArray);
+            CollectionAssert.AreEqual(originArray, collectedArray);
+        }
+        [Test]
+        public void FIFO_SeparateAndCollectBigArray_CollectedEqualToOrigin()
+        {
+            byte[] originArray = Enumerable.Range(1, 10000).Select(s => (byte)(s % 255)).ToArray();
+            var collectedArray = SeparateAndCollect(new FIFOSendPduBehaviour(), originArray);
+            Assert.IsNotNull(collectedArray);
+            CollectionAssert.AreEqual(originArray, collectedArray);
+        }
+
+        //[Test]
+        //public void Mix_SeparateAndCollectEmptyArray_CollectedEqualToOrigin()
+        //{
+        //    byte[] originArray = new byte[0];
+        //    var collectedArray = SeparateAndCollect(new MixedSendPduBehaviour(), originArray);
+        //    Assert.IsNotNull(collectedArray);
+        //    CollectionAssert.AreEqual(originArray, collectedArray);
+        //}
+        //[Test]
+        //public void Mix_SeparateAndCollectSmallArray_CollectedEqualToOrigin()
+        //{
+        //    byte[] originArray = new byte[] { 1, 2, 3, 4 };
+        //    var collectedArray = SeparateAndCollect(new MixedSendPduBehaviour(), originArray);
+        //    Assert.IsNotNull(collectedArray);
+        //    CollectionAssert.AreEqual(originArray, collectedArray);
+        //}
+        //[Test]
+        //public void Mix_SeparateAndCollectBigArray_CollectedEqualToOrigin()
+        //{
+        //    byte[] originArray = Enumerable.Range(1, 10000).Select(s => (byte)(s % 255)).ToArray();
+        //    var collectedArray = SeparateAndCollect(new MixedSendPduBehaviour(), originArray);
+        //    Assert.IsNotNull(collectedArray);
+        //    CollectionAssert.AreEqual(originArray, collectedArray);
+        //}
+        [Test]
+        public void FIFO_SeparateAndCollectManyMessages_CollectedEqualToOrigins()
+        {
+            List<byte[]> originMessages = new List<byte[]>
+            {
+                Enumerable.Range(1, 10000).Select(s => (byte) (s % 255)).ToArray(),
+                new byte[] {1, 2, 3, 4},
+                new byte[0],
+                new byte[] {1, 2, 3, 4},
+            };
+
+            var separator = new FIFOSendPduBehaviour();
+            var collector = new ReceivePduQueue();
+
+            foreach (var origin in originMessages.Select(o => new MemoryStream(o)))
+            {
+                separator.Enqueue(origin);
+            }
+            
+       
+            foreach (var pdu in separator.TryDequeue())
+                collector.Enqueue(pdu);
+
+            for (int i = 0; i < originMessages.Count; i++)
+            {
+                var collected = collector.DequeueOrNull();
+                Assert.IsNotNull(collected);
+                CollectionAssert.AreEqual(originMessages[i], collected.ToArray());
+            }
+        }
+       
+      
+
+        private static byte[] SeparateAndCollect(ISendPduBehaviour separator, byte[] originArray)
+        {
+            var stream = new MemoryStream(originArray);
+
+            var collector = new ReceivePduQueue();
+
+            separator.Enqueue(stream);
+
+            foreach (var pdu in separator.TryDequeue())
+            {
+                collector.Enqueue(pdu);
+            }
+
+            var collected = collector.DequeueOrNull();
+
+            if (collected == null)
+                return null;
+
+
+            return collected.ToArray();
+
+        }
+    }
+}

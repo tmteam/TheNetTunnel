@@ -1,8 +1,0 @@
-C:\code\TNT\TheTunnel\TheNetTunnel\bin\Debug\TNT.dll
-C:\code\TNT\TheTunnel\TheNetTunnel\bin\Debug\TNT.pdb
-C:\code\TNT\TheTunnel\TheNetTunnel\bin\Debug\protobuf-net.dll
-C:\code\TNT\TheTunnel\TheNetTunnel\obj\Debug\TNT.dll
-C:\code\TNT\TheTunnel\TheNetTunnel\obj\Debug\TNT.pdb
-C:\code\TNT\TheTunnel\TheNetTunnel\obj\Debug\TheTunnel.csprojResolveAssemblyReference.cache
-C:\code\Pluton - s734\packages\TheNetTunnel\TNT.dll
-C:\code\Pluton - s734\packages\TheNetTunnel\TNT.pdb
