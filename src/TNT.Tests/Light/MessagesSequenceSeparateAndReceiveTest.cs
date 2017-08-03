@@ -94,57 +94,8 @@ namespace TNT.Tests.Light
                 CollectionAssert.AreEqual(originMessages[i], collected.ToArray());
             }
         }
-        //[Test]
-        //public void Mix_SeparateAndCollectManyMessages_CollectedSameToOrigins()
-        //{
-        //    List<byte[]> originMessages = new List<byte[]>
-        //    {
-        //        new byte[] {1, 2},
-        //        Enumerable.Range(1, 10000).Select(s => (byte) (s % 255)).ToArray(),
-        //        new byte[] {1, 2, 3, 4},
-        //        new byte[0],
-        //        Enumerable.Range(1, 5000).Select(s => (byte) (s % 255)).ToArray(),
-        //    };
-
-        //    var separator = new MixedSendPduBehaviour();
-        //    var collector = new ReceivePduQueue();
-
-        //    foreach (var origin in originMessages.Select(o => new MemoryStream(o)))
-        //    {
-        //        separator.Enqueue(origin);
-        //    }
-
-        //    foreach (var pdu in separator.TryDequeue())
-        //    {
-        //        collector.Enqueue(pdu);
-        //    }
-
-
-        //    while (!collector.IsEmpty)
-        //    {
-        //        var collected = collector.DequeueOrNull();
-        //        Assert.IsNotNull(collected);
-        //        var collectedArray = collected.ToArray();
-        //        var origin = originMessages.FirstOrDefault(o => ArraysAreEqual(o, collectedArray));
-
-        //        Assert.IsNotNull(origin);
-        //        originMessages.Remove(origin);
-        //    }
-        //    if(originMessages.Any())
-        //        Assert.Fail("Не все сообщения доставленны");
-        //}
-
-        private bool ArraysAreEqual(byte[] origin, byte[] other)
-        {
-            if (origin.Length != other.Length)
-                return false;
-            for (int i = 0; i < origin.Length; i++)
-            {
-                if (origin[i] != other[i])
-                    return false;
-            }
-            return true;
-        }
+       
+      
 
         private static byte[] SeparateAndCollect(ISendPduBehaviour separator, byte[] originArray)
         {
