@@ -14,6 +14,8 @@ namespace TNT.Testing
         private bool _allowReceive;
         ConcurrentQueue<byte[]> _receiveQueue = new ConcurrentQueue<byte[]>();
         private Task _receiveQueueHandlerTask = new Task(() => { });
+        private  int _bytesReceived;
+        private int _bytesSent;
 
         public TestChannel(bool threadQueue = true)
         {
@@ -37,6 +39,7 @@ namespace TNT.Testing
                 return;
             if(!IsConnected)
                 return;
+            _bytesReceived += msg.Length;
             OnReceive?.Invoke(this, msg);
         }
         public void ImmitateConnect()
@@ -112,11 +115,20 @@ namespace TNT.Testing
                 throw new ConnectionIsNotEstablishedYet();
             if (!IsConnected)
                 throw new ConnectionIsLostException();
+            _bytesSent += array.Length;
             OnWrited?.Invoke(this, array);
         }
 
-        public int BytesReceived { get; }
-        public int BytesSent { get; }
+        public int BytesReceived
+        {
+            get { return _bytesReceived; }
+        }
+
+        public int BytesSent
+        {
+            get { return _bytesSent; }
+        }
+
         public string RemoteEndpointName { get; }
         public string LocalEndpointName { get; }
         public Task WriteAsync(byte[] data)

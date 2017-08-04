@@ -7,7 +7,7 @@ using TNT.Transport;
 
 namespace TNT.Api
 {
-    public class ChannelServer<TContract, TChannel>: IChannelServer<TContract,TChannel> 
+    public class ChannelServer<TContract, TChannel>: IChannelServer<TContract,TChannel>, IDisposable
         where TChannel :  IChannel
         where TContract: class
     {
@@ -74,6 +74,11 @@ namespace TNT.Api
             {
                 allConnection.Channel.Disconnect();
             }
+        }
+
+        public void Dispose()
+        {
+            Close();
         }
     }
 }

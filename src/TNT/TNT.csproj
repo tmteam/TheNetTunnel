@@ -47,6 +47,7 @@
     <Compile Include="Api\IConnection.cs" />
     <Compile Include="Api\PresentationBuilder.cs" />
     <Compile Include="Api\TntBuilder.cs" />
+    <Compile Include="Presentation\Deserializers\ByteArrayDeserializer.cs" />
     <Compile Include="Presentation\Deserializers\ByteEnumerableDeserializer.cs" />
     <Compile Include="Presentation\Deserializers\NullableDeserializer.cs" />
     <Compile Include="Presentation\PresentationHelper.cs" />
@@ -56,6 +57,7 @@
     <Compile Include="Presentation\Deserializers\ExceptionMessageDeserializer.cs" />
     <Compile Include="Presentation\ErrorMessage.cs" />
     <Compile Include="Presentation\Sender.cs" />
+    <Compile Include="Presentation\Serializers\ByteArraySerializer.cs" />
     <Compile Include="Presentation\Serializers\ByteEnumerableSerializer.cs" />
     <Compile Include="Presentation\Serializers\ExceptionMessageSerializer.cs" />
     <Compile Include="Exceptions\ContractImplementation\ContractCordIdDuplicateException.cs" />

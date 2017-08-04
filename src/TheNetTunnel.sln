@@ -11,6 +11,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{61
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TNT.IntergrationTests", "TNT.IntergrationTests\TNT.IntergrationTests.csproj", "{50F0CC5A-509C-425F-A681-F5F5AB4D4679}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SpeedTest", "SpeedTest", "{AE64DD7F-7ECB-4945-93DF-6859F4EAC5E9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TNT.LocalSpeedTest", "TNT.LocalSpeedTest\TNT.LocalSpeedTest.csproj", "{BAD4CCAB-11C5-4557-AD6A-6AAB42F6D186}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,8 +33,15 @@ Global
 		{50F0CC5A-509C-425F-A681-F5F5AB4D4679}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{50F0CC5A-509C-425F-A681-F5F5AB4D4679}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{50F0CC5A-509C-425F-A681-F5F5AB4D4679}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BAD4CCAB-11C5-4557-AD6A-6AAB42F6D186}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BAD4CCAB-11C5-4557-AD6A-6AAB42F6D186}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BAD4CCAB-11C5-4557-AD6A-6AAB42F6D186}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BAD4CCAB-11C5-4557-AD6A-6AAB42F6D186}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{BAD4CCAB-11C5-4557-AD6A-6AAB42F6D186} = {AE64DD7F-7ECB-4945-93DF-6859F4EAC5E9}
 	EndGlobalSection
 EndGlobal
