@@ -51,9 +51,19 @@
     <Compile Include="Contracts\ProtoStruct.cs" />
     <Compile Include="Contracts\ProtoStructItem.cs" />
     <Compile Include="Contracts\SpeedTestContract.cs" />
+    <Compile Include="Helper.cs" />
+    <Compile Include="Output.cs" />
+    <Compile Include="TransactionBandwidth\TransactionBandwidthTest.cs" />
+    <Compile Include="TransactionBandwidth\TransactionBandwidthTestResults.cs" />
+    <Compile Include="TransactionBandwidth\TransactionMeasurement.cs" />
+    <Compile Include="OutputBandwidth\OutputBandwithTestResults.cs" />
+    <Compile Include="OutputBandwidth\OutputTestMeasurement.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="OutputBandwidth\OutputBandwithTest.cs" />
+    <Compile Include="ProtobuffNetClearSerialzationTest.cs" />
     <Compile Include="SpeedTestMeasurement.cs" />
+    <Compile Include="TransactionOverheadTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

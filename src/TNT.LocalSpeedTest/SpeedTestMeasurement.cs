@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
+using ProtoBuf;
 using TNT.LocalSpeedTest.Contracts;
 using TNT.Transport;
 
 namespace TNT.LocalSpeedTest
 {
-    public class SpeedTestMeasurement
+   /* public class SpeedTestMeasurement
     {
         private readonly ISpeedTestContract _proxy;
         private readonly IChannel _channel;
@@ -42,7 +44,17 @@ namespace TNT.LocalSpeedTest
             GC.Collect(1);
             OneSideBandwidthTest(packetSize: 10000, iterationsCount: 1000);
             GC.Collect(1);
-            OneSideBandwidthTest(packetSize: 1 * 1024 * 1024, iterationsCount: 50);
+            OneSideBandwidthTest(packetSize: 50000, iterationsCount: 1000);
+            GC.Collect(1);
+            OneSideBandwidthTest(packetSize: 60000, iterationsCount: 1000);
+            GC.Collect(1);
+            OneSideBandwidthTest(packetSize: 70000, iterationsCount: 1000);
+            GC.Collect(1);
+            OneSideBandwidthTest(packetSize: 100000, iterationsCount: 1000);
+            GC.Collect(1);
+            OneSideBandwidthTest(packetSize: 500000, iterationsCount: 500);
+            GC.Collect(1);
+            OneSideBandwidthTest(packetSize: 1000000, iterationsCount: 50);
             GC.Collect(1);
             Console.WriteLine();
             TwoSideBandwidthTest(packetSize: 2, iterationsCount: 100000);
@@ -51,7 +63,14 @@ namespace TNT.LocalSpeedTest
             GC.Collect(1);
             TwoSideBandwidthTest(packetSize: 10000, iterationsCount: 1000);
             GC.Collect(1);
-            TwoSideBandwidthTest(packetSize: 1 * 1024 * 1024, iterationsCount: 20);
+            TwoSideBandwidthTest(packetSize: 50000, iterationsCount: 1000);
+            GC.Collect(1);
+            TwoSideBandwidthTest(packetSize: 100000, iterationsCount: 1000);
+            GC.Collect(1);
+            TwoSideBandwidthTest(packetSize: 500000, iterationsCount: 500);
+
+            GC.Collect(1);
+            TwoSideBandwidthTest(packetSize: 1000000, iterationsCount: 20);
 
 
             Console.WriteLine();
@@ -73,27 +92,46 @@ namespace TNT.LocalSpeedTest
             GC.Collect(1);
             TwoSideStringTest(1000000, 100);
 
+            Console.WriteLine();
+            GC.Collect(1);
+            ProtobuffNetSerializeTest(1, 10000);
+            GC.Collect(1);
+            ProtobuffNetSerializeTest(100, 1000);
+            GC.Collect(1);
+            ProtobuffNetSerializeTest(1000, 1000);
+            GC.Collect(1);
+            ProtobuffNetSerializeTest(10000, 100);
+            GC.Collect(1);
+            ProtobuffNetSerializeTest(100000, 10);
+            GC.Collect(1);
+            ProtobuffNetSerializeTest(1000000, 1);
 
             Console.WriteLine();
             GC.Collect(1);
             OneSideProtobuffTest(1, 10000);
             GC.Collect(1);
+            OneSideProtobuffTest(100, 1000);
+            GC.Collect(1);
             OneSideProtobuffTest(1000, 1000);
             GC.Collect(1);
-            OneSideProtobuffTest(10000, 1000);
+            OneSideProtobuffTest(10000, 100);
             GC.Collect(1);
-            OneSideProtobuffTest(1000000, 100);
+            OneSideProtobuffTest(100000, 10);
+            GC.Collect(1);
+            OneSideProtobuffTest(1000000, 1);
             Console.WriteLine();
             GC.Collect(1);
             TwoSideProtobuffTest(1, 10000);
             GC.Collect(1);
+            TwoSideProtobuffTest(100, 1000);
+            GC.Collect(1);
             TwoSideProtobuffTest(1000, 1000);
             GC.Collect(1);
-            TwoSideProtobuffTest(10000, 1000);
+            TwoSideProtobuffTest(10000, 10);
             GC.Collect(1);
-            TwoSideProtobuffTest(1000000, 100);
-
-
+            TwoSideProtobuffTest(100000, 10);
+            GC.Collect(1);
+            TwoSideProtobuffTest(1000000, 1);
         }
 
         public void OneSideStringTest(int stringLength, int iterationsCount)
@@ -176,6 +214,36 @@ namespace TNT.LocalSpeedTest
                 $"One-side protobuff {memeberSize:0000000} items: { (megabytesSend / sw.Elapsed.TotalSeconds):0.00} megabytes per second");
         }
 
+        public void ProtobuffNetSerializeTest(int memeberSize, int iterationsCount)
+        {
+            Console.Write($"protobuff-net test {memeberSize:   0} items... [Calculating]");
+
+            var packet = GenerateProtoStruct(memeberSize);
+            var serializedLength = 0;
+            ProtoBuf.Serializer.PrepareSerializer<ProtoStruct>();
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            //Act:
+            for (int i = 0; i < iterationsCount; i++)
+            {
+                using (var stream = new MemoryStream())
+                {
+                    stream.Position = 0;
+                    ProtoBuf.Serializer.SerializeWithLengthPrefix<ProtoStruct>(stream, packet, PrefixStyle.None);
+                    stream.Position = 0;
+                    serializedLength += (int) stream.Length;
+                    var result = ProtoBuf.Serializer.DeserializeWithLengthPrefix<ProtoStruct>(stream, PrefixStyle.None);
+                }
+            }
+            sw.Stop();
+
+            Console.CursorLeft = 0;
+            var megabytesSerialized = serializedLength / (1024d * 1024d);
+
+            Console.WriteLine(
+                $"protobuff-net test {memeberSize:   0} items: { (megabytesSerialized / sw.Elapsed.TotalSeconds):0.00} megabytes per second");
+        }
+
         public void TwoSideProtobuffTest(int memeberSize, int iterationsCount)
         {
             Console.Write($"Two-side protobuff {memeberSize:   0} items... [Calculating]");
@@ -202,6 +270,10 @@ namespace TNT.LocalSpeedTest
                 $"Two-side protobuff {memeberSize:000000} items: { ((megabytesReceived + megabytesSent) / sw.Elapsed.TotalSeconds):0.00} megabytes per second");
         }
 
+
+        
+
+
         public void OneSideBandwidthTest(int packetSize, int iterationsCount)
         {
             Console.Write($"One-side Bandwidth test for {packetSize} bytes packet... [Calculating]");
@@ -214,21 +286,27 @@ namespace TNT.LocalSpeedTest
             _proxy.SaysCallsCountReceived += () => mre.Set();
 
             var packet = GenerateArray(packetSize);
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
+            Stopwatch send = new Stopwatch();
+            Stopwatch sendandReceive = new Stopwatch();
+            send.Start();
+
+            sendandReceive.Start();
             //Act:
             for (int i = 0; i < iterationsCount; i++)
                 _proxy.SayBytes(packet);
+            send.Stop();
             mre.WaitOne();
-            sw.Stop();
+            sendandReceive.Stop();
             _proxy.SaysCallsCountReceived = null;
 
             Console.CursorLeft = 0;
             var megabytesSend = (_channel.BytesSent - sentCounter) / (1024d * 1024d);
-            Console.WriteLine(
-                $"One-side Bandwidth for {packetSize:0000000} bytes: { (megabytesSend / sw.Elapsed.TotalSeconds):0.00} megabytes per second");
 
-           
+            Console.WriteLine(
+                $"One-side Send Bandwidth for {packetSize:0000000} bytes: { (megabytesSend / send.Elapsed.TotalSeconds):0.00} megabytes per second");
+
+            Console.WriteLine(
+                $"One-side IO Bandwidth for {packetSize:0000000} bytes: { (megabytesSend / sendandReceive.Elapsed.TotalSeconds):0.00} megabytes per second");
         }
 
         public void TwoSideBandwidthTest(int packetSize, int iterationsCount)
@@ -257,7 +335,6 @@ namespace TNT.LocalSpeedTest
             Console.WriteLine(
                 $"Two-side Bandwidth for {packetSize:0000000} bytes: { ((megabytesReceived + megabytesSent)/ sw.Elapsed.TotalSeconds):0.00} megabytes per second");
         }
-
         public void EmptyOneSideTransactionOverheadTest()
         {
             Console.Write("One-side transaction overhead... [Calculating]");
@@ -314,57 +391,5 @@ namespace TNT.LocalSpeedTest
             Console.WriteLine($"    Received by client per transaction: {(_channel.BytesReceived - receivedCounter) / (double)iterationsCount} b");
         }
 
-        private byte[] GenerateArray(int size)
-        {
-            var rnd = new Random(size);
-            var ans = new byte[size];
-            rnd.NextBytes(ans);
-            return ans;
-        }
-
-        private string GenerateString(int size)
-        {
-            //up to https://stackoverflow.com/questions/1344221/how-can-i-generate-random-alphanumeric-strings-in-c/1344255#1344255
-            char[] chars = new char[62];
-            chars =
-            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890".ToCharArray();
-            byte[] data = new byte[1];
-            using (RNGCryptoServiceProvider crypto = new RNGCryptoServiceProvider())
-            {
-                crypto.GetNonZeroBytes(data);
-                data = new byte[size];
-                crypto.GetNonZeroBytes(data);
-            }
-            StringBuilder result = new StringBuilder(size);
-            foreach (byte b in data)
-            {
-                result.Append(chars[b % (chars.Length)]);
-            }
-            return result.ToString();
-        }
-        private ProtoStruct GenerateProtoStruct(int size)
-        {
-            var rnd = new Random(size);
-
-            List<ProtoStructItem> items = new List<ProtoStructItem>(size);
-            for (int i = 0; i < items.Count; i++)
-            {
-                var str = new ProtoStructItem
-                {
-                    Byte = (byte) (rnd.Next() % 0xFF),
-                    Integer = rnd.Next(),
-                    IntegerArray = new int[4] {rnd.Next(), rnd.Next(), rnd.Next(), rnd.Next()},
-                    Long = rnd.Next(),
-                    Text = "piu piu, superfast",
-                    Time = DateTime.Now
-                };
-                items.Add(str);
-            }
-            return new ProtoStruct()
-            {
-                Members = items.ToArray()
-            };
-        }
-
-    }
+    }*/
 }

@@ -6,7 +6,7 @@ namespace TNT.LocalSpeedTest.Contracts
     [ProtoContract]
     public class ProtoStructItem
     {
-        [ProtoMember(0)]
+        [ProtoMember(6)]
         public int Integer { get; set; }
         [ProtoMember(1)]
         public long Long { get; set; }
