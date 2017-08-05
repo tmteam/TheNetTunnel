@@ -1,7 +1,7 @@
 ﻿using System;
 using TNT.Contract;
 
-namespace TNT.LocalSpeedTest.Contracts
+namespace TNT.SpeedTest.Contracts
 {
     public interface ISpeedTestContract
     {

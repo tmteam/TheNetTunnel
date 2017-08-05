@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
-using TNT.LocalSpeedTest.Contracts;
+using TNT.SpeedTest.Contracts;
 
-namespace TNT.LocalSpeedTest
+namespace TNT.SpeedTest
 {
     public static class Helper
     {

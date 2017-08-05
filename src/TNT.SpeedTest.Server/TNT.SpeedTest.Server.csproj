@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{BAD4CCAB-11C5-4557-AD6A-6AAB42F6D186}</ProjectGuid>
+    <ProjectGuid>{B77531AE-98F5-49B1-A705-162D6FA9C16B}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TNT.LocalSpeedTest</RootNamespace>
-    <AssemblyName>TNT.LocalSpeedTest</AssemblyName>
+    <RootNamespace>TNT.SpeedTest.Server</RootNamespace>
+    <AssemblyName>TNT.SpeedTest.Server</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -33,10 +33,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="protobuf-net, Version=2.3.1.0, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
-      <HintPath>..\packages\protobuf-net.2.3.1\lib\net40\protobuf-net.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -52,7 +48,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TNT.SpeedTest\TNT.SpeedTest.csproj">
@@ -60,7 +55,7 @@
       <Name>TNT.SpeedTest</Name>
     </ProjectReference>
     <ProjectReference Include="..\TNT\TNT.csproj">
-      <Project>{e1613910-06b6-4c28-8900-87f0c9793dff}</Project>
+      <Project>{E1613910-06B6-4C28-8900-87F0C9793DFF}</Project>
       <Name>TNT</Name>
     </ProjectReference>
   </ItemGroup>

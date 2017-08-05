@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace TNT.LocalSpeedTest.Contracts
+namespace TNT.SpeedTest.Contracts
 {
     // Ultimate air heating contract
     public class SpeedTestContract: ISpeedTestContract

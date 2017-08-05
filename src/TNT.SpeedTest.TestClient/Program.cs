@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
 using TNT.Api;
 using TNT.Presentation.ReceiveDispatching;
-using TNT.SpeedTest;
 using TNT.SpeedTest.Contracts;
 using TNT.SpeedTest.OutputBandwidth;
 using TNT.SpeedTest.TransactionBandwidth;
@@ -15,27 +14,27 @@ using TNT.Tcp;
 using TNT.Testing;
 using TNT.Transport;
 
-namespace TNT.LocalSpeedTest
+namespace TNT.SpeedTest.TestClient
 {
     class Program
     {
+
         private static readonly Output _output = new Output();
+
         static void Main(string[] args)
         {
-            _output.WriteLine("Current time: "+ DateTime.Now);
+
+            _output.WriteLine("Current time: " + DateTime.Now);
             _output.WriteLine("Machine:" + System.Environment.MachineName);
-            _output.WriteLine("Local measurement test started");
+            _output.WriteLine("Client measurement test started");
             _output.WriteLine();
             new ProtobuffNetClearSerialzationTest(_output).Run();
             _output.WriteLine();
             _output.WriteLine();
-
-            TestLocalhost();
+            Test(new IPEndPoint(IPAddress.Loopback, 24731));
             _output.WriteLine();
             _output.WriteLine();
 
-            TestDirectTestConnection();
-            _output.WriteLine();
             _output.WriteLine("Measurements are done");
             while (true)
             {
@@ -49,7 +48,7 @@ namespace TNT.LocalSpeedTest
                         var name = Console.ReadLine();
 
                         if (!_output.TrySaveTo(
-                            String.IsNullOrWhiteSpace(name)? "MeasureResults.txt":name))
+                            String.IsNullOrWhiteSpace(name) ? "MeasureResults.txt" : name))
                         {
                             Console.WriteLine("Saving failed");
                             continue;
@@ -59,9 +58,9 @@ namespace TNT.LocalSpeedTest
                         Console.ReadLine();
                         return;
                     }
-                  
+
                 }
-                else if(key== ConsoleKey.N)
+                else if (key == ConsoleKey.N)
                 {
                     Console.WriteLine("Press any key to continue...");
                     Console.ReadLine();
@@ -93,34 +92,36 @@ namespace TNT.LocalSpeedTest
             pair.Disconnect();
         }
 
-        private static void TestLocalhost()
+        private static void Test(IPEndPoint endPoint)
         {
-            _output.WriteLine("-------------Localhost test--------------");
-            using (var server = TntBuilder
-                .UseContract<ISpeedTestContract, SpeedTestContract>()
-                .UseReceiveDispatcher<ConveyorDispatcher>()
-                .CreateTcpServer(IPAddress.Loopback, 12345))
-            {
-                server.IsListening = true;
+            _output.WriteLine($"-------------{endPoint} test--------------");
 
+            try
+            {
                 using (var client = TntBuilder
-                    .UseContract<ISpeedTestContract>()
-                    .UseReceiveDispatcher<ConveyorDispatcher>()
-                    .CreateTcpClientConnection(IPAddress.Loopback, 12345))
+               .UseContract<ISpeedTestContract>()
+               .UseReceiveDispatcher<ConveyorDispatcher>()
+               .CreateTcpClientConnection(endPoint))
                 {
                     Test(client);
                 }
-
+            }
+            catch (IOException e)
+            {
+                Console.WriteLine();
+                Console.WriteLine("Connection failed: "+ e.Message);
+                Console.WriteLine();
+                throw;
             }
         }
 
         private static void Test(IConnection<ISpeedTestContract, IChannel> client)
         {
             client.Contract.AskForTrue();
-            client.Contract.AskBytesEcho(new byte[] { 1, 2, 3, });
-            client.Contract.AskIntegersEcho(new int[] { 1, 2, 3, });
+            client.Contract.AskBytesEcho(new byte[] {1, 2, 3,});
+            client.Contract.AskIntegersEcho(new int[] {1, 2, 3,});
             client.Contract.AskTextEcho("taram pam pam");
-            client.Contract.SayBytes(new byte[] { 1, 2, 3, });
+            client.Contract.SayBytes(new byte[] {1, 2, 3,});
             client.Contract.SayProtoStructEcho(new ProtoStruct());
             client.Contract.AskProtoStructEcho(new ProtoStruct());
 
@@ -136,7 +137,8 @@ namespace TNT.LocalSpeedTest
             _output.WriteLine();
             var transactionTest = new TransactionMeasurement(client.Contract, client.Channel, _output);
             transactionTest.Measure();
-           
+
         }
     }
+
 }

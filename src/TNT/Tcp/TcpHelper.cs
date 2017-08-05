@@ -12,18 +12,24 @@ namespace TNT.Tcp
         {
             return new TcpChannelServer<TContract>(builder, new IPEndPoint(ip, port));
         }
+        public static IConnection<TContract, TcpChannel> CreateTcpClientConnection<TContract>(
+         this PresentationBuilder<TContract> builder, IPEndPoint endPoint)
+         where TContract : class
 
+        {
+            return builder.UseChannel(() =>
+            {
+                var channel = new TcpChannel();
+                channel.Connect(endPoint);
+                return channel;
+            }).Build();
+        }
         public static IConnection<TContract, TcpChannel> CreateTcpClientConnection<TContract>(
             this PresentationBuilder<TContract> builder, IPAddress ip, int port)
             where TContract : class
 
         {
-            return builder.UseChannel(() =>
-                    {
-                        var channel = new TcpChannel();
-                        channel.Connect(new IPEndPoint(ip, port));
-                        return channel;
-                    }).Build();
+            return CreateTcpClientConnection(builder, new IPEndPoint(ip, port));
         }
     }
 }

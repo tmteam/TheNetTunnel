@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TNT.LocalSpeedTest.Contracts;
+﻿using TNT.SpeedTest.Contracts;
 using TNT.Transport;
 
-namespace TNT.LocalSpeedTest.OutputBandwidth
+namespace TNT.SpeedTest.OutputBandwidth
 {
     public class OutputTestMeasurement
     {
@@ -79,7 +74,6 @@ namespace TNT.LocalSpeedTest.OutputBandwidth
             MeasureBandWidth(test, 500000,  50);
             MeasureBandWidth(test, 1000000, 10);
         }
-
 
         public void TestProtobuffBandwidth()
         {

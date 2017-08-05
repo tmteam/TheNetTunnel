@@ -1,10 +1,10 @@
 using System;
 using System.Diagnostics;
 using System.Threading;
-using TNT.LocalSpeedTest.Contracts;
+using TNT.SpeedTest.Contracts;
 using TNT.Transport;
 
-namespace TNT.LocalSpeedTest.OutputBandwidth
+namespace TNT.SpeedTest.OutputBandwidth
 {
     public class OutputBandwithTest<T>
     {

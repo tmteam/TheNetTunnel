@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ProtoBuf;
-using TNT.LocalSpeedTest.Contracts;
+using TNT.SpeedTest.Contracts;
 
-namespace TNT.LocalSpeedTest
+namespace TNT.SpeedTest
 {
     public class ProtobuffNetClearSerialzationTest
     {
@@ -38,15 +33,20 @@ namespace TNT.LocalSpeedTest
         {
             var packet = Helper.GenerateProtoStruct(memeberSize);
             var serializedLength = 0;
-            ProtoBuf.Serializer.PrepareSerializer<ProtoStruct>();
+            Serializer.PrepareSerializer<ProtoStruct>();
+
+          
+
             Stopwatch serializationSw = new Stopwatch();
             serializationSw.Start();
+
             //Act:
             for (int i = 0; i < iterationsCount; i++)
             {
                 using (var stream = new MemoryStream())
                 {
                     stream.Position = 0;
+
                     ProtoBuf.Serializer.SerializeWithLengthPrefix<ProtoStruct>(stream, packet, PrefixStyle.None);
                     serializedLength += (int)stream.Position;
                 }

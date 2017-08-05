@@ -1,10 +1,9 @@
 using System;
 using System.Diagnostics;
-using System.Threading;
-using TNT.LocalSpeedTest.Contracts;
+using TNT.SpeedTest.Contracts;
 using TNT.Transport;
 
-namespace TNT.LocalSpeedTest.TransactionBandwidth
+namespace TNT.SpeedTest.TransactionBandwidth
 {
     public class TransactionBandwithTest<T>
     {

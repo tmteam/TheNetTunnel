@@ -1,11 +1,7 @@
-﻿using System;
-using TNT.LocalSpeedTest;
-using TNT.LocalSpeedTest.Contracts;
-using TNT.LocalSpeedTest.OutputBandwidth;
-using TNT.LocalSpeedTest.TransactionBandwidth;
+﻿using TNT.SpeedTest.Contracts;
 using TNT.Transport;
 
-namespace TNT.LocalSpeedTest.TransactionBandwidth
+namespace TNT.SpeedTest.TransactionBandwidth
 {
     public class TransactionMeasurement
     {

@@ -53,6 +53,7 @@
     <Compile Include="Presentation\PresentationHelper.cs" />
     <Compile Include="Presentation\ReceiveDispatching\ConveyorDispatcher.cs" />
     <Compile Include="Presentation\ReceiveDispatching\NotThreadDispatcher.cs" />
+    <Compile Include="Presentation\ReceiveDispatching\TaskDispatcher.cs" />
     <Compile Include="Presentation\RequestMessage.cs" />
     <Compile Include="Presentation\Deserializers\ExceptionMessageDeserializer.cs" />
     <Compile Include="Presentation\ErrorMessage.cs" />

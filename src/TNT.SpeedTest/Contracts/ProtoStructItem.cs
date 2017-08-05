@@ -1,7 +1,7 @@
 ﻿using System;
 using ProtoBuf;
 
-namespace TNT.LocalSpeedTest.Contracts
+namespace TNT.SpeedTest.Contracts
 {
     [ProtoContract]
     public class ProtoStructItem

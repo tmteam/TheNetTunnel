@@ -15,6 +15,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SpeedTest", "SpeedTest", "{
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TNT.LocalSpeedTest", "TNT.LocalSpeedTest\TNT.LocalSpeedTest.csproj", "{BAD4CCAB-11C5-4557-AD6A-6AAB42F6D186}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TNT.SpeedTest", "TNT.SpeedTest\TNT.SpeedTest.csproj", "{65BE04C4-E0D7-4E5F-A065-EB20D7900C0F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TNT.SpeedTest.Server", "TNT.SpeedTest.Server\TNT.SpeedTest.Server.csproj", "{B77531AE-98F5-49B1-A705-162D6FA9C16B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TNT.SpeedTest.TestClient", "TNT.SpeedTest.TestClient\TNT.SpeedTest.TestClient.csproj", "{FF554732-E8E3-4297-A970-11FFE20066DB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,11 +43,26 @@ Global
 		{BAD4CCAB-11C5-4557-AD6A-6AAB42F6D186}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BAD4CCAB-11C5-4557-AD6A-6AAB42F6D186}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BAD4CCAB-11C5-4557-AD6A-6AAB42F6D186}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65BE04C4-E0D7-4E5F-A065-EB20D7900C0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65BE04C4-E0D7-4E5F-A065-EB20D7900C0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65BE04C4-E0D7-4E5F-A065-EB20D7900C0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65BE04C4-E0D7-4E5F-A065-EB20D7900C0F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B77531AE-98F5-49B1-A705-162D6FA9C16B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B77531AE-98F5-49B1-A705-162D6FA9C16B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B77531AE-98F5-49B1-A705-162D6FA9C16B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B77531AE-98F5-49B1-A705-162D6FA9C16B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF554732-E8E3-4297-A970-11FFE20066DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF554732-E8E3-4297-A970-11FFE20066DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF554732-E8E3-4297-A970-11FFE20066DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF554732-E8E3-4297-A970-11FFE20066DB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{BAD4CCAB-11C5-4557-AD6A-6AAB42F6D186} = {AE64DD7F-7ECB-4945-93DF-6859F4EAC5E9}
+		{65BE04C4-E0D7-4E5F-A065-EB20D7900C0F} = {AE64DD7F-7ECB-4945-93DF-6859F4EAC5E9}
+		{B77531AE-98F5-49B1-A705-162D6FA9C16B} = {AE64DD7F-7ECB-4945-93DF-6859F4EAC5E9}
+		{FF554732-E8E3-4297-A970-11FFE20066DB} = {AE64DD7F-7ECB-4945-93DF-6859F4EAC5E9}
 	EndGlobalSection
 EndGlobal

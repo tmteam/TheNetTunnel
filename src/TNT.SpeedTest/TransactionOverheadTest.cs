@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
+﻿using System.Diagnostics;
 using System.Threading;
-using System.Threading.Tasks;
-using TNT.LocalSpeedTest.Contracts;
+using TNT.SpeedTest.Contracts;
 using TNT.Transport;
 
-namespace TNT.LocalSpeedTest
+namespace TNT.SpeedTest
 {
     public class TransactionOverheadTest
     {

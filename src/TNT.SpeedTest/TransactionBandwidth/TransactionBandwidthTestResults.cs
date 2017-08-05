@@ -1,4 +1,4 @@
-﻿namespace TNT.LocalSpeedTest.TransactionBandwidth
+﻿namespace TNT.SpeedTest.TransactionBandwidth
 {
     public class TransactionBandwidthTestResults
     {
