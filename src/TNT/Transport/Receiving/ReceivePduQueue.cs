@@ -94,7 +94,7 @@ namespace TNT.Transport.Receiving
             if (c.Collect(msgFromStream, quantBeginOffset))
             {
                 // we have got a new light message!
-                var stream = c.GetLightMessageStream();
+                var stream = c.GetPduMessageStream();
 
                 collectors.Remove(head.msgId);
 

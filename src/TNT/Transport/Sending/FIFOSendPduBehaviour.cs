@@ -11,7 +11,7 @@ namespace TNT.Transport.Sending
     /// </summary>
     public class FIFOSendPduBehaviour : ISendPduBehaviour
     {
-        private const int MaxQuantumSize = ushort.MaxValue;
+        private const int MaxQuantumSize = 100*1024*1024;
         private readonly ConcurrentQueue<PacketSeparator> _messageQueue = new ConcurrentQueue<PacketSeparator>();
         private int _lastUsedId;
 

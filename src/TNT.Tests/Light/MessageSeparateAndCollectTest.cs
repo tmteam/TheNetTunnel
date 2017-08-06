@@ -66,7 +66,7 @@ namespace TNT.Tests.Light
             {
                 if (collector.Collect(quant, 0))
                 {
-                    using (var collected = collector.GetLightMessageStream())
+                    using (var collected = collector.GetPduMessageStream())
                     {
                         return collected.ToArray();
                     }

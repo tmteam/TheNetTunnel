@@ -3,23 +3,23 @@ using System.Runtime.InteropServices;
 
 namespace TNT.Transport
 {
-	[StructLayout(LayoutKind.Explicit, Size= 7)]
+	[StructLayout(LayoutKind.Explicit, Size= 9)]
 	public struct PduHead
 	{
         public static readonly int DefaultHeadSize = Marshal.SizeOf(typeof(PduHead));
 
         /// <summary>
-        /// Full quantum lenght
+        /// Full Pdu lenght
         /// </summary>
-		[FieldOffset(0)] public UInt16 length;
+		[FieldOffset(0)] public Int32 length;
         /// <summary>
-        /// Light message ID
+        /// Pdu message ID
         /// </summary>
-		[FieldOffset(2)] public Int32 msgId;
+		[FieldOffset(4)] public Int32 msgId;
         /// <summary>
-        /// Type of a quant
+        /// Type of the pdu message
         /// </summary>
-		[FieldOffset(6)] public PduType type;
+		[FieldOffset(8)] public PduType type;
 	}
 }
 

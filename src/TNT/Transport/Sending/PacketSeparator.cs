@@ -64,7 +64,7 @@ namespace TNT.Transport.Sending
             var actualHeadSize = got1Sended ? DefaultHeadSize : (DefaultHeadSize + 4);
             var head = new PduHead
             {
-                length = (ushort) Math.Min(actualHeadSize + dataLeft, _maxQuantSize),
+                length =  Math.Min(actualHeadSize + dataLeft, _maxQuantSize),
                 msgId = msgId,
                 type = got1Sended ? PduType.Data : PduType.Start,
             };

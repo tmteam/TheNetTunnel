@@ -11,8 +11,6 @@ namespace TNT.Transport.Receiving
     {
         private static readonly int DefaultHeadSize = Marshal.SizeOf(typeof(PduHead));
 
-        //public DateTime LastTimeSet { get; private set; }
-
         private MemoryStream _stream = null;
 
         private int lenght = 0;
@@ -25,8 +23,6 @@ namespace TNT.Transport.Receiving
         /// <returns>true if light-message is fully collected</returns>
         public bool Collect(byte[] packetFromAStream, int offset)
         {
-            //LastTimeSet = DateTime.Now;
-
             var head = packetFromAStream.ToStruct<PduHead>(offset, PduHead.DefaultHeadSize);
             
             int bodyStart = offset + DefaultHeadSize;
@@ -41,7 +37,7 @@ namespace TNT.Transport.Receiving
                 }
                 else
                 {
-                    throw new InvalidOperationException("Invalid quant order");
+                    throw new InvalidOperationException("Invalid pdu order");
                 }
             }
             else if (head.type == PduType.Data)
@@ -62,20 +58,12 @@ namespace TNT.Transport.Receiving
             return true;
         }
 
-        ///// <summary>
-        /////     reset collector
-        ///// </summary>
-        //public void Clear()
-        //{
-        //    _stream = null;
-        //    lenght = 0;
-        //}
 
         /// <summary>
         /// Get collected message stream
         /// </summary>
         /// <returns></returns>
-        public MemoryStream GetLightMessageStream()
+        public MemoryStream GetPduMessageStream()
         {
             return _stream;
         }
