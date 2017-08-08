@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace TNT.Tests.Presentation.Contracts
+namespace TNT.Tests.Contracts
 {
     public class TestContractMock:ITestContract
     {

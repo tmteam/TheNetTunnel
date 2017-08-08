@@ -1,7 +1,6 @@
 ﻿using TNT.Contract;
-using TNT.Presentation;
 
-namespace TNT.Tests.Presentation.Contracts
+namespace TNT.Tests.Contracts
 {
     public interface IExceptionalContract
     {

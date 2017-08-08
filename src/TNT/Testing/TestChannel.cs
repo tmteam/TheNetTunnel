@@ -103,20 +103,24 @@ namespace TNT.Testing
             return Task.Run(
                 () => {
                     if (IsConnected)
-                        Write(array);
+                        Write(array, 0, array.Length);
                     return IsConnected;
                 }
             );
         }
 
-        public void Write(byte[] array)
+        public void Write(byte[] array, int offset, int length)
         {
             if (!_wasConnected)
                 throw new ConnectionIsNotEstablishedYet();
             if (!IsConnected)
                 throw new ConnectionIsLostException();
             _bytesSent += array.Length;
-            OnWrited?.Invoke(this, array);
+
+            var buf = new byte[length];
+            Buffer.BlockCopy(array, offset, buf, 0, length);
+
+            OnWrited?.Invoke(this, buf);
         }
 
         public int BytesReceived
@@ -133,7 +137,7 @@ namespace TNT.Testing
         public string LocalEndpointName { get; }
         public Task WriteAsync(byte[] data)
         {
-            return Task.Run(() => Write(data));
+            return Task.Run(() => Write(data,0, data.Length));
         }
     }
 }

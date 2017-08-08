@@ -6,12 +6,12 @@ using TNT.Exceptions.Remote;
 using TNT.Presentation.ReceiveDispatching;
 using TNT.Tcp;
 using TNT.Tests;
-using TNT.Tests.Presentation.Contracts;
 using System.Threading;
 using TNT.Presentation.Serializers;
 using Moq;
 using System.IO;
 using TNT.Presentation.Deserializers;
+using TNT.Tests.Contracts;
 
 namespace TNT.IntegrationTests.TcpLocalhost
 {

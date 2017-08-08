@@ -4,7 +4,7 @@ using NUnit.Framework;
 using TNT.Presentation.Deserializers;
 using TNT.Presentation.Serializers;
 
-namespace TNT.Tests.Presentation.Serialization
+namespace TNT.Tests.Serialization
 {
     [TestFixture()]
     public class GeneralSerializersTest

@@ -9,7 +9,7 @@ using TNT.Api;
 using TNT.IntegrationTests.Serialization;
 using TNT.Presentation.Deserializers;
 using TNT.Presentation.Serializers;
-using TNT.Tests.Presentation.Contracts;
+using TNT.Tests.Contracts;
 
 namespace TNT.IntegrationTests
 {

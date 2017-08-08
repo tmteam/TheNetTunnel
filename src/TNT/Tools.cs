@@ -28,6 +28,11 @@ namespace TNT
             return ans;
         }
 
+        public static void WriteInt(this MemoryStream stream, uint value)
+        {
+            var val = BitConverter.GetBytes(value);
+            stream.Write(val, 0, val.Length);
+        }
         public static void WriteShort(short outputMessageId, MemoryStream to)
         {
             //Write first byte
@@ -35,7 +40,7 @@ namespace TNT
             //Write second byte
             to.WriteByte((byte)(outputMessageId >> 8));
         }
-
+        
         public static short? TryReadShort(this MemoryStream from)
         {
             if (@from.Length - @from.Position < sizeof(short))

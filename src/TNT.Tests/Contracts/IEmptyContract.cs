@@ -1,5 +1,5 @@
 ﻿
-namespace TNT.Tests.Presentation.Contracts
+namespace TNT.Tests.Contracts
 {
     public interface IEmptyContract
     {

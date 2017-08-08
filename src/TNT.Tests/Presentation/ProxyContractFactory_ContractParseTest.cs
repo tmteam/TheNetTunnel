@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 using TNT.Contract.Proxy;
 using TNT.Exceptions.ContractImplementation;
-using TNT.Tests.Presentation.Contracts;
+using TNT.Tests.Contracts;
 
 namespace TNT.Tests.Presentation
 {

@@ -1,7 +1,7 @@
 ﻿using System;
 using TNT.Contract;
 
-namespace TNT.Tests.Presentation.Contracts
+namespace TNT.Tests.Contracts
 {
     public interface IContractWithMethodWithoutAttribute
     {

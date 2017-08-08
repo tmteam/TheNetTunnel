@@ -30,6 +30,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.JScript" />
     <Reference Include="protobuf-net, Version=2.3.1.0, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
       <HintPath>..\..\packages\protobuf-net.2.3.1\lib\net40\protobuf-net.dll</HintPath>
       <Private>True</Private>
@@ -100,13 +101,9 @@
     <Compile Include="Presentation\Deserializers\UTCFileTimeAndOffsetDeserializer.cs" />
     <Compile Include="Exceptions\ContractImplementation\TypeCannotBeDeserializedException.cs" />
     <Compile Include="Exceptions\ContractImplementation\TypeCannotBeSerializedException.cs" />
+    <Compile Include="Transport\SendStreamManager.cs" />
     <Compile Include="Transport\Transporter.cs" />
-    <Compile Include="Transport\Receiving\PacketCollector.cs" />
-    <Compile Include="Transport\Receiving\ReceivePduQueue.cs" />
-    <Compile Include="Transport\Sending\MixedSendPduBehaviour.cs" />
-    <Compile Include="Transport\Sending\ISendPduBehaviour.cs" />
-    <Compile Include="Transport\Sending\FIFOSendPduBehaviour.cs" />
-    <Compile Include="Transport\Sending\PacketSeparator.cs" />
+    <Compile Include="Transport\ReceivePduQueue.cs" />
     <Compile Include="Transport\PduHead.cs" />
     <Compile Include="Transport\PduType.cs" />
     <Compile Include="Contract\ContractAttribute.cs" />

@@ -1,7 +1,8 @@
 ﻿using System;
 using TNT.Contract;
+using TNT.Tests.Presentation;
 
-namespace TNT.Tests.Presentation.Contracts
+namespace TNT.Tests.Contracts
 {
     public interface ICallContract2
     {

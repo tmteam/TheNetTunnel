@@ -9,7 +9,6 @@ using TNT.Api;
 using TNT.Presentation;
 using TNT.Tcp;
 using TNT.Tests;
-using TNT.Transport.Sending;
 
 namespace TNT.IntegrationTests.Serialization
 {
