@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Threading;
 using System.Threading.Tasks;
 using TNT.Exceptions.Local;
 using TNT.Presentation;
@@ -115,7 +116,8 @@ namespace TNT.Testing
                 throw new ConnectionIsNotEstablishedYet();
             if (!IsConnected)
                 throw new ConnectionIsLostException();
-            _bytesSent += array.Length;
+
+            Interlocked.Add(ref _bytesSent, length);
 
             var buf = new byte[length];
             Buffer.BlockCopy(array, offset, buf, 0, length);

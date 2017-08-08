@@ -138,10 +138,7 @@ namespace TNT.Tcp
                     ans = networkStream.WriteAsync(data, 0, data.Length);
                 }
 
-                unchecked
-                {
-                    _bytesSent += data.Length;
-                }
+                Interlocked.Add(ref _bytesSent, data.Length);
                 return ans;
             }
             catch (Exception e)
@@ -173,10 +170,7 @@ namespace TNT.Tcp
                 {
                     networkStream.BeginWrite(data, offset, length, WriteCallback, null);
                 }
-                unchecked
-                {
-                    _bytesSent += data.Length;
-                }
+                Interlocked.Add(ref _bytesSent, length);
             }
             catch (Exception e)
             {
