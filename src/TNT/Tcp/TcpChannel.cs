@@ -132,11 +132,9 @@ namespace TNT.Tcp
             {
                 NetworkStream networkStream = Client.GetStream();
 
-                Task ans;
-                lock (_writeLocker)
-                {
-                    ans = networkStream.WriteAsync(data, 0, data.Length);
-                }
+                //According to msdn, the WriteAsync call is thread-safe.
+                //No need to use lock
+                var ans = networkStream.WriteAsync(data, 0, data.Length);
 
                 Interlocked.Add(ref _bytesSent, data.Length);
                 return ans;
@@ -166,10 +164,10 @@ namespace TNT.Tcp
 
                 NetworkStream networkStream = Client.GetStream();
                 //Start async write operation
-                lock (_writeLocker)
-                {
-                    networkStream.BeginWrite(data, offset, length, WriteCallback, null);
-                }
+                //According to msdn, the WriteAsync call is thread-safe.
+                //No need to use lock
+                networkStream.BeginWrite(data, offset, length, WriteCallback, null);
+                
                 Interlocked.Add(ref _bytesSent, length);
             }
             catch (Exception e)

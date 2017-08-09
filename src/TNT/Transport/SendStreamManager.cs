@@ -6,7 +6,7 @@ namespace TNT.Transport
     {
         public MemoryStream CreateStreamForSend()
         {
-            var stream = new MemoryStream();
+            var stream = new MemoryStream(1024);
 
             if (ReservedHeadLength > 0)
                 stream.Write(new byte[ReservedHeadLength], 0, ReservedHeadLength);
