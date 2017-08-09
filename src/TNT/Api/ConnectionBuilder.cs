@@ -24,12 +24,9 @@ namespace TNT.Api
         }
         public IConnection<TContract, TChannel> Build()
         {
-            var sendSeparationBehaviour = _contractBuilder.SendMessageSequenceBehaviourFactory();
             var channel = _channelFactory();
 
-            var light = new Transporter(
-                underlyingChannel: channel,
-                sendMessageSequenceBehaviour: sendSeparationBehaviour);
+            var light = new Transporter( channel);
             
             TContract contract = null;
             if (_contractBuilder.OriginContractFactory == null)

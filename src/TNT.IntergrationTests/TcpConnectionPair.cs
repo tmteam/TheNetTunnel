@@ -6,7 +6,7 @@ using TNT.Api;
 using TNT.Presentation.ReceiveDispatching;
 using TNT.Tcp;
 using TNT.Tests;
-using TNT.Tests.Presentation.Contracts;
+using TNT.Tests.Contracts;
 
 namespace TNT.IntegrationTests
 {

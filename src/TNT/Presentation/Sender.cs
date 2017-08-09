@@ -58,8 +58,8 @@ namespace TNT.Presentation
             if (serializer == null)
                 throw new ArgumentException($"Ans-messageId {messageId} is unknown");
 
+            var stream = _channel.CreateStreamForSend();
 
-            var stream = new MemoryStream();
             Tools.WriteShort(messageId, to: stream);
             Tools.WriteShort(askId, to: stream);
             try
@@ -89,7 +89,8 @@ namespace TNT.Presentation
             if (serializer == null)
                 throw new ArgumentException($"Ask-messageId {id} is unknown");
 
-            var stream = new MemoryStream();
+            var stream = _channel.CreateStreamForSend();
+
             Tools.WriteShort(id, to: stream);
             Tools.WriteShort(askId, to: stream);
             Write(values, serializer, stream);
@@ -103,7 +104,8 @@ namespace TNT.Presentation
         ///<exception cref="LocalSerializationException">specified serializer does not fit the arguments</exception>
         public void SendError(ErrorMessage errorInfo)
         {
-            var stream = new MemoryStream();
+            var stream = _channel.CreateStreamForSend();
+
             Tools.WriteShort((short)Messenger.ExceptionMessageTypeId, to: stream);
             new ErrorMessageSerializer().SerializeT(errorInfo, stream);
             stream.Position = 0;
@@ -137,7 +139,7 @@ namespace TNT.Presentation
         ///<exception cref="LocalSerializationException">specified serializer does not fit the arguments</exception>
         private void Say(int id, object[] values, ISerializer serializer)
         {
-            var stream = new MemoryStream();
+            var stream = _channel.CreateStreamForSend();
             Tools.WriteShort((short)id, to: stream);
             Write(values, serializer, stream);
         }

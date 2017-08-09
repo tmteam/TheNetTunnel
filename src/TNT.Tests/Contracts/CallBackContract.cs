@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TNT.Tests.Presentation.Contracts
+namespace TNT.Tests.Contracts
 {
 
     public class CallBackContract : ICallBackContract

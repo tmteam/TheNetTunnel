@@ -1,21 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using NUnit.Framework;
 using TNT.Api;
-using TNT.Exceptions;
-using TNT.Exceptions.ContractImplementation;
 using TNT.Exceptions.Local;
 using TNT.Exceptions.Remote;
-using TNT.Presentation;
 using TNT.Presentation.ReceiveDispatching;
 using TNT.Testing;
-using TNT.Tests.Presentation.Contracts;
+using TNT.Tests.Contracts;
 
-namespace TNT.Tests.Presentation.FullStack
+namespace TNT.Tests.FullStack
 {
     [TestFixture]
     public class RcpCallsExceptionsTest

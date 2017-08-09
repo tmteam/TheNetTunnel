@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -20,12 +21,12 @@ namespace TNT.Tcp
         /// </summary>
         private int disconnectIsHandled = 0;
         private bool readWasStarted = false;
-        private  int _bytesReceived;
-        private  int _bytesSent;
+        private int _bytesReceived;
+        private int _bytesSent;
 
-        public TcpChannel(IPAddress address, int port): this(new TcpClient(new IPEndPoint(address, port)))
+        public TcpChannel(IPAddress address, int port) : this(new TcpClient(new IPEndPoint(address, port)))
         {
-            
+
         }
         public TcpChannel(TcpClient client)
         {
@@ -81,7 +82,7 @@ namespace TNT.Tcp
 
 
         public TcpClient Client { get; }
-        
+
         public event Action<object, byte[]> OnReceive;
         public event Action<object, ErrorMessage> OnDisconnect;
 
@@ -96,7 +97,7 @@ namespace TNT.Tcp
         {
             //Thread race state. 
             //AsyncWrite, AsyncRead and main disconnect reason are in concurrence
-            
+
             //if(disconnectIsHandled==0) disconnectIsHandled = 1; 
             //else return;
             if (Interlocked.CompareExchange(ref disconnectIsHandled, 1, 0) == 1)
@@ -119,7 +120,7 @@ namespace TNT.Tcp
             DisconnectBecauseOf(null);
         }
 
-        public async Task WriteAsync(byte[] data)
+        public  Task WriteAsync(byte[] data)
         {
             if (!_wasConnected)
                 throw new ConnectionIsNotEstablishedYet("tcp channel was not connected yet");
@@ -130,13 +131,13 @@ namespace TNT.Tcp
             try
             {
                 NetworkStream networkStream = Client.GetStream();
-               
-                await networkStream.WriteAsync(data, 0, data.Length);
 
-                unchecked
-                {
-                    _bytesSent += data.Length;
-                }
+                //According to msdn, the WriteAsync call is thread-safe.
+                //No need to use lock
+                var ans = networkStream.WriteAsync(data, 0, data.Length);
+
+                Interlocked.Add(ref _bytesSent, data.Length);
+                return ans;
             }
             catch (Exception e)
             {
@@ -150,7 +151,7 @@ namespace TNT.Tcp
         /// </summary>
         ///<exception cref="ConnectionIsLostException"></exception>
         ///<exception cref="ArgumentNullException"></exception>
-        public void Write(byte[] data)
+        public void Write(byte[] data, int offset, int length)
         {
             if (!_wasConnected)
                 throw new ConnectionIsNotEstablishedYet("tcp channel was not connected yet");
@@ -160,21 +161,24 @@ namespace TNT.Tcp
 
             try
             {
+
                 NetworkStream networkStream = Client.GetStream();
                 //Start async write operation
-                networkStream.BeginWrite(data, 0, data.Length, WriteCallback, null);
-                unchecked
-                {
-                    _bytesSent += data.Length;
-                }
+                //According to msdn, the WriteAsync call is thread-safe.
+                //No need to use lock
+                networkStream.BeginWrite(data, offset, length, WriteCallback, null);
+                
+                Interlocked.Add(ref _bytesSent, length);
             }
             catch (Exception e)
             {
-               Disconnect();
-               throw new ConnectionIsLostException(innerException: e,
-                    message: "Write operation was failed");
+                Disconnect();
+                throw new ConnectionIsLostException(innerException: e,
+                     message: "Write operation was failed");
             }
         }
+
+        readonly object _writeLocker = new object();
 
         private void WriteCallback(IAsyncResult result)
         {
@@ -204,7 +208,6 @@ namespace TNT.Tcp
 
                 var buffer = result.AsyncState as byte[];
                 var readed = new byte[bytesToRead];
-                //Array.Copy(buffer, readed, read);
                 Buffer.BlockCopy(buffer, 0, readed, 0, bytesToRead);
 
                 unchecked
@@ -231,9 +234,5 @@ namespace TNT.Tcp
                 LocalEndpointName = Client.Client.LocalEndPoint.ToString();
             }
         }
-
-     
-
-       
     }
 }

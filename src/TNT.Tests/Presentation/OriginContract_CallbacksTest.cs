@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using NUnit.Framework;
 using TNT.Contract.Origin;
-using TNT.Tests.Presentation.Contracts;
+using TNT.Tests.Contracts;
 
 namespace TNT.Tests.Presentation
 {

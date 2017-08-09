@@ -5,13 +5,11 @@ using TNT.Presentation.Deserializers;
 using TNT.Presentation.ReceiveDispatching;
 using TNT.Presentation.Serializers;
 using TNT.Transport;
-using TNT.Transport.Sending;
 
 namespace TNT.Api
 {
     public class PresentationBuilder<TContract> where TContract:class
     {
-        public Func<ISendPduBehaviour> SendMessageSequenceBehaviourFactory { get; private set; } = ()=> new FIFOSendPduBehaviour();
 
         public Func<IDispatcher> ReceiveDispatcherFactory { get; private set; } = ()=>new ConveyorDispatcher();
 
@@ -41,18 +39,7 @@ namespace TNT.Api
 
         
 
-        public PresentationBuilder<TContract> UseSendSeparationBehaviour<TSendMessageSequenceBehaviour>() 
-            where TSendMessageSequenceBehaviour: ISendPduBehaviour, new()
-        {
-            return UseSendSeparationBehaviour(()=>new TSendMessageSequenceBehaviour());
-        }
-        public PresentationBuilder<TContract> UseSendSeparationBehaviour(Func<ISendPduBehaviour> sendMessageSequenceBehaviourFactory)
-        {
-            if (sendMessageSequenceBehaviourFactory == null)
-                throw new ArgumentNullException(nameof(sendMessageSequenceBehaviourFactory));
-            SendMessageSequenceBehaviourFactory = sendMessageSequenceBehaviourFactory;
-            return this;
-        }
+      
         public PresentationBuilder<TContract> UseReceiveDispatcher<TDispatcher>()
             where TDispatcher : IDispatcher, new()
         {

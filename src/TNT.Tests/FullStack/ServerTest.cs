@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NUnit.Framework.Internal;
+﻿using System.Linq;
 using NUnit.Framework;
 using TNT.Api;
-using TNT.Presentation;
 using TNT.Testing;
-using TNT.Tests.Presentation.Contracts;
+using TNT.Tests.Contracts;
 
-namespace TNT.Tests.Presentation.FullStack
+namespace TNT.Tests.FullStack
 {
     [TestFixture]
     public class ServerTest

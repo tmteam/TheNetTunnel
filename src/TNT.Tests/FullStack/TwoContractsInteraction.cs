@@ -1,17 +1,12 @@
 ﻿using System;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Moq;
 using NUnit.Framework;
 using TNT.Api;
-using TNT.Exceptions;
-using TNT.Presentation;
 using TNT.Presentation.ReceiveDispatching;
 using TNT.Testing;
-using TNT.Tests.Presentation.Contracts;
+using TNT.Tests.Contracts;
 
-namespace TNT.Tests.Presentation.FullStack
+namespace TNT.Tests.FullStack
 {
     [TestFixture]
     public class TwoContractsInteraction
