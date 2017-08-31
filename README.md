@@ -1,2 +1,7 @@
 # TheNetTunnel
-Lightweight Tcp Client Server framework with rpc (remote procedure call)  for .net 3.5+
+Tcp Client Server rpc library. Protobuf and or custom serialization support.
+
+To install TNT, run the following command in the Package Manager Console:
+PM> Install-Package TNT   
+
+
