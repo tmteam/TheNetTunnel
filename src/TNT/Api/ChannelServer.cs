@@ -20,7 +20,6 @@ namespace TNT.Api
 
         public bool IsListening {
             get { return Listener.IsListening; }
-            set { Listener.IsListening = value; }
         }
 
         public event Action<object, BeforeConnectEventArgs<TContract, TChannel>> 
@@ -36,7 +35,43 @@ namespace TNT.Api
             Listener = listener;
             Listener.Accepted += _listener_Accepted;
         }
+        public void StartListening()
+        {
+            if (IsListening)
+                throw new InvalidOperationException("Server is already listening");
+            Listener.IsListening = true;
+        }
 
+        public void StopListening()
+        {
+            Listener.IsListening = false;
+        }
+
+        public IEnumerable<IConnection<TContract, TChannel>> GetAllConnections() {
+            return _connections.Values.ToArray();
+        }
+
+        private void Channel_OnDisconnect(object obj, ErrorMessage cause)
+        {
+            IConnection<TContract, TChannel> connection;
+            _connections.TryRemove((IChannel)obj, out connection);
+            if (connection != null)
+                Disconnected?.Invoke(this, new ClientDisconnectEventArgs<TContract, TChannel>(connection, cause));
+        }
+
+        public void Close()
+        {
+            StopListening();
+            foreach (var allConnection in GetAllConnections())
+            {
+                allConnection.Channel.Disconnect();
+            }
+        }
+
+        public void Dispose()
+        {
+            Close();
+        }
         private void _listener_Accepted(IChannelListener<TChannel> sender, TChannel channel)
         {
             channel.OnDisconnect += Channel_OnDisconnect;
@@ -55,30 +90,6 @@ namespace TNT.Api
             _connections.TryAdd(channel, connection);
             AfterConnect?.Invoke(this, connection);
         }
-        public IEnumerable<IConnection<TContract, TChannel>> GetAllConnections() {
-            return _connections.Values.ToArray();
-        }
 
-        private void Channel_OnDisconnect(object obj, ErrorMessage cause)
-        {
-            IConnection<TContract, TChannel> connection;
-            _connections.TryRemove((IChannel)obj, out connection);
-            if (connection != null)
-                Disconnected?.Invoke(this, new ClientDisconnectEventArgs<TContract, TChannel>(connection, cause));
-        }
-
-        public void Close()
-        {
-            this.IsListening = false;
-            foreach (var allConnection in GetAllConnections())
-            {
-                allConnection.Channel.Disconnect();
-            }
-        }
-
-        public void Dispose()
-        {
-            Close();
-        }
     }
 }

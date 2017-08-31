@@ -11,7 +11,9 @@ namespace TNT.Api
         event Action<object, IConnection<TContract, TChannel>> AfterConnect;
         event Action<object, ClientDisconnectEventArgs<TContract, TChannel>> Disconnected;
         int ConnectionsCount { get; }
-        bool IsListening { get; set; }
+        void StartListening();
+        void StopListening();
+        bool IsListening { get; }
         IEnumerable<IConnection<TContract, TChannel>> GetAllConnections();
         void Close();
     }

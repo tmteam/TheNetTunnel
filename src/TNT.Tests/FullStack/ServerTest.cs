@@ -13,7 +13,7 @@ namespace TNT.Tests.FullStack
         public void ServerAcceptConnection_BeforeConnectRaised()
         {
             var server = new TestChannelServer<ITestContract>(TntBuilder.UseContract<ITestContract, TestContractMock>());
-            server.IsListening = true;
+            server.StartListening();
             BeforeConnectEventArgs<ITestContract, TestChannel> connectionArgs = null;
             server.BeforeConnect  += (sender, args) => connectionArgs = args;
 
@@ -29,7 +29,7 @@ namespace TNT.Tests.FullStack
         public void ServerAcceptConnection_AfterConnectRaised()
         {
             var server = new TestChannelServer<ITestContract>(TntBuilder.UseContract<ITestContract,TestContractMock>());
-            server.IsListening = true; 
+            server.StartListening(); 
             IConnection<ITestContract, TestChannel> incomeContractConnection = null;
             server.AfterConnect += (sender, income) => incomeContractConnection = income;
             var clientChannel = new TestChannel();
@@ -43,7 +43,7 @@ namespace TNT.Tests.FullStack
         public void ServerAcceptConnection_AllowReceiveEqualTrue()
         {
             var server = new TestChannelServer<ITestContract>(TntBuilder.UseContract<ITestContract, TestContractMock>());
-            server.IsListening = true;
+            server.StartListening();
             var clientChannel = new TestChannel();
             TntBuilder.UseContract<ITestContract>().UseChannel(clientChannel).Build();
             server.TestListener.ImmitateAccept(clientChannel);
@@ -54,7 +54,7 @@ namespace TNT.Tests.FullStack
         public void ClientDisconnected_DisconnectedRaised()
         {
             var server = new TestChannelServer<ITestContract>(TntBuilder.UseContract<ITestContract, TestContractMock>());
-            server.IsListening = true;
+            server.StartListening();
             ClientDisconnectEventArgs<ITestContract, TestChannel> disconnectedConnection = null;
             
             server.Disconnected += (sender, args) => disconnectedConnection = args;

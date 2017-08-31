@@ -101,7 +101,7 @@ namespace TNT.LocalSpeedTest
                 .UseReceiveDispatcher<ConveyorDispatcher>()
                 .CreateTcpServer(IPAddress.Loopback, 12345))
             {
-                server.IsListening = true;
+                server.StartListening(); 
 
                 using (var client = TntBuilder
                     .UseContract<ISpeedTestContract>()

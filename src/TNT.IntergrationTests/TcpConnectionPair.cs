@@ -55,7 +55,7 @@ namespace TNT.IntegrationTests
         {
             _eventAwaiter = new TNT.Tests.EventAwaiter<IConnection<TOriginContractInterface, TcpChannel>>();
             Server.AfterConnect += _eventAwaiter.EventRaised;
-            Server.IsListening = true;
+            Server.StartListening();
             ClientChannel.Connect(new IPEndPoint(IPAddress.Loopback, 12345));
             OriginConnection = _eventAwaiter.WaitOneOrDefault(500);
             Assert.IsNotNull(OriginConnection);

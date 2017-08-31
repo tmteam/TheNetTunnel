@@ -21,7 +21,7 @@ namespace Example.Stage3_IntroducingToTestingExample
                 .UseReceiveDispatcher<NotThreadDispatcher>(); //Use "no thread dispatcher" to perform the calls in the calling thread
 
             var server = new TestChannelServer<IStage3EchoContract>(serverBuilder);
-            server.IsListening = true;
+            server.StartListening();
 
             var clientConnection = TntBuilder
                 .UseContract<IStage3EchoContract>()

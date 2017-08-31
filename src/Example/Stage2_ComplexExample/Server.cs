@@ -29,7 +29,7 @@ namespace Example.Stage2Example
                 if (_tntServer.ConnectionsCount >= 10)
                     arg.AllowConnection = false;
             };
-            _tntServer.IsListening = true;
+            _tntServer.StartListening();
             Console.WriteLine("Server opened");
 
         }

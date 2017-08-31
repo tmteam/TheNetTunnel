@@ -21,7 +21,7 @@ namespace TNT.SpeedTest.Server
                 .UseReceiveDispatcher<ConveyorDispatcher>()
                 .CreateTcpServer(IPAddress.Any, port);
 
-            server.IsListening = true;
+            server.StartListening();
             Console.WriteLine($"Speed test server opened at port {port}");
 
             while (true)

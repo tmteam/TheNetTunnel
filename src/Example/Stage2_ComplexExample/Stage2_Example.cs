@@ -41,9 +41,11 @@ namespace Example.Stage2_ComplexExample
 
             Console.WriteLine("Connecting to the server");
 
-          
+           //Using statefull mode here:
+
             using (var client = TntBuilder   // socket exception can be thrown here
                    .UseContract<IStage2Contract>()
+                   //.UseContractInitalization((c,_)=>{}) place an additional initialization here
                    .CreateTcpClientConnection(IPAddress.Loopback, 12345))
             {
                 //subscribing for income message callback:

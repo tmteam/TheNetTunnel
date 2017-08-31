@@ -29,7 +29,7 @@ namespace Example.Stage1_EasyStart
             */
 
             Console.WriteLine("Start listening...");
-            server.IsListening = true;
+            server.StartListening();
             Console.WriteLine("listening is started");
 
             #endregion
