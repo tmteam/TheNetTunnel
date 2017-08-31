@@ -17,6 +17,7 @@ namespace TNT.Exceptions.Remote
             bool isFatal,
             short? messageId,
             short? askId,
+
             string message = null, 
             Exception innerException = null)
             :base(isFatal, messageId, askId,  $"[{id}]"+ (message??(" tnt call exception")), innerException)

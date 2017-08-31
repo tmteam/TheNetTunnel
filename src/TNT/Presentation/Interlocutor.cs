@@ -13,9 +13,9 @@ namespace TNT.Presentation
     /// </summary>
     public class Interlocutor:IInterlocutor
     {
-        private readonly IMessenger _messenger;
+        private readonly IMessenger  _messenger;
         private readonly IDispatcher _receiveDispatcher;
-        private readonly int _maxAnsDelay;
+        private readonly int         _maxAnsDelay;
 
         private readonly ConcurrentDictionary<int, Action<object[]>> _saySubscribtion 
             = new ConcurrentDictionary<int, Action<object[]>>();
@@ -26,7 +26,7 @@ namespace TNT.Presentation
 
         private readonly ConcurrentDictionary<short, AnswerAwaiter > _answerAwaiters = new ConcurrentDictionary<short, AnswerAwaiter>();
 
-        public int lastUsedAskId = 0;
+        public int lastUsedAskId;
 
         public Interlocutor(IMessenger messenger, IDispatcher receiveDispatcher, int maxAnsDelay = 3000)
         {
@@ -38,11 +38,8 @@ namespace TNT.Presentation
             _messenger.OnAns += _messenger_OnAns;
             _messenger.ChannelIsDisconnected += _messenger_ChannelIsDisconnected;
             _messenger.OnException += _messenger_OnException1;
-
         }
-
-       
-
+        
         /// <summary>
         /// Sends "Say" message with "values" arguments
         /// </summary>
@@ -81,7 +78,9 @@ namespace TNT.Presentation
         public void SetIncomeSayCallHandler(int messageId, Action<object[]> callback)
         {
             if (!_saySubscribtion.TryAdd(messageId, callback))
+            {
                 throw new ArgumentException($"say {messageId} already subscribed");
+            }
         }
         /// <summary>
         /// Set income Say message Handler
@@ -89,8 +88,10 @@ namespace TNT.Presentation
         ///<exception cref="ArgumentException">already contains ask messageId handler</exception>
         public void SetIncomeAskCallHandler<T>(int messageId, Func<object[], T> callback)
         {
-            if (!_askSubscribtion.TryAdd(messageId, (args)=> callback(args)))
+            if (!_askSubscribtion.TryAdd(messageId, (args) => callback(args)))
+            {
                 throw new ArgumentException($"ask {messageId} already subscribed");
+            }
         }
         /// <summary>
         /// Unsubscribes request handler
@@ -108,7 +109,7 @@ namespace TNT.Presentation
         {
             //use not conveyor. 
             AnswerAwaiter awaiter;
-            _answerAwaiters.TryRemove((short) askId, out awaiter);
+            _answerAwaiters.TryRemove(askId, out awaiter);
             //in case of timeoutException awaiter is still in dictionary
             if (awaiter == null)
             {
@@ -125,7 +126,7 @@ namespace TNT.Presentation
         private void _messenger_OnException1(IMessenger arg1, Exception exception)
         {
             var callException = exception as TntCallException;
-            if (callException != null && callException.AskId.HasValue)
+            if (callException?.AskId != null)
             {
                 AnswerAwaiter awaiter;
                 _answerAwaiters.TryRemove((short) callException.AskId, out awaiter);
@@ -136,7 +137,6 @@ namespace TNT.Presentation
                 // what shall we do?
             }
         }
-     
 
         private void _receiveDispatcher_OnNewMessage(IDispatcher arg1, RequestMessage message)
         {
@@ -146,8 +146,13 @@ namespace TNT.Presentation
                 {
                     Func<object[], object> askHandler;
                     _askSubscribtion.TryGetValue(message.TypeId, out askHandler);
+
+                    Console.WriteLine($"_askSubscribtion count -> {_askSubscribtion.Count} \n");
+
                     if (askHandler == null)
                     {
+                        Console.WriteLine($"_channel_OnReceive message type id = {message.TypeId} \n");
+
                         _messenger.HandleRequestProcessingError(
                             new ErrorMessage(
                                 messageId: message.TypeId,
@@ -158,7 +163,7 @@ namespace TNT.Presentation
                     }
                     object answer = null;
                     answer = askHandler.Invoke(message.Arguments);
-                    _messenger.Ans((short) -message.TypeId, (short) message.AskId.Value, answer);
+                    _messenger.Ans((short) -message.TypeId, message.AskId.Value, answer);
                 }
                 else
                 {
@@ -202,6 +207,7 @@ namespace TNT.Presentation
                     awaiter.SetErrorResult(cause);
             }
         }
+
         class AnswerAwaiter
         {
             private readonly short _messageId;
@@ -217,6 +223,7 @@ namespace TNT.Presentation
                 _askId = askId;
                 _event = new ManualResetEvent(false);
             }
+
             /// <summary>
             /// Waits for the operation result
             /// </summary>

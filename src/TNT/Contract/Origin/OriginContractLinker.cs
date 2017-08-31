@@ -10,19 +10,27 @@ namespace TNT.Contract.Origin
         public static ContractInfo Link<TInterface>(TInterface contract, IInterlocutor interlocutor)
         {
             var contractType = contract.GetType();
+
+            Console.WriteLine($"Full name contract -> {contractType.FullName} \n");
+
             var interfaceType = typeof(TInterface);
+
+            Console.WriteLine($"Full name interfaceType -> {interfaceType.FullName} \n");
+
             ContractInfo contractMemebers = GetContractMemebers(contractType, interfaceType);
             foreach (var method in contractMemebers.GetMethods())
             {
                 if (method.Value.ReturnParameter.ParameterType == typeof(void))
                 {
+                    Console.WriteLine($"Say method name -> {method.Value.Name} message ID -> {method.Key} \n");
                     //Say handler method:
-                    interlocutor.SetIncomeSayCallHandler(method.Key, (args) => method.Value.Invoke(contract, args));
+                    interlocutor.SetIncomeSayCallHandler(method.Key, args => method.Value.Invoke(contract, args));
                 }
                 else
                 {
+                    Console.WriteLine($"Ask method name -> {method.Value.Name} message ID -> {method.Key}  \n");
                     //Ask handler method:
-                    interlocutor.SetIncomeAskCallHandler(method.Key, (args) => method.Value.Invoke(contract, args));
+                    interlocutor.SetIncomeAskCallHandler(method.Key, args => method.Value.Invoke(contract, args));
                 }
             }
             OriginCallbackDelegatesHandlerFactory.CreateFor(contractMemebers, contract, interlocutor);

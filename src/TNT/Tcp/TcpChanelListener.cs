@@ -42,8 +42,7 @@ namespace TNT.Tcp
             }
         }
         public event Action<IChannelListener<TcpChannel>, TcpChannel> Accepted;
-
-
+        
         private void EndAcceptTcpClient(IAsyncResult state)
         {
             bool needAccept = true;

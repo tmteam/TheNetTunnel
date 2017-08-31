@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Net.Sockets;
 using TNT.Api;
 using TNT.Presentation;
 
@@ -24,10 +25,13 @@ namespace TNT.Tcp
                 return channel;
             }).Build();
         }
+        /// <summary>
+        /// Connect to remote tcp point
+        /// </summary>
+        /// <exception cref="SocketException">Connection failed</exception>
         public static IConnection<TContract, TcpChannel> CreateTcpClientConnection<TContract>(
             this PresentationBuilder<TContract> builder, IPAddress ip, int port)
             where TContract : class
-
         {
             return CreateTcpClientConnection(builder, new IPEndPoint(ip, port));
         }

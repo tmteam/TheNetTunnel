@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 using TNT.Exceptions.Local;
-using TNT.Exceptions.Remote;
 using TNT.Presentation.Serializers;
 using TNT.Transport;
 
@@ -105,7 +100,7 @@ namespace TNT.Presentation
         public void SendError(ErrorMessage errorInfo)
         {
             var stream = _channel.CreateStreamForSend();
-
+            
             Tools.WriteShort((short)Messenger.ExceptionMessageTypeId, to: stream);
             new ErrorMessageSerializer().SerializeT(errorInfo, stream);
             stream.Position = 0;

@@ -16,6 +16,7 @@ namespace TNT.Api
 
         readonly ConcurrentDictionary<IChannel, IConnection<TContract, TChannel>> _connections
             = new ConcurrentDictionary<IChannel, IConnection<TContract, TChannel>>();
+        public int ConnectionsCount { get { return _connections.Count; } }
 
         public bool IsListening {
             get { return Listener.IsListening; }
@@ -54,7 +55,6 @@ namespace TNT.Api
             _connections.TryAdd(channel, connection);
             AfterConnect?.Invoke(this, connection);
         }
-
         public IEnumerable<IConnection<TContract, TChannel>> GetAllConnections() {
             return _connections.Values.ToArray();
         }

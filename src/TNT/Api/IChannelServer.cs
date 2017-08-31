@@ -10,7 +10,8 @@ namespace TNT.Api
         event Action<object, BeforeConnectEventArgs<TContract, TChannel>>  BeforeConnect;
         event Action<object, IConnection<TContract, TChannel>> AfterConnect;
         event Action<object, ClientDisconnectEventArgs<TContract, TChannel>> Disconnected;
-	    bool IsListening { get; set; }
+        int ConnectionsCount { get; }
+        bool IsListening { get; set; }
         IEnumerable<IConnection<TContract, TChannel>> GetAllConnections();
         void Close();
     }
