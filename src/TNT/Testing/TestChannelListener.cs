@@ -15,7 +15,7 @@ namespace TNT.Testing
                 throw  new  InvalidOperationException();
             var thisChannel = new TestChannel();
             var pair = TntTestHelper.CreateChannelPair(thisChannel, incomeChannel);
-            pair.Connect();
+            pair.ConnectAndStartReceiving();
             Accepted?.Invoke(this, thisChannel);
             return pair;
         }

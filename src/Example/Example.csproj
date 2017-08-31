@@ -33,6 +33,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="protobuf-net, Version=2.3.1.0, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
+      <HintPath>..\packages\protobuf-net.2.3.1\lib\net40\protobuf-net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -43,12 +47,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EasyStartExample.cs" />
+    <Compile Include="Stage2_ComplexExample\IStage2Contract.cs" />
+    <Compile Include="Stage2_ComplexExample\Server.cs" />
+    <Compile Include="Stage2_ComplexExample\Stage2ContractImplementation.cs" />
+    <Compile Include="Stage2_ComplexExample\Stage2_Example.cs" />
+    <Compile Include="Stage1_EasyStart\Stage1_EasyStartExample.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Stage3_IntroducingToTestingExample\Stage3_Example.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TNT\TNT.csproj">
@@ -56,6 +66,7 @@
       <Name>TNT</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

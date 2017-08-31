@@ -2,9 +2,9 @@
 using System.Net;
 using TNT;
 
-namespace Example
+namespace Example.Stage1_EasyStart
 {
-    public class EasyStartExample
+    public class Stage1_EasyStartExample
     {
         public void Run()
         {
@@ -17,7 +17,7 @@ namespace Example
 
             Console.WriteLine("Opening the server...");
             var server = TntBuilder
-                .UseContract<IChatContract, ServerChatContract>()
+                .UseContract<IStage1Contract, Stage2Contract>()
                 .CreateTcpServer(IPAddress.Any, 12345);
             /*
              * Uncomment folowing strings to see the order of operations:
@@ -43,7 +43,7 @@ namespace Example
                     break;
                 //Creating new client connection
                 using (var client = TntBuilder
-                    .UseContract<IChatContract>()
+                    .UseContract<IStage1Contract>()
                     .CreateTcpClientConnection(IPAddress.Loopback, 12345))
                 {
                    //Sending the message in "fire and foget" style, because the return type is void
@@ -57,7 +57,7 @@ namespace Example
     /// <summary>
     /// Interface (contract) for client server interaction
     /// </summary>
-    public interface IChatContract
+    public interface IStage1Contract
     {
         [TntMessage(1)] 
         //Message type number 1. Return type is void so the message sends in "fire and foget" style
@@ -66,9 +66,9 @@ namespace Example
     /// <summary>
     /// Server implementation of the interaction contract
     /// </summary>
-    public class ServerChatContract : IChatContract
+    public class Stage2Contract : IStage1Contract
     {
-        public ServerChatContract()
+        public Stage2Contract()
         {
             //Server contract creates one time for every connection
             //Console.WriteLine("Server contract is constructed");
