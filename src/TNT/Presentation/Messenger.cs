@@ -160,8 +160,6 @@ namespace TNT.Presentation
             _inputSayMessageDeserializeInfos.TryGetValue(id, out sayDeserializer);
             if (sayDeserializer == null)
             {
-                Console.WriteLine($"_channel_OnReceive id = {id} \n");
-
                 HandleRequestProcessingError(
                     new ErrorMessage(id, data.TryReadShort(),
                         ErrorType.ContractSignatureError,
