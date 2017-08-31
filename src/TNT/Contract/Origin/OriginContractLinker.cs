@@ -11,24 +11,18 @@ namespace TNT.Contract.Origin
         {
             var contractType = contract.GetType();
 
-            Console.WriteLine($"Full name contract -> {contractType.FullName} \n");
-
             var interfaceType = typeof(TInterface);
-
-            Console.WriteLine($"Full name interfaceType -> {interfaceType.FullName} \n");
 
             ContractInfo contractMemebers = GetContractMemebers(contractType, interfaceType);
             foreach (var method in contractMemebers.GetMethods())
             {
                 if (method.Value.ReturnParameter.ParameterType == typeof(void))
                 {
-                    Console.WriteLine($"Say method name -> {method.Value.Name} message ID -> {method.Key} \n");
                     //Say handler method:
                     interlocutor.SetIncomeSayCallHandler(method.Key, args => method.Value.Invoke(contract, args));
                 }
                 else
                 {
-                    Console.WriteLine($"Ask method name -> {method.Value.Name} message ID -> {method.Key}  \n");
                     //Ask handler method:
                     interlocutor.SetIncomeAskCallHandler(method.Key, args => method.Value.Invoke(contract, args));
                 }
@@ -51,7 +45,7 @@ namespace TNT.Contract.Origin
                     continue;
 
                 var attribute = Attribute.GetCustomAttribute(meth,
-                    typeof(ContractMessageAttribute)) as ContractMessageAttribute;
+                    typeof(TntMessage)) as TntMessage;
                 if (attribute == null)
                     throw new ContractMemberAttributeMissingException(interfaceType, meth.Name);
 
@@ -62,7 +56,7 @@ namespace TNT.Contract.Origin
             {
                 var attribute = Attribute.GetCustomAttribute(
                     propertyInfo,
-                    typeof(ContractMessageAttribute)) as ContractMessageAttribute;
+                    typeof(TntMessage)) as TntMessage;
 
                 if (attribute == null)
                     throw new ContractMemberAttributeMissingException(interfaceType, propertyInfo.Name);

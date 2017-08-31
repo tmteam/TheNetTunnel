@@ -147,12 +147,8 @@ namespace TNT.Presentation
                     Func<object[], object> askHandler;
                     _askSubscribtion.TryGetValue(message.TypeId, out askHandler);
 
-                    Console.WriteLine($"_askSubscribtion count -> {_askSubscribtion.Count} \n");
-
                     if (askHandler == null)
                     {
-                        Console.WriteLine($"_channel_OnReceive message type id = {message.TypeId} \n");
-
                         _messenger.HandleRequestProcessingError(
                             new ErrorMessage(
                                 messageId: message.TypeId,

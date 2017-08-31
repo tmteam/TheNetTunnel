@@ -4,7 +4,7 @@ namespace TNT.Tests.Contracts
 {
     public interface IExceptionalContract
     {
-        [ContractMessage(1)] int Ask();
-        [ContractMessage(2)] void Say();
+        [TntMessage(1)] int Ask();
+        [TntMessage(2)] void Say();
     }
 }

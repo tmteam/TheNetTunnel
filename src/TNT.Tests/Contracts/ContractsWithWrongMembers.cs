@@ -25,42 +25,42 @@ namespace TNT.Tests.Contracts
 
     public interface IContractWithNonDelegateProperty
     {
-        [ContractMessage(1)]
+        [TntMessage(1)]
         int propertyWithoutAttribute { get; set; }
     }
     public interface IContractWithSameAskAndEventId
     {
-        [ContractMessage(1)]
+        [TntMessage(1)]
         string Ask();
 
-        [ContractMessage(1)]
+        [TntMessage(1)]
         Func<int> OnAsk { get; set; }
     }
     public interface IContractWithSameEventId
     {
-        [ContractMessage(1)]
+        [TntMessage(1)]
         Action OnSay { get; set; }
 
-        [ContractMessage(1)]
+        [TntMessage(1)]
         Func<int> OnAsk { get; set; }
     }
     public interface IContractWithSameSayId
     {
-        [ContractMessage(1)]
+        [TntMessage(1)]
         void Say1();
 
-        [ContractMessage(1)]
+        [TntMessage(1)]
         void Say2();
     }
     public interface IUnserializeableContract
     {
-        [ContractMessage(1)]
+        [TntMessage(1)]
         void Say(EventArgs arg);
     }
 
     public interface IUnDeserializeableContract
     {
-        [ContractMessage(1)]
+        [TntMessage(1)]
         EventArgs Ask();
     }
 }

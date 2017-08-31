@@ -1,7 +1,9 @@
 using System;
+using TNT.Api;
 using TNT.Transport;
 
-namespace TNT.Api
+// ReSharper disable once CheckNamespace
+namespace TNT
 {
     public static class TntBuilder
     {

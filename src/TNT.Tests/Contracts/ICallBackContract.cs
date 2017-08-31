@@ -5,16 +5,16 @@ namespace TNT.Tests.Contracts
 {
     public interface ICallBackContract
     {
-        [ContractMessage(CallBackContract.AskSummId)]
+        [TntMessage(CallBackContract.AskSummId)]
         Func<double, double, double> AskSumm { get; set; }
 
-        [ContractMessage(CallBackContract.AskVoidId)]
+        [TntMessage(CallBackContract.AskVoidId)]
         Func<double> AskVoid { get; set; }
 
-        [ContractMessage(CallBackContract.SayIntStringCallBackId)]
+        [TntMessage(CallBackContract.SayIntStringCallBackId)]
         Action<int, string> SayIntString { get; set; }
 
-        [ContractMessage(CallBackContract.SayVoidCallBackId)]
+        [TntMessage(CallBackContract.SayVoidCallBackId)]
         Action SayVoid { get; set; }
     }
 }

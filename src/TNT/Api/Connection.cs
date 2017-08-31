@@ -26,6 +26,8 @@ namespace TNT.Api
         public TChannel Channel { get; }
         public void Dispose()
         {
+            if(Channel.IsConnected)
+                Channel.Disconnect();
         }
     }
 }

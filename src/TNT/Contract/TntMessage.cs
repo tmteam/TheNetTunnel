@@ -1,14 +1,15 @@
 ﻿using System;
 
-namespace TNT.Contract
+// ReSharper disable once CheckNamespace
+namespace TNT
 {
     [AttributeUsage( AttributeTargets.Method
         | AttributeTargets.Property, AllowMultiple = false, Inherited= true)]
-    public class ContractMessageAttribute: Attribute
+    public class TntMessage: Attribute
     {
         private readonly ushort _id;
 
-        public ContractMessageAttribute(ushort id)
+        public TntMessage(ushort id)
         {
             _id = id;
         }

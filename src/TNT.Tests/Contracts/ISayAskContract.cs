@@ -5,17 +5,17 @@ namespace TNT.Tests.Contracts
 {
     public interface ISayAskContract
     {        
-        [ContractMessage(CordInterlocutorMock.SaySomething1Id)]
+        [TntMessage(CordInterlocutorMock.SaySomething1Id)]
         void SaySomething1(int intParameter, string strParametr, double doubleParameter, float floatParametr, bool boolParametr);
 
-        [ContractMessage(CordInterlocutorMock.SaySomethingWithArrayId)]
+        [TntMessage(CordInterlocutorMock.SaySomethingWithArrayId)]
         void SaySomethingWithArray(object[] objs, string[] strings);
 
 
-        [ContractMessage(CordInterlocutorMock.AskMessage1Id)]
+        [TntMessage(CordInterlocutorMock.AskMessage1Id)]
         string AskSomething1(int intParameter, string strParametr, double doubleParameter, float floatParametr, bool boolParametr);
 
-        [ContractMessage(CordInterlocutorMock.AskSomethingWithArrayId)]
+        [TntMessage(CordInterlocutorMock.AskSomethingWithArrayId)]
         bool AskSomethingWithArray(object[] objs, string[] strings);
     }
 }

@@ -2,8 +2,10 @@
 using System.Net.Sockets;
 using TNT.Api;
 using TNT.Presentation;
+using TNT.Tcp;
 
-namespace TNT.Tcp
+// ReSharper disable once CheckNamespace
+namespace TNT
 {
     public static class TcpHelper
     {

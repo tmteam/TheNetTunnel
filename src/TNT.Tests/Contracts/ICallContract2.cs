@@ -6,32 +6,32 @@ namespace TNT.Tests.Contracts
 {
     public interface ICallContract2
     {
-        [ContractMessage(CordInterlocutorMock.ProcedureCallId)]
+        [TntMessage(CordInterlocutorMock.ProcedureCallId)]
         Action ProcedureCall { get; set; }
 
-        [ContractMessage(CordInterlocutorMock.ArgumentProcedureCallId)]
+        [TntMessage(CordInterlocutorMock.ArgumentProcedureCallId)]
         Action<int, string> ArgumentProcedureCall { get; set; }
 
-        [ContractMessage(CordInterlocutorMock.ArrayArgumentProcedureCallId)]
+        [TntMessage(CordInterlocutorMock.ArrayArgumentProcedureCallId)]
         Action<int[], string[]> ArrayArgumentProcedureCall { get; set; }
 
-        [ContractMessage(CordInterlocutorMock.FuncCallReturnsIntId)]
+        [TntMessage(CordInterlocutorMock.FuncCallReturnsIntId)]
         Func<int> FuncCallReturnsInt { get; set; }
 
-        [ContractMessage(CordInterlocutorMock.FuncCallReturnsBoolId)]
+        [TntMessage(CordInterlocutorMock.FuncCallReturnsBoolId)]
         Func<bool> FuncCallReturnsBool { get; set; }
 
 
-        [ContractMessage(CordInterlocutorMock.FuncCallReturnsRefTypeId)]
+        [TntMessage(CordInterlocutorMock.FuncCallReturnsRefTypeId)]
         Func<string> FuncCallReturnsRefType { get; set; }
 
-        [ContractMessage(CordInterlocutorMock.ArgumentFuncCallId)]
+        [TntMessage(CordInterlocutorMock.ArgumentFuncCallId)]
         Func<int,string,int> ArgumentFuncCall { get; set; }
 
-        [ContractMessage(CordInterlocutorMock.ArrayArgumentFuncCallId)]
+        [TntMessage(CordInterlocutorMock.ArrayArgumentFuncCallId)]
         Func<int[], string[], int> ArrayArgumentFuncCall { get; set; }
 
-        [ContractMessage(CordInterlocutorMock.FuncReturnsArrayCallId)]
+        [TntMessage(CordInterlocutorMock.FuncReturnsArrayCallId)]
         Func<int[]> FuncReturnsArrayCall { get; set; }
     }
 }

@@ -110,7 +110,7 @@
     <Compile Include="Contract\ContractInfo.cs" />
     <Compile Include="Contract\Origin\OriginCallbackDelegatesHandlerFactory.cs" />
     <Compile Include="Contract\Origin\OriginContractLinker.cs" />
-    <Compile Include="Contract\ContractMessageAttribute.cs" />
+    <Compile Include="Contract\TntMessage.cs" />
     <Compile Include="Presentation\Interlocutor.cs" />
     <Compile Include="Contract\DelegatePropertyInfo.cs" />
     <Compile Include="Contract\EmitHelper.cs" />

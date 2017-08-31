@@ -5,30 +5,30 @@ namespace TNT.Tests.Contracts
 {
     public interface ITestContract
     {
-        [ContractMessage(1)]
+        [TntMessage(1)]
         void Say();
-        [ContractMessage(2)]
+        [TntMessage(2)]
         void Say(string s);
-        [ContractMessage(3)]
+        [TntMessage(3)]
         void Say(string s, int i, long l);
-        [ContractMessage(4)]
+        [TntMessage(4)]
         int Ask();
-        [ContractMessage(5)]
+        [TntMessage(5)]
         string Ask(string s);
-        [ContractMessage(6)]
+        [TntMessage(6)]
         string Ask(string s, int i, long l);
 
-        [ContractMessage(101)]
+        [TntMessage(101)]
         Action OnSay { get; set; }
-        [ContractMessage(102)]
+        [TntMessage(102)]
         Action<string> OnSayS { get; set; }
-        [ContractMessage(103)]
+        [TntMessage(103)]
         Action<string, int, long> OnSaySIL { get; set; }
-        [ContractMessage(104)]
+        [TntMessage(104)]
         Func<int> OnAsk { get; set; }
-        [ContractMessage(105)]
+        [TntMessage(105)]
         Func<string, string> OnAskS { get; set; }
-        [ContractMessage(106)]
+        [TntMessage(106)]
         Func<string,int, long, string> OnAskSIL { get; set; }
     }
 }
