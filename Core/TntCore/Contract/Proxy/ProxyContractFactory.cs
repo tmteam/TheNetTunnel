@@ -93,7 +93,7 @@ namespace TNT.Contract.Proxy
                 new [] {outputApiFieldInfo},
                 constructorCodeGeneration);
 
-            var finalType = typeBuilder.CreateType();
+            var finalType = typeBuilder.CreateTypeInfo().AsType;
             return (T) Activator.CreateInstance(finalType, interlocutor);
 
         }
@@ -106,8 +106,7 @@ namespace TNT.Contract.Proxy
             {
                 if (methodInfo.IsSpecialName) continue;
 
-                var attribute = Attribute.GetCustomAttribute(methodInfo,
-                    typeof(TntMessage)) as TntMessage;
+                var attribute = methodInfo.GetCustomAttribute<TntMessage>();
                 if (attribute == null)
                     throw new ContractMemberAttributeMissingException(contractInterfaceType, methodInfo.Name);
 
@@ -117,10 +116,7 @@ namespace TNT.Contract.Proxy
             }
             foreach (var propertyInfo in contractInterfaceType.GetProperties())
             {
-                var attribute = Attribute.GetCustomAttribute(
-                    propertyInfo,
-                    typeof(TntMessage)) as TntMessage;
-
+                var attribute = propertyInfo.GetCustomAttribute<TntMessage>();
                 if (attribute == null)
                     throw new ContractMemberAttributeMissingException(contractInterfaceType, propertyInfo.Name);
 
@@ -244,7 +240,7 @@ namespace TNT.Contract.Proxy
                 ilGen.Emit(OpCodes.Ldc_I4, i);
                 ilGen.Emit(OpCodes.Ldelem_Ref);
 
-                if (parameterType.IsValueType)
+                if (parameterType.GetTypeInfo().IsValueType)
                     ilGen.Emit(OpCodes.Unbox_Any, parameterType);
                 else /*if (parameterType!= typeof(object))*/
                     ilGen.Emit(OpCodes.Castclass, parameterType);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 
 namespace TNT.Presentation.Serializers
 {
@@ -9,7 +10,7 @@ namespace TNT.Presentation.Serializers
         
         public EnumSerializer()
         {
-            if(!(typeof(T).IsEnum))
+            if(!(typeof(T).GetTypeInfo().IsEnum))
                 throw  new InvalidOperationException("Type \""+typeof(T)+"\" must be enum type");
             var underLying = Enum.GetUnderlyingType(typeof(T));
 

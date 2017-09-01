@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
 using TNT.Exceptions.ContractImplementation;
@@ -51,9 +52,9 @@ namespace TNT.Presentation.Deserializers
             ans.AddRule(new DeserializationRule(
                 t => Attribute.IsDefined(t, typeof(ProtoBuf.ProtoContractAttribute)), CreateProtoDeserializer));
             ans.AddRule(new DeserializationRule(t=>t.IsArray, CreateArrayDeserializer));
-            ans.AddRule(new DeserializationRule(t=>t.IsEnum, CreateEnumDeserializer));
+            ans.AddRule(new DeserializationRule(t=>t.GetTypeInfo().IsEnum, CreateEnumDeserializer));
             ans.AddRule(new DeserializationRule(PresentationHelper.IsNulable, CreateDotNetNullableSerializer));
-            ans.AddRule(new DeserializationRule(t=>t.IsValueType, CreateDotNetValueTypeSerializer));
+            ans.AddRule(new DeserializationRule(t=>t.GetTypeInfo().IsValueType, CreateDotNetValueTypeSerializer));
             return ans;
         }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Reflection;
 
 namespace TNT.Presentation.Deserializers
 {
@@ -10,7 +11,7 @@ namespace TNT.Presentation.Deserializers
         
         public EnumDeserializer()
         {
-            if(!(typeof(T).IsEnum))
+            if(!(typeof(T).GetTypeInfo().IsEnum))
                 throw  new InvalidOperationException("Type \""+typeof(T)+"\" must be enum type");
             var underLying = Enum.GetUnderlyingType(typeof(T));
 

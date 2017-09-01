@@ -2,6 +2,7 @@
 using TNT.Api;
 using TNT.Exceptions.ContractImplementation;
 using TNT.Presentation;
+using System.Reflection;
 
 namespace TNT.Contract.Origin
 {
@@ -44,19 +45,16 @@ namespace TNT.Contract.Origin
                 if (overrided == null)
                     continue;
 
-                var attribute = Attribute.GetCustomAttribute(meth,
-                    typeof(TntMessage)) as TntMessage;
+                var attribute = meth.GetCustomAttribute<TntMessage>();
                 if (attribute == null)
                     throw new ContractMemberAttributeMissingException(interfaceType, meth.Name);
 
                 contractMemebers.ThrowIfAlreadyContainsId(attribute.Id, overrided);
                 contractMemebers.AddInfo(attribute.Id, overrided);
             }
-            foreach (var propertyInfo in interfaceType.GetProperties())
+            foreach (var propertyInfo in interfaceType.GetTypeInfo().GetProperties())
             {
-                var attribute = Attribute.GetCustomAttribute(
-                    propertyInfo,
-                    typeof(TntMessage)) as TntMessage;
+                var attribute = propertyInfo.GetCustomAttribute<TntMessage>();
 
                 if (attribute == null)
                     throw new ContractMemberAttributeMissingException(interfaceType, propertyInfo.Name);

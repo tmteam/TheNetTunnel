@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using TNT.Exceptions.ContractImplementation;
+using System.Reflection;
 
 namespace TNT.Presentation.Serializers
 {
@@ -47,12 +48,11 @@ namespace TNT.Presentation.Serializers
             ans.AddRule(SerializationRule.Create(new UnicodeSerializer()));
             ans.AddRule(SerializationRule.Create(new UTCFileTimeSerializer()));
             ans.AddRule(SerializationRule.Create(new UTCFileTimeAndOffsetSerializer()));
-            ans.AddRule(new SerializationRule(
-                t => Attribute.IsDefined(t, typeof(ProtoBuf.ProtoContractAttribute)), CreateProtoSerializer));
-            ans.AddRule(new SerializationRule(t => t.IsArray, CreateArraySerializer));
-            ans.AddRule(new SerializationRule(t => t.IsEnum, CreateEnumSerializer));
+            ans.AddRule(new SerializationRule(t => t.GetTypeInfo().IsDefined(typeof(ProtoBuf.ProtoContractAttribute)), CreateProtoSerializer));
+            ans.AddRule(new SerializationRule(t => t.GetTypeInfo().IsArray, CreateArraySerializer));
+            ans.AddRule(new SerializationRule(t => t.GetTypeInfo().IsEnum, CreateEnumSerializer));
             ans.AddRule(new SerializationRule(PresentationHelper.IsNulable, CreateDotNetNullableSerializer));
-            ans.AddRule(new SerializationRule(t => t.IsValueType, CreateDotNetValueTypeSerializer));
+            ans.AddRule(new SerializationRule(t => t.GetTypeInfo().IsValueType, CreateDotNetValueTypeSerializer));
             return ans;
         }
 

@@ -49,7 +49,6 @@ namespace TNT.Contract.Origin
 
             var delegateHandler = Activator.CreateInstance(type, interlocutor);
 
-            //myContract.Callback += delegateHandler.CallbackDelegateHandler;
             foreach (var method in delegateToMethodsMap)
             {
                 method.Key.SetValue(contractObject, Delegate.CreateDelegate(method.Key.PropertyType,delegateHandler, method.Value));
@@ -122,7 +121,7 @@ namespace TNT.Contract.Origin
 
                 delegateToMethodsMap.Add(property.Value, metbuilder.Name);
             }
-            generatedType = typeBuilder.CreateType();
+            generatedType = typeBuilder.CreateTypeInfo().AsType();
         }
     }
 

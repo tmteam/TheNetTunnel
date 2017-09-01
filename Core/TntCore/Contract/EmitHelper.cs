@@ -192,7 +192,7 @@ namespace TNT.Contract
 
                 ilGen.Emit(OpCodes.Ldc_I4, j); //ставим индекс массива
                 ilGen.Emit(OpCodes.Ldarg, j + 1); //грузим аргумент вызова
-                if (callParameters[j].IsValueType) //если это Value Type то боксим
+                if (callParameters[j].GetTypeInfo().IsValueType) //если это Value Type то боксим
                     ilGen.Emit(OpCodes.Box, callParameters[j]);
                 // значения стека сейчас:
                 // 0 - значение
