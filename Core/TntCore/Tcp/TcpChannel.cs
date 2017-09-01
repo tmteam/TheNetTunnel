@@ -68,11 +68,7 @@ namespace TNT.Tcp
                         {
                             readWasStarted = true;
                             NetworkStream networkStream = Client.GetStream();
-                            byte[] buffer = new byte[Client.ReceiveBufferSize];
-
-                            //start async read operation.
-                            //IOException
-                            networkStream.BeginRead(buffer, 0, buffer.Length, ReadCallback, buffer);
+                            var recTask = Receiving(networkStream);
                         }
                     }
                     if (!value)
@@ -83,6 +79,35 @@ namespace TNT.Tcp
             }
         }
 
+        async Task Receiving(NetworkStream stream )
+        {
+            byte[] buffer = new byte[Client.ReceiveBufferSize];
+            try
+            { 
+                while (true)
+                {
+                    var bytesToRead =  await stream.ReadAsync(buffer, 0, buffer.Length);
+
+                    if (bytesToRead == 0)
+                    {
+                        Disconnect();
+                        return;
+                    }
+                    var readed = new byte[bytesToRead];
+                    Buffer.BlockCopy(buffer, 0, readed, 0, bytesToRead);
+
+                    unchecked
+                    {
+                        _bytesReceived += bytesToRead;
+                    }
+                    OnReceive?.Invoke(this, readed);
+                }
+            }
+            catch
+            {
+                Disconnect();
+            }
+        }
 
         public TcpClient Client { get; }
 
@@ -169,8 +194,7 @@ namespace TNT.Tcp
                 //Start async write operation
                 //According to msdn, the WriteAsync call is thread-safe.
                 //No need to use lock
-                networkStream.BeginWrite(data, offset, length, WriteCallback, null);
-                
+               var writeTask = networkStream.WriteAsync(data, offset, length);
                 Interlocked.Add(ref _bytesSent, length);
             }
             catch (Exception e)
@@ -182,52 +206,6 @@ namespace TNT.Tcp
         }
 
         readonly object _writeLocker = new object();
-
-        private void WriteCallback(IAsyncResult result)
-        {
-            try
-            {
-                NetworkStream networkStream = Client.GetStream();
-                networkStream.EndWrite(result);
-            }
-            catch
-            {
-                Disconnect();
-            }
-        }
-
-        private void ReadCallback(IAsyncResult result)
-        {
-            try
-            {
-                var networkStream = Client.GetStream();
-                var bytesToRead = networkStream.EndRead(result);
-
-                if (bytesToRead == 0)
-                {
-                    Disconnect();
-                    return;
-                }
-
-                var buffer = result.AsyncState as byte[];
-                var readed = new byte[bytesToRead];
-                Buffer.BlockCopy(buffer, 0, readed, 0, bytesToRead);
-
-                unchecked
-                {
-                    _bytesReceived += bytesToRead;
-                }
-
-                OnReceive?.Invoke(this, readed);
-
-                //Start reading from the network again.
-                networkStream.BeginRead(buffer, 0, buffer.Length, ReadCallback, buffer);
-            }
-            catch
-            {
-                Disconnect();
-            }
-        }
 
         void SetEndPoints()
         {

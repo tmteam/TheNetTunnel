@@ -12,7 +12,7 @@ namespace Example
                 .UseContract<IExampleContract, ExampleContract>()
                 .CreateTcpServer(IPAddress.Any, 12345);
             server.StartListening();
-
+            
             Console.WriteLine("Type your messages:");
             while (true)
             {
