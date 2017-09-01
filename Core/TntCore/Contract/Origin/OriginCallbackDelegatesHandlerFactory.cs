@@ -49,9 +49,14 @@ namespace TNT.Contract.Origin
 
             var delegateHandler = Activator.CreateInstance(type, interlocutor);
 
+            //Set handlers for origin contract delegate properties:
             foreach (var method in delegateToMethodsMap)
             {
-                method.Key.SetValue(contractObject, Delegate.CreateDelegate(method.Key.PropertyType,delegateHandler, method.Value));
+                var del =  delegateHandler
+                                .GetType()
+                                .GetMethod(method.Value)
+                                .CreateDelegate(method.Key.PropertyType);
+                method.Key.SetValue(contractObject, del);
             }
         }
 
@@ -72,7 +77,6 @@ namespace TNT.Contract.Origin
             EmitHelper.ImplementPublicConstructor(typeBuilder,new[] { outputApiFieldInfo });
             
             var sayMehodInfo = interlocutorType.GetMethod("Say", new[] { typeof(int), typeof(object[]) });
-
 
             foreach (var property in contractMembers.GetProperties())
             {
