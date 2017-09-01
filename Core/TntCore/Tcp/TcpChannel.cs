@@ -24,9 +24,12 @@ namespace TNT.Tcp
         private int _bytesReceived;
         private int _bytesSent;
 
-        public TcpChannel(IPAddress address, int port) : this(new TcpClient(new IPEndPoint(address, port)))
+        public TcpChannel(IPAddress address, int port) 
         {
-
+            Client = new TcpClient();
+            Client.ConnectAsync(address, port).Wait();
+            _wasConnected = Client.Connected;
+            SetEndPoints();
         }
         public TcpChannel(TcpClient client)
         {
@@ -88,7 +91,7 @@ namespace TNT.Tcp
 
         public void Connect(IPEndPoint endPoint)
         {
-            this.Client.Connect(endPoint);
+            this.Client.ConnectAsync(endPoint.Address, endPoint.Port).Wait();
             _wasConnected = IsConnected;
             AllowReceive = true;
             SetEndPoints();
@@ -109,7 +112,7 @@ namespace TNT.Tcp
             {
                 try
                 {
-                    Client.Close();
+                    Client.Dispose();
                 }
                 catch { /* ignored*/ }
             }

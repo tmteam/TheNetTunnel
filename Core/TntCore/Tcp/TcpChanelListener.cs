@@ -1,6 +1,7 @@
 using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 using TNT.Api;
 using TNT.Presentation;
 
@@ -11,7 +12,6 @@ namespace TNT.Tcp
         private readonly IPEndPoint _endpoint;
 
         private TcpListener _listener = null;
-        private IAsyncResult _listenResults = null;
 
         public TcpChanelListener(IPEndPoint endpoint)
         {
@@ -29,42 +29,41 @@ namespace TNT.Tcp
                 if (value)
                 {
                     _listener = new TcpListener(_endpoint);
-                    _listener.Start();
-                    _listenResults = _listener.BeginAcceptTcpClient(EndAcceptTcpClient, _listener);
+                    var task = Listen();
                 }
                 else
                 {
-                    //_listener.EndAcceptTcpClient(_listenResults);
                     _listener.Stop();
                     _listener = null;
-                    _listenResults = null;
                 }
             }
         }
-        public event Action<IChannelListener<TcpChannel>, TcpChannel> Accepted;
-        
-        private void EndAcceptTcpClient(IAsyncResult state)
+
+        async Task Listen()
         {
-            bool needAccept = true;
-            var listener = (TcpListener)state.AsyncState;
-            try
+            
+            while (true)
             {
-                var client = listener.EndAcceptTcpClient(state);
+                var listener = _listener;
+                TcpClient client = null;
+                try
+                {
+                    if (_listener == null)
+                        return;
+                    client = await listener.AcceptTcpClientAsync();
+                }
+                catch (ObjectDisposedException)
+                {
+                    return;
+                }
+                if (_listener == null)
+                    return;
                 var channel = new TcpChannel(client);
                 Accepted?.Invoke(this, channel);
             }
-            catch (ObjectDisposedException)
-            {
-                needAccept = false;
-                return;
-            }
-            finally
-            {
-                if(needAccept)
-                    listener.BeginAcceptTcpClient(EndAcceptTcpClient, listener);
-            }
         }
 
-     
+        public event Action<IChannelListener<TcpChannel>, TcpChannel> Accepted;
+
     }
 }
