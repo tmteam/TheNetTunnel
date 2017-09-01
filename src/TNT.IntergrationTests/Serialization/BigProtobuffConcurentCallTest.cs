@@ -24,6 +24,8 @@ namespace TNT.IntegrationTests.Serialization
         [TestCase(990)]
         [TestCase(1024)]
         [TestCase(2*1024)]
+        [TestCase(ushort.MaxValue+1)]
+        [TestCase(ushort.MaxValue * 2-1)]
         [TestCase(ushort.MaxValue*2)] 
         public void StringPackets_transmitsViaTcp_concurent(int stringLengthInBytes)
         {
@@ -33,7 +35,7 @@ namespace TNT.IntegrationTests.Serialization
                 SingleMessageContract<string>>())
             {
                 //Tasks count:
-                int sentCount = 40;
+                int sentCount = 10;
                 
                 string originStringArgument = generateRandomString(stringLengthInBytes / 2);
 

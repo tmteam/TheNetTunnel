@@ -52,7 +52,6 @@ namespace Example.Stage1_EasyStart
             }
             server.Close();
         }
-    
     }
     /// <summary>
     /// Interface (contract) for client server interaction
