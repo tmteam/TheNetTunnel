@@ -49,8 +49,7 @@ namespace TNT.Presentation.Deserializers
             ans.AddRule(DeserializationRule.Create(new UnicodeDeserializer()));
             ans.AddRule(DeserializationRule.Create(new UTCFileTimeDeserializer()));
             ans.AddRule(DeserializationRule.Create(new UTCFileTimeAndOffsetDeserializer()));
-            ans.AddRule(new DeserializationRule(
-                t => Attribute.IsDefined(t, typeof(ProtoBuf.ProtoContractAttribute)), CreateProtoDeserializer));
+            ans.AddRule(new DeserializationRule(t =>t.GetTypeInfo().IsDefined(typeof(ProtoBuf.ProtoContractAttribute)), CreateProtoDeserializer));
             ans.AddRule(new DeserializationRule(t=>t.IsArray, CreateArrayDeserializer));
             ans.AddRule(new DeserializationRule(t=>t.GetTypeInfo().IsEnum, CreateEnumDeserializer));
             ans.AddRule(new DeserializationRule(PresentationHelper.IsNulable, CreateDotNetNullableSerializer));

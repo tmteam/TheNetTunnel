@@ -54,9 +54,7 @@ namespace TNT.Contract
 
         public static TypeBuilder CreateTypeBuilder(string typeName, string assemblyName = "AutogenAssembly", string moduleName = "AutogenAssembly.Module")
         {
-            var dynGeneratorHostAssembly = AppDomain.CurrentDomain.DefineDynamicAssembly(
-                new AssemblyName(assemblyName+", Version=1.0.0.1"),
-                AssemblyBuilderAccess.Run);
+            var dynGeneratorHostAssembly = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName(Guid.NewGuid().ToString()),AssemblyBuilderAccess.Run);
             var dynModule = dynGeneratorHostAssembly.DefineDynamicModule(moduleName);
 
             TypeBuilder tb = dynModule.DefineType(typeName, TypeAttributes.Public);

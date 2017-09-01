@@ -42,7 +42,10 @@ namespace TNT.Transport
         public void Write(MemoryStream message)
         {
             _sendStreamManager.PrepareForSending(message);
-            Channel.Write(message.GetBuffer(), (int)message.Position, (int)(message.Length - message.Position));
+            ArraySegment<byte> buffer;
+            if (!message.TryGetBuffer(out buffer))
+                throw new InvalidOperationException();
+            Channel.Write(buffer.Array, (int)message.Position, (int)(message.Length - message.Position));
         }
 
       
@@ -59,7 +62,11 @@ namespace TNT.Transport
         public async Task WriteAsync(MemoryStream packet)
         {
             _sendStreamManager.PrepareForSending(packet);
-            Channel.Write(packet.GetBuffer(), 
+            ArraySegment<byte> buffer;
+            if (!packet.TryGetBuffer(out buffer))
+                throw new InvalidOperationException();
+
+            Channel.Write(buffer.Array, 
                 (int)packet.Position,
                 (int)(packet.Length - packet.Position));
         }

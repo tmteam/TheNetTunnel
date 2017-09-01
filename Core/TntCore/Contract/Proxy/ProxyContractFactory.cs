@@ -93,7 +93,7 @@ namespace TNT.Contract.Proxy
                 new [] {outputApiFieldInfo},
                 constructorCodeGeneration);
 
-            var finalType = typeBuilder.CreateTypeInfo().AsType;
+            var finalType = typeBuilder.CreateTypeInfo().AsType();
             return (T) Activator.CreateInstance(finalType, interlocutor);
 
         }
