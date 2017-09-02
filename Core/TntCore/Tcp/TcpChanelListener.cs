@@ -29,6 +29,7 @@ namespace TNT.Tcp
                 if (value)
                 {
                     _listener = new TcpListener(_endpoint);
+                    _listener.Start();
                     var task = Listen();
                 }
                 else

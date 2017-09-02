@@ -10,7 +10,7 @@ namespace Example
         {
             var server = TntBuilder
                 .UseContract<IExampleContract, ExampleContract>()
-                .CreateTcpServer(IPAddress.Any, 12345);
+                .CreateTcpServer(IPAddress.Loopback, 12345);
             server.StartListening();
             
             Console.WriteLine("Type your messages:");

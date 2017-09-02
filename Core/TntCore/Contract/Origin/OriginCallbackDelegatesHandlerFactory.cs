@@ -55,7 +55,7 @@ namespace TNT.Contract.Origin
                 var del =  delegateHandler
                                 .GetType()
                                 .GetMethod(method.Value)
-                                .CreateDelegate(method.Key.PropertyType);
+                                .CreateDelegate(method.Key.PropertyType, delegateHandler);
                 method.Key.SetValue(contractObject, del);
             }
         }
