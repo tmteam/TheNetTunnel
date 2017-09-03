@@ -64,6 +64,7 @@ namespace TNT.Testing
         public bool IsConnected { get; private set; }
 
         public bool AllowReceive
+
         {
             get { return _allowReceive; }
             set

@@ -10,6 +10,7 @@ using TNT.IntegrationTests.Serialization;
 using TNT.Presentation.Deserializers;
 using TNT.Presentation.Serializers;
 using TNT.Tests.Contracts;
+using TNT.IntegrationTests.ContractMocks;
 
 namespace TNT.IntegrationTests
 {

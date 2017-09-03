@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Castle.Components.DictionaryAdapter;
 using NUnit.Framework;
 using TNT.Tests;
+using TNT.IntegrationTests.ContractMocks;
 
 namespace TNT.IntegrationTests.Serialization
 {

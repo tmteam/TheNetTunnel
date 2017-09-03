@@ -10,11 +10,12 @@ using TNT.Presentation;
 using TNT.Tcp;
 using TNT.Tests;
 using TNT.IntegrationTests.ContractMocks;
+using TNT.Testing;
 
-namespace TNT.IntegrationTests.Serialization
+namespace TNT.IntegrationTests.MockChannel
 {
     [TestFixture()]
-    public class BigProtobuffConcurentCallTest
+    public class MockChannel_BigProtobuffConcurentCallTest
     {
         [TestCase(2)]
         [TestCase(10)]
@@ -26,7 +27,7 @@ namespace TNT.IntegrationTests.Serialization
         [TestCase(ushort.MaxValue*2)] 
         public void StringPackets_transmitsViaTcp_concurent(int stringLengthInBytes)
         {
-            using (var tcpPair = new TcpConnectionPair
+            using (var tcpPair = new MockConnectionPair
                 <ISingleMessageContract<string>,
                 ISingleMessageContract<string>,
                 SingleMessageContract<string>>())
@@ -42,7 +43,7 @@ namespace TNT.IntegrationTests.Serialization
 
                 //start monitoring disconnection events. 
                 var serverDisconnectAwaiter
-                    = new EventAwaiter<ClientDisconnectEventArgs<ISingleMessageContract<string>, TcpChannel>>();
+                    = new EventAwaiter<ClientDisconnectEventArgs<ISingleMessageContract<string>, TestChannel>>();
                 tcpPair.Server.Disconnected += serverDisconnectAwaiter.EventRaised;
 
                 var clientDisconnectAwaiter
@@ -124,32 +125,32 @@ namespace TNT.IntegrationTests.Serialization
                 .UseContract<ISingleMessageContract<Company>>()
                 .SetMaxAnsDelay(5 * 60 * 1000);
 
-            using (var tcpPair = new TcpConnectionPair
+            using (var mockPair = new MockConnectionPair
                 <ISingleMessageContract<Company>,
                 ISingleMessageContract<Company>,
-                SingleMessageContract<Company>>(origin,proxy))
+                SingleMessageContract<Company>>(origin, proxy))
             {
                 var originCompany = IntegrationTestsHelper.CreateCompany(sizeOfCompanyInUsers);
                 var receivedList = new List<Company>(parralelTasksCount);
-                tcpPair.OriginContract.SayCalled
+                mockPair.OriginContract.SayCalled
                    += (Sender, received) => receivedList.Add(received);
 
                 //start monitoring the server disconnection event. 
-                var serverDisconnectAwaiter 
-                    = new EventAwaiter<ClientDisconnectEventArgs<ISingleMessageContract<Company>, TcpChannel>>();
-                tcpPair.Server.Disconnected += serverDisconnectAwaiter.EventRaised;
+                var serverDisconnectAwaiter
+                    = new EventAwaiter<ClientDisconnectEventArgs<ISingleMessageContract<Company>, TestChannel>>();
+                mockPair.Server.Disconnected += serverDisconnectAwaiter.EventRaised;
 
                 var clientDisconnectAwaiter
                    = new EventAwaiter<ErrorMessage>();
-                tcpPair.ClientChannel.OnDisconnect += clientDisconnectAwaiter.EventRaised;
-                tcpPair.ClientChannel.OnDisconnect += (s, arg) =>
+                mockPair.ClientChannel.OnDisconnect += clientDisconnectAwaiter.EventRaised;
+                mockPair.ClientChannel.OnDisconnect += (s, arg) =>
                 {
                     Console.WriteLine();
                 };
                 #region sending
                 var sentTasks = new List<Task>(parralelTasksCount);
                 for (var i = 0; i < parralelTasksCount; i++)
-                    sentTasks.Add(new Task(() => tcpPair.ProxyConnection.Contract.Ask(originCompany)));
+                    sentTasks.Add(new Task(() => mockPair.ProxyConnection.Contract.Ask(originCompany)));
                 foreach (var task in sentTasks)
                     task.Start();
                 #endregion
@@ -165,14 +166,14 @@ namespace TNT.IntegrationTests.Serialization
                 catch (Exception e) { doneException = e; }
                 //Check for client disconnection
                 var clientDisconnectArgs = clientDisconnectAwaiter.WaitOneOrDefault(500);
-                
+
                 //Check for server disconnection
                 var serverDisconnectedArg = serverDisconnectAwaiter.WaitOneOrDefault(500);
                 if (clientDisconnectArgs != null || serverDisconnectedArg != null)
                 {
-                    if(clientDisconnectArgs!=null)
+                    if (clientDisconnectArgs != null)
                         Assert.Fail("Client disconnected. Reason: " + clientDisconnectArgs);
-                    else if(serverDisconnectedArg!=null)
+                    else if (serverDisconnectedArg != null)
                         Assert.Fail("Server disconnected. Reason: " + serverDisconnectedArg.ErrorMessageOrNull);
                 }
                 //check for tasks agregate exception
@@ -187,12 +188,13 @@ namespace TNT.IntegrationTests.Serialization
 
                 #region checking for  serialization results
                 Assert.AreEqual(parralelTasksCount, receivedList.Count);
-                foreach (var received in receivedList) {
+                foreach (var received in receivedList)
+                {
                     received.AssertIsSameTo(originCompany);
                 }
                 #endregion
             }
-        }
+         }
         [Test]
         public void HundredOf2mbPacket_transmitsViaTcp_oneByOne()
         {
@@ -202,7 +204,7 @@ namespace TNT.IntegrationTests.Serialization
             var proxy = TntBuilder
                 .UseContract<ISingleMessageContract<Company>>()
                 .SetMaxAnsDelay(5 * 60 * 1000);
-            using (var tcpPair = new TcpConnectionPair
+            using (var tcpPair = new MockConnectionPair
                 <ISingleMessageContract<Company>,
                 ISingleMessageContract<Company>,
                 SingleMessageContract<Company>>(origin,proxy))
@@ -232,7 +234,7 @@ namespace TNT.IntegrationTests.Serialization
             var proxy = TntBuilder
                 .UseContract<ISingleMessageContract<Company>>()
                 .SetMaxAnsDelay(5 * 60 * 1000);
-            using (var tcpPair = new TcpConnectionPair
+            using (var tcpPair = new MockConnectionPair
                 <ISingleMessageContract<Company>,
                 ISingleMessageContract<Company>,
                 SingleMessageContract<Company>>(origin, proxy))

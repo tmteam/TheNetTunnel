@@ -147,7 +147,7 @@ namespace TNT.Tcp
         {
             DisconnectBecauseOf(null);
         }
-
+        object locker = new object();
         public  Task WriteAsync(byte[] data)
         {
             if (!_wasConnected)
@@ -158,14 +158,17 @@ namespace TNT.Tcp
 
             try
             {
-                NetworkStream networkStream = Client.GetStream();
+                lock (locker)
+                {
+                    NetworkStream networkStream = Client.GetStream();
 
-                //According to msdn, the WriteAsync call is thread-safe.
-                //No need to use lock
-                var ans = networkStream.WriteAsync(data, 0, data.Length);
+                    //According to msdn, the WriteAsync call is thread-safe.
+                    //No need to use lock
+                    var ans = networkStream.WriteAsync(data, 0, data.Length);
 
-                Interlocked.Add(ref _bytesSent, data.Length);
-                return ans;
+                    Interlocked.Add(ref _bytesSent, data.Length);
+                    return ans;
+                }
             }
             catch (Exception e)
             {

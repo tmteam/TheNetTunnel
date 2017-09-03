@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 using ProtoBuf;
 
-namespace TNT.IntegrationTests.Serialization
+namespace TNT.IntegrationTests.ContractMocks
 {
     [ProtoContract]
     public class User

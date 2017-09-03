@@ -1,6 +1,6 @@
 using System;
 
-namespace TNT.IntegrationTests.Serialization
+namespace TNT.IntegrationTests.ContractMocks
 {
     public class SingleMessageContract<TMessageArg> : ISingleMessageContract<TMessageArg>
     {
