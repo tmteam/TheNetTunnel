@@ -24,9 +24,12 @@ namespace TNT.Tcp
         private int _bytesReceived;
         private int _bytesSent;
 
-        public TcpChannel(IPAddress address, int port) : this(new TcpClient(new IPEndPoint(address, port)))
+        public TcpChannel(IPAddress address, int port)
         {
-
+            Client = new TcpClient();
+            Client.ConnectAsync(address, port).Wait();
+            _wasConnected = Client.Connected;
+            SetEndPoints();
         }
         public TcpChannel(TcpClient client)
         {
@@ -65,11 +68,7 @@ namespace TNT.Tcp
                         {
                             readWasStarted = true;
                             NetworkStream networkStream = Client.GetStream();
-                            byte[] buffer = new byte[Client.ReceiveBufferSize];
-
-                            //start async read operation.
-                            //IOException
-                            networkStream.BeginRead(buffer, 0, buffer.Length, ReadCallback, buffer);
+                            var recTask = Receiving(networkStream);
                         }
                     }
                     if (!value)
@@ -80,6 +79,35 @@ namespace TNT.Tcp
             }
         }
 
+        async Task Receiving(NetworkStream stream)
+        {
+            byte[] buffer = new byte[Client.ReceiveBufferSize];
+            try
+            {
+                while (true)
+                {
+                    var bytesToRead = await stream.ReadAsync(buffer, 0, buffer.Length);
+
+                    if (bytesToRead == 0)
+                    {
+                        Disconnect();
+                        return;
+                    }
+                    var readed = new byte[bytesToRead];
+                    Buffer.BlockCopy(buffer, 0, readed, 0, bytesToRead);
+
+                    unchecked
+                    {
+                        _bytesReceived += bytesToRead;
+                    }
+                    OnReceive?.Invoke(this, readed);
+                }
+            }
+            catch (Exception e)
+            {
+                Disconnect();
+            }
+        }
 
         public TcpClient Client { get; }
 
@@ -88,7 +116,7 @@ namespace TNT.Tcp
 
         public void Connect(IPEndPoint endPoint)
         {
-            this.Client.Connect(endPoint);
+            this.Client.ConnectAsync(endPoint.Address, endPoint.Port).Wait();
             _wasConnected = IsConnected;
             AllowReceive = true;
             SetEndPoints();
@@ -119,8 +147,8 @@ namespace TNT.Tcp
         {
             DisconnectBecauseOf(null);
         }
-
-        public  Task WriteAsync(byte[] data)
+        object locker = new object();
+        public Task WriteAsync(byte[] data)
         {
             if (!_wasConnected)
                 throw new ConnectionIsNotEstablishedYet("tcp channel was not connected yet");
@@ -130,14 +158,17 @@ namespace TNT.Tcp
 
             try
             {
-                NetworkStream networkStream = Client.GetStream();
+                lock (locker)
+                {
+                    NetworkStream networkStream = Client.GetStream();
 
-                //According to msdn, the WriteAsync call is thread-safe.
-                //No need to use lock
-                var ans = networkStream.WriteAsync(data, 0, data.Length);
+                    //According to msdn, the WriteAsync call is thread-safe.
+                    //No need to use lock
+                    var ans = networkStream.WriteAsync(data, 0, data.Length);
 
-                Interlocked.Add(ref _bytesSent, data.Length);
-                return ans;
+                    Interlocked.Add(ref _bytesSent, data.Length);
+                    return ans;
+                }
             }
             catch (Exception e)
             {
@@ -146,6 +177,7 @@ namespace TNT.Tcp
                      message: "Write operation was failed");
             }
         }
+        object writeLocker = new object();
         /// <summary>
         /// Writes the data to underlying channel
         /// </summary>
@@ -163,11 +195,12 @@ namespace TNT.Tcp
             {
 
                 NetworkStream networkStream = Client.GetStream();
-                //Start async write operation
-                //According to msdn, the WriteAsync call is thread-safe.
-                //No need to use lock
-                networkStream.BeginWrite(data, offset, length, WriteCallback, null);
-                
+                Task writeTask = null;
+                lock (writeLocker)
+                {
+                    writeTask = networkStream.WriteAsync(data, offset, length);
+                    writeTask.Wait();
+                }
                 Interlocked.Add(ref _bytesSent, length);
             }
             catch (Exception e)
@@ -179,52 +212,6 @@ namespace TNT.Tcp
         }
 
         readonly object _writeLocker = new object();
-
-        private void WriteCallback(IAsyncResult result)
-        {
-            try
-            {
-                NetworkStream networkStream = Client.GetStream();
-                networkStream.EndWrite(result);
-            }
-            catch
-            {
-                Disconnect();
-            }
-        }
-
-        private void ReadCallback(IAsyncResult result)
-        {
-            try
-            {
-                var networkStream = Client.GetStream();
-                var bytesToRead = networkStream.EndRead(result);
-
-                if (bytesToRead == 0)
-                {
-                    Disconnect();
-                    return;
-                }
-
-                var buffer = result.AsyncState as byte[];
-                var readed = new byte[bytesToRead];
-                Buffer.BlockCopy(buffer, 0, readed, 0, bytesToRead);
-
-                unchecked
-                {
-                    _bytesReceived += bytesToRead;
-                }
-
-                OnReceive?.Invoke(this, readed);
-
-                //Start reading from the network again.
-                networkStream.BeginRead(buffer, 0, buffer.Length, ReadCallback, buffer);
-            }
-            catch
-            {
-                Disconnect();
-            }
-        }
 
         void SetEndPoints()
         {

@@ -16,7 +16,7 @@ namespace Tnt.LongTests
         [TestCase(150000, 100, 13345)]
         [TestCase(170000, 100, 13346)]
         [TestCase(200000, 100, 13347)]
-        [TestCase(400000, 100, 13348)]
+       // [TestCase(400000, 100, 13348)]
         public void SendAndReceiveViaTcpTest(int length, int concurentLevel, int port)
         {
             TcpClient client;
