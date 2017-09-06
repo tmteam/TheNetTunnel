@@ -4,7 +4,7 @@
     {
         public static TestChannelPair CreateChannelPair()
         {
-            return  new TestChannelPair(new TestChannel(), new TestChannel());
+            return  new TestChannelPair(new TestChannel(true), new TestChannel(true));
         }
         public static TestChannelPair CreateThreadlessChannelPair()
         {

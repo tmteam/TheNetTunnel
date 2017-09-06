@@ -10,6 +10,7 @@ using TNT.Tests.Contracts;
 
 namespace TNT.IntegrationTests
 {
+    
     public class TcpConnectionPair<TProxyContractInterface, TOriginContractInterface, TOriginContractType> : IDisposable
         where TProxyContractInterface: class
         where TOriginContractInterface: class 

@@ -14,7 +14,6 @@ namespace TNT.Testing
         private bool _wasConnected;
         private bool _allowReceive;
         ConcurrentQueue<byte[]> _receiveQueue = new ConcurrentQueue<byte[]>();
-        private Task _receiveQueueHandlerTask = new Task(() => { });
         private  int _bytesReceived;
         private int _bytesSent;
 
@@ -27,9 +26,21 @@ namespace TNT.Testing
             
             _receiveQueue.Enqueue(message);
             if(_threadQueue)
-                _receiveQueueHandlerTask = _receiveQueueHandlerTask.ContinueWith((t) => HandleReceiveQueue());
+            {
+                newDataReveived.Set();
+            }
             else
                 HandleReceiveQueue();
+        }
+        AutoResetEvent newDataReveived = new AutoResetEvent(false);
+        Thread receiveThreadOrNull;
+        void ThreadVoid()
+        {
+            while (IsConnected)
+            {
+                newDataReveived.WaitOne(100);
+                HandleReceiveQueue();
+            }
         }
 
         void HandleReceiveQueue()
@@ -76,10 +87,13 @@ namespace TNT.Testing
 
                 if (_allowReceive)
                 {
-                    if(!_threadQueue)
+                    if (!_threadQueue)
                         HandleReceiveQueue();
-                    else if (_receiveQueueHandlerTask.Status == TaskStatus.Created)
-                        _receiveQueueHandlerTask.Start();
+                    else
+                    {
+                        this.receiveThreadOrNull = new Thread((s) => ThreadVoid());
+                        receiveThreadOrNull.Start();
+                    }
                 }
                 AllowReceiveChanged?.Invoke(this,value);
             }

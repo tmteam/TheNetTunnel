@@ -103,7 +103,7 @@ namespace TNT.Tcp
                     OnReceive?.Invoke(this, readed);
                 }
             }
-            catch
+            catch(Exception e)
             {
                 Disconnect();
             }
@@ -177,6 +177,7 @@ namespace TNT.Tcp
                      message: "Write operation was failed");
             }
         }
+        object writeLocker = new object();
         /// <summary>
         /// Writes the data to underlying channel
         /// </summary>
@@ -194,10 +195,12 @@ namespace TNT.Tcp
             {
 
                 NetworkStream networkStream = Client.GetStream();
-                //Start async write operation
-                //According to msdn, the WriteAsync call is thread-safe.
-                //No need to use lock
-               var writeTask = networkStream.WriteAsync(data, offset, length);
+                Task writeTask = null;
+                lock (writeLocker)
+                {
+                    writeTask = networkStream.WriteAsync(data, offset, length);
+                    writeTask.Wait();
+                }
                 Interlocked.Add(ref _bytesSent, length);
             }
             catch (Exception e)

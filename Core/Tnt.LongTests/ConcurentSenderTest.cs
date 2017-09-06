@@ -58,7 +58,6 @@ namespace Tnt.LongTests
             {
                 Thread.Sleep(1);
             }
-
         }
 
         private static byte[] CreateArray(int length, byte value)
