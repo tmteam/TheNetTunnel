@@ -24,7 +24,7 @@ namespace TNT.Tcp
         private int _bytesReceived;
         private int _bytesSent;
 
-        public TcpChannel(IPAddress address, int port)
+        public TcpChannel(IPAddress address, int port) 
         {
             Client = new TcpClient();
             Client.ConnectAsync(address, port).Wait();
@@ -79,14 +79,14 @@ namespace TNT.Tcp
             }
         }
 
-        async Task Receiving(NetworkStream stream)
+        async Task Receiving(NetworkStream stream )
         {
             byte[] buffer = new byte[Client.ReceiveBufferSize];
             try
-            {
+            { 
                 while (true)
                 {
-                    var bytesToRead = await stream.ReadAsync(buffer, 0, buffer.Length);
+                    var bytesToRead =  await stream.ReadAsync(buffer, 0, buffer.Length);
 
                     if (bytesToRead == 0)
                     {
@@ -103,7 +103,7 @@ namespace TNT.Tcp
                     OnReceive?.Invoke(this, readed);
                 }
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 Disconnect();
             }
@@ -137,7 +137,7 @@ namespace TNT.Tcp
             {
                 try
                 {
-                    Client.Close();
+                    Client.Dispose();
                 }
                 catch { /* ignored*/ }
             }
@@ -148,7 +148,7 @@ namespace TNT.Tcp
             DisconnectBecauseOf(null);
         }
         object locker = new object();
-        public Task WriteAsync(byte[] data)
+        public  Task WriteAsync(byte[] data)
         {
             if (!_wasConnected)
                 throw new ConnectionIsNotEstablishedYet("tcp channel was not connected yet");
