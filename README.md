@@ -53,11 +53,10 @@ It's hard to name a single figure, otrageous overall TNT speed if you're not a m
 All results are performed by [local speed test](https://github.com/tmteam/TheNetTunnel/tree/master/src/TNT.SpeedTest) 
 ```
 
-Result speed: 2.5 - 5 Gbit (no serialization), 0.4 - 1 GBit (protobuff serialization) (see below) 
-Output localhost Delay: 9 microseconds
-Output message overhead: 6 byte per message
-Echo transaction localhost (IO) Delay: 34,87 microseconds
-Echo transaction (I/O) overhead : 8/12 byte per message
+General speed results:
+no serialization: 2.5 - 5 Gbit
+protobuff serialization: 0.4 - 1 GBit
+
 
 
 Output speed:
