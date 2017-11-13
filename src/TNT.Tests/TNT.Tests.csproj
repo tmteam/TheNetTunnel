@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EventAwaiter.cs" />
+    <Compile Include="FullStack\RemoteCallExceptionHandlingTest.cs" />
     <Compile Include="ReceivePduQueueTest.cs" />
     <Compile Include="Serialization\SerializeFactoryTest.cs" />
     <Compile Include="Contracts\ExceptionalContract.cs" />
@@ -67,7 +68,7 @@
     <Compile Include="Contracts\IUnserializeableContract.cs" />
     <Compile Include="FullStack\ConnectionBuilderTest.cs" />
     <Compile Include="Contracts\ITestContract.cs" />
-    <Compile Include="FullStack\RcpCallsExceptionsTest.cs" />
+    <Compile Include="FullStack\ConnectionFailedExceptionsTest.cs" />
     <Compile Include="FullStack\ServerTest.cs" />
     <Compile Include="Contracts\TestContractMock.cs" />
     <Compile Include="Contracts\ContractsWithWrongMembers.cs" />
@@ -88,6 +89,7 @@
     <Compile Include="Presentation\ProxyContractFactory_SayAskContractTests.cs" />
     <Compile Include="Serialization\ProtoSerializerTest.cs" />
     <Compile Include="Serialization\GeneralSerializersTest.cs" />
+    <Compile Include="Serialization\SerializeTestHelper.cs" />
     <Compile Include="Serialization\ValueTypeSerializerTests.cs" />
     <Compile Include="TestTools.cs" />
   </ItemGroup>

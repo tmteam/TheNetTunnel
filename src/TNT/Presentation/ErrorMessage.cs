@@ -11,13 +11,14 @@ namespace TNT.Presentation
             this.MessageId = messageId;
             this.AskId = askId;
             ErrorType = type;
+            AdditionalExceptionInformation = additionalExceptionInformation;
             Exception = RemoteException.Create(type, additionalExceptionInformation, messageId, askId);
         }
        
-        public short? MessageId { get; set; }
-        public short? AskId { get; set; }
-        public ErrorType ErrorType { get; set; }
-        public string AdditionalExceptionInformation { get; set; }
+        public short? MessageId { get; }
+        public short? AskId { get; }
+        public ErrorType ErrorType { get; }
+        public string AdditionalExceptionInformation { get;  }
         public  RemoteException Exception { get; }
 
         public override string ToString()

@@ -12,15 +12,17 @@ namespace TNT.Exceptions.Remote
     /// </summary>
     public abstract class RemoteException: TntCallException
     {
+        public const string DefaultExceptionText = "tnt call exception without any additional information";
         protected RemoteException(
             ErrorType id,
             bool isFatal,
             short? messageId,
             short? askId,
-
-            string message = null, 
+            string message, 
             Exception innerException = null)
-            :base(isFatal, messageId, askId,  $"[{id}]"+ (message??(" tnt call exception")), innerException)
+            :base(isFatal, messageId, askId, 
+                 $"[{id}]"+ (message?? DefaultExceptionText), 
+                 innerException)
         {
             Id = id;
         }
@@ -35,9 +37,9 @@ namespace TNT.Exceptions.Remote
               case ErrorType.UnhandledUserExceptionError:
                     return new RemoteUnhandledException(messageId,askId, null, additionalInfo);
                 case ErrorType.SerializationError:
-                    return new RemoteSerializationException(messageId.Value, askId, isFatal, additionalInfo);
+                    return new RemoteSerializationException(messageId, askId, isFatal, additionalInfo);
                 case ErrorType.ContractSignatureError:
-                    return new RemoteContractImplementationException(messageId.Value, askId, isFatal, additionalInfo);
+                    return new RemoteContractImplementationException(messageId, askId, isFatal, additionalInfo);
                 default:
                     throw new InvalidOperationException(
                         $"Exception type {type} is unknown. Exception message: {additionalInfo}"); 
