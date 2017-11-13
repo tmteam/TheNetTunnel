@@ -23,6 +23,7 @@ namespace TNT.Tcp
         private bool readWasStarted = false;
         private int _bytesReceived;
         private int _bytesSent;
+        readonly object _writeLocker = new object();
 
         public TcpChannel(IPAddress address, int port) : this(new TcpClient(new IPEndPoint(address, port)))
         {
@@ -119,7 +120,7 @@ namespace TNT.Tcp
         {
             DisconnectBecauseOf(null);
         }
-
+       
         public  Task WriteAsync(byte[] data)
         {
             if (!_wasConnected)
@@ -164,9 +165,8 @@ namespace TNT.Tcp
 
                 NetworkStream networkStream = Client.GetStream();
                 //Start async write operation
-                //According to msdn, the WriteAsync call is thread-safe.
-                //No need to use lock
-                networkStream.BeginWrite(data, offset, length, WriteCallback, null);
+                lock(_writeLocker)
+                    networkStream.BeginWrite(data, offset, length, WriteCallback, null);
                 
                 Interlocked.Add(ref _bytesSent, length);
             }
@@ -178,7 +178,6 @@ namespace TNT.Tcp
             }
         }
 
-        readonly object _writeLocker = new object();
 
         private void WriteCallback(IAsyncResult result)
         {
