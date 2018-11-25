@@ -1,4 +1,0 @@
-﻿namespace TNT.Tests.Contracts
-{
-    
-}
