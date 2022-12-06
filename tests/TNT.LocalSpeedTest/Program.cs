@@ -9,129 +9,123 @@ using TNT.SpeedTest.TransactionBandwidth;
 using TNT.Testing;
 using TNT.Transport;
 
-namespace TNT.LocalSpeedTest
+namespace TNT.LocalSpeedTest;
+
+class Program
 {
-    class Program
+    private static readonly Output _output = new Output();
+
+    static void Main()
     {
-        private static readonly Output _output = new Output();
+        _output.WriteLine("Current time: "+ DateTime.Now);
+        _output.WriteLine("Machine:" + System.Environment.MachineName);
+        _output.WriteLine("Local measurement test started");
+        _output.WriteLine();
+        new ProtobuffNetClearSerialzationTest(_output).Run();
+        _output.WriteLine();
+        _output.WriteLine();
 
-        static void Main(string[] args)
+        TestLocalhost();
+        _output.WriteLine();
+        _output.WriteLine();
+
+        TestDirectTestConnection();
+        _output.WriteLine();
+        _output.WriteLine("Measurements are done");
+        while (true)
         {
-            _output.WriteLine("Current time: "+ DateTime.Now);
-            _output.WriteLine("Machine:" + System.Environment.MachineName);
-            _output.WriteLine("Local measurement test started");
-            _output.WriteLine();
-            new ProtobuffNetClearSerialzationTest(_output).Run();
-            _output.WriteLine();
-            _output.WriteLine();
-
-            TestLocalhost();
-            _output.WriteLine();
-            _output.WriteLine();
-
-            TestDirectTestConnection();
-            _output.WriteLine();
-            _output.WriteLine("Measurements are done");
-            while (true)
+            Console.WriteLine("Save results [y/n]?");
+            var key = Console.ReadKey().Key;
+            if (key == ConsoleKey.Y)
             {
-                Console.WriteLine("Save results [y/n]?");
-                var key = Console.ReadKey().Key;
-                if (key == ConsoleKey.Y)
+                while (true)
                 {
-                    while (true)
-                    {
-                        Console.WriteLine("Enter file name [MeasureResults.txt]:");
-                        var name = Console.ReadLine();
+                    Console.WriteLine("Enter file name [MeasureResults.txt]:");
+                    var name = Console.ReadLine();
 
-                        if (!_output.TrySaveTo(
+                    if (!_output.TrySaveTo(
                             String.IsNullOrWhiteSpace(name)? "MeasureResults.txt":name))
-                        {
-                            Console.WriteLine("Saving failed");
-                            continue;
-                        }
-                        Console.WriteLine("Succesfully saved");
-                        Console.WriteLine("Press any key to continue...");
-                        Console.ReadLine();
-                        return;
+                    {
+                        Console.WriteLine("Saving failed");
+                        continue;
                     }
-                  
-                }
-                else if(key== ConsoleKey.N)
-                {
+                    Console.WriteLine("Succesfully saved");
                     Console.WriteLine("Press any key to continue...");
                     Console.ReadLine();
                     return;
                 }
+                  
             }
-        }
-
-        private static void TestDirectTestConnection()
-        {
-            _output.WriteLine("-------------Direct test mock test--------------");
-
-            var pair = TntTestHelper.CreateThreadlessChannelPair();
-            var proxy = TntBuilder
-                .UseContract<ISpeedTestContract>()
-                .UseReceiveDispatcher<ConveyorDispatcher>()
-                .UseChannel(pair.CahnnelA)
-                .Build();
-
-            var origin = TntBuilder
-                .UseContract<ISpeedTestContract, SpeedTestContract>()
-                .UseReceiveDispatcher<ConveyorDispatcher>()
-                .UseChannel(pair.ChannelB)
-                .Build();
-            pair.ConnectAndStartReceiving();
-
-            Test(proxy);
-
-            pair.Disconnect();
-        }
-
-        private static void TestLocalhost()
-        {
-            _output.WriteLine("-------------Localhost test--------------");
-            using (var server = TntBuilder
-                .UseContract<ISpeedTestContract, SpeedTestContract>()
-                .UseReceiveDispatcher<ConveyorDispatcher>()
-                .CreateTcpServer(IPAddress.Loopback, 12345))
+            else if(key== ConsoleKey.N)
             {
-                server.StartListening(); 
-
-                using (var client = TntBuilder
-                    .UseContract<ISpeedTestContract>()
-                    .UseReceiveDispatcher<ConveyorDispatcher>()
-                    .CreateTcpClientConnection(IPAddress.Loopback, 12345))
-                {
-                    Test(client);
-                }
-
+                Console.WriteLine("Press any key to continue...");
+                Console.ReadLine();
+                return;
             }
         }
+    }
 
-        private static void Test(IConnection<ISpeedTestContract, IChannel> client)
-        {
-            client.Contract.AskForTrue();
-            client.Contract.AskBytesEcho(new byte[] { 1, 2, 3, });
-            client.Contract.AskIntegersEcho(new int[] { 1, 2, 3, });
-            client.Contract.AskTextEcho("taram pam pam");
-            client.Contract.SayBytes(new byte[] { 1, 2, 3, });
-            client.Contract.SayProtoStructEcho(new ProtoStruct());
-            client.Contract.AskProtoStructEcho(new ProtoStruct());
+    private static void TestDirectTestConnection()
+    {
+        _output.WriteLine("-------------Direct test mock test--------------");
 
-            var overheadTest = new TransactionOverheadTest(client.Contract, client.Channel, _output);
-            overheadTest.MeasureOutputOverhead();
-            _output.WriteLine();
+        var pair = TntTestHelper.CreateThreadlessChannelPair();
+        var proxy = TntBuilder
+            .UseContract<ISpeedTestContract>()
+            .UseReceiveDispatcher<ConveyorDispatcher>()
+            .UseChannel(pair.ChannelA)
+            .Build();
 
-            overheadTest.MeasureTransactionOverhead();
-            _output.WriteLine();
+        var origin = TntBuilder
+            .UseContract<ISpeedTestContract, SpeedTestContract>()
+            .UseReceiveDispatcher<ConveyorDispatcher>()
+            .UseChannel(pair.ChannelB)
+            .Build();
+        pair.ConnectAndStartReceiving();
 
-            var outputTest = new OutputTestMeasurement(client.Contract, client.Channel, _output);
-            outputTest.Measure();
-            _output.WriteLine();
-            var transactionTest = new TransactionMeasurement(client.Contract, client.Channel, _output);
-            transactionTest.Measure();
+        Test(proxy);
+
+        pair.Disconnect();
+    }
+
+    private static void TestLocalhost()
+    {
+        _output.WriteLine("-------------Localhost test--------------");
+        using var server = TntBuilder
+            .UseContract<ISpeedTestContract, SpeedTestContract>()
+            .UseReceiveDispatcher<ConveyorDispatcher>()
+            .CreateTcpServer(IPAddress.Loopback, 12345);
+        server.StartListening();
+
+        using var client = TntBuilder
+            .UseContract<ISpeedTestContract>()
+            .UseReceiveDispatcher<ConveyorDispatcher>()
+            .CreateTcpClientConnection(IPAddress.Loopback, 12345);
+        Test(client);
+    }
+
+    private static void Test(IConnection<ISpeedTestContract, IChannel> client)
+    {
+        client.Contract.AskForTrue();
+        client.Contract.AskBytesEcho(new byte[] { 1, 2, 3, });
+        client.Contract.AskIntegersEcho(new[] { 1, 2, 3, });
+        client.Contract.AskTextEcho("taram pam pam");
+        client.Contract.SayBytes(new byte[] { 1, 2, 3, });
+        client.Contract.SayProtoStructEcho(new ProtoStruct());
+        client.Contract.AskProtoStructEcho(new ProtoStruct());
+
+        var overheadTest = new TransactionOverheadTest(client.Contract, client.Channel, _output);
+        overheadTest.MeasureOutputOverhead();
+        _output.WriteLine();
+
+        overheadTest.MeasureTransactionOverhead();
+        _output.WriteLine();
+
+        var outputTest = new OutputTestMeasurement(client.Contract, client.Channel, _output);
+        outputTest.Measure();
+        _output.WriteLine();
+        var transactionTest = new TransactionMeasurement(client.Contract, client.Channel, _output);
+        transactionTest.Measure();
            
-        }
     }
 }

@@ -1,11 +1,10 @@
-﻿namespace TNT.Testing
+﻿namespace TNT.Testing;
+
+interface IOneSideConnection
 {
-    interface IOneSideConnection
-    {
-        TestChannel CahnnelFrom { get; }
-        TestChannel ChannelTo { get; }
-        void OnSideConnection(TestChannel cahnnelFrom, TestChannel channelTo);
-        void Start();
-        void Stop();
-    }
+    TestChannel CahnnelFrom { get; }
+    TestChannel ChannelTo { get; }
+    void OnSideConnection(TestChannel cahnnelFrom, TestChannel channelTo);
+    void Start();
+    void Stop();
 }

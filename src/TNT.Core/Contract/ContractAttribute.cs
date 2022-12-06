@@ -1,10 +1,9 @@
 using System;
 
-namespace TNT.Contract
+namespace TNT.Contract;
+
+[AttributeUsage(AttributeTargets.Interface)]
+public class ContractAttribute : Attribute
 {
-    [AttributeUsage(AttributeTargets.Interface)]
-    public class ContractAttribute : Attribute
-    {
         
-    }
 }

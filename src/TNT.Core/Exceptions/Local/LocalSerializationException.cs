@@ -1,15 +1,13 @@
 using System;
-using TNT.Exceptions.Remote;
 
-namespace TNT.Exceptions.Local
+namespace TNT.Exceptions.Local;
+
+public class LocalSerializationException : TntCallException
 {
-    public class LocalSerializationException : TntCallException
+    public LocalSerializationException(
+        short? messageId, short? askId,
+        string message = null, Exception innerException = null)
+        :base(false, messageId, askId, message, innerException)
     {
-        public LocalSerializationException(
-             short? messageId, short? askId,
-             string message = null, Exception innerException = null)
-            :base(false, messageId, askId, message, innerException)
-        {
-        }
     }
 }

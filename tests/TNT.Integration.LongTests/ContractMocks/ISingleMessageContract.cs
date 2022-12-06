@@ -1,9 +1,8 @@
 using TNT;
 
-namespace Tnt.LongTests.ContractMocks
+namespace Tnt.LongTests.ContractMocks;
+
+public interface ISingleMessageContract<TMessageArg>
 {
-    public interface ISingleMessageContract<TMessageArg>
-    {
-        [TntMessage(1)] bool Ask(TMessageArg message);
-    }
+    [TntMessage(1)] bool Ask(TMessageArg message);
 }

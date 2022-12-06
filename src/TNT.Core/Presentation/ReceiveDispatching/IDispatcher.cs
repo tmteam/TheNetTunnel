@@ -1,11 +1,10 @@
 ﻿using System;
 
-namespace TNT.Presentation.ReceiveDispatching
+namespace TNT.Presentation.ReceiveDispatching;
+
+public interface IDispatcher
 {
-    public interface IDispatcher
-    {
-        void Set(RequestMessage message);
-        event Action<IDispatcher, RequestMessage> OnNewMessage;
-        void Release();
-    }
+    void Set(RequestMessage message);
+    event Action<IDispatcher, RequestMessage> OnNewMessage;
+    void Release();
 }

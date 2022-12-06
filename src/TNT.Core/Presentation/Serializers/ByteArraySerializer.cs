@@ -1,24 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 
-namespace TNT.Presentation.Serializers
+namespace TNT.Presentation.Serializers;
+
+public class ByteArraySerializer : SerializerBase<byte[]>
 {
-    public class ByteArraySerializer : SerializerBase<byte[]>
+    public ByteArraySerializer()
     {
-        public ByteArraySerializer()
-        {
-            Size = null;
-        }
+        Size = null;
+    }
 
-        public override void SerializeT(byte[] obj, MemoryStream stream)
-        {
-            if (obj == null)
-                return;
-            stream.Write(obj,0, obj.Length);
-        }
+    public override void SerializeT(byte[] obj, MemoryStream stream)
+    {
+        if (obj == null)
+            return;
+        stream.Write(obj,0, obj.Length);
     }
 }

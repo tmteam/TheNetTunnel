@@ -37,8 +37,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TNT.Integration.Tests", "te
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TNT.Integration.LongTests", "tests\TNT.Integration.LongTests\TNT.Integration.LongTests.csproj", "{48CD0576-4D13-4309-A37B-B501CEDB2769}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".build", ".build", "{C16430AC-87F8-428B-820F-D8C85D78B1AD}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

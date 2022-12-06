@@ -1,7 +1,6 @@
-namespace TNT.IntegrationTests.Serialization
+namespace TNT.IntegrationTests.Serialization;
+
+public interface ISingleMessageContract<TMessageArg>
 {
-    public interface ISingleMessageContract<TMessageArg>
-    {
-        [TntMessage(1)] bool Ask(TMessageArg message);
-    }
+    [TntMessage(1)] bool Ask(TMessageArg message);
 }

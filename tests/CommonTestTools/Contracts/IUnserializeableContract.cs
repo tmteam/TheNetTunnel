@@ -1,4 +1,1 @@
-﻿namespace CommonTestTools.Contracts
-{
-    
-}
+﻿namespace CommonTestTools.Contracts;

@@ -1,26 +1,25 @@
 ﻿using NUnit.Framework;
 using ProtoBuf;
 
-namespace Tnt.LongTests.ContractMocks
+namespace Tnt.LongTests.ContractMocks;
+
+[ProtoContract]
+public class Company
 {
-    [ProtoContract]
-    public class Company
+    [ProtoMember(3)]
+    public string Name;
+    [ProtoMember(2)]
+    public int Id;
+    [ProtoMember(1)]
+    public User[] Users;
+    public void AssertIsSameTo(Company company)
     {
-        [ProtoMember(3)]
-        public string Name;
-        [ProtoMember(2)]
-        public int Id;
-        [ProtoMember(1)]
-        public User[] Users;
-        public void AssertIsSameTo(Company company)
+        Assert.AreEqual(company.Name, Name);
+        Assert.AreEqual(Id, company.Id);
+        Assert.AreEqual(Users.Length, company.Users.Length);
+        for (int i = 0; i < Users.Length; i++)
         {
-            Assert.AreEqual(company.Name, Name);
-            Assert.AreEqual(Id, company.Id);
-            Assert.AreEqual(Users.Length, company.Users.Length);
-            for (int i = 0; i < Users.Length; i++)
-            {
-                Users[i].AssertIsSameTo(company.Users[i]);
-            }
+            Users[i].AssertIsSameTo(company.Users[i]);
         }
     }
 }

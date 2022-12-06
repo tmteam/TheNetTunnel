@@ -1,10 +1,9 @@
 ﻿using TNT;
 
-namespace CommonTestTools.Contracts
+namespace CommonTestTools.Contracts;
+
+public interface IExceptionalContract
 {
-    public interface IExceptionalContract
-    {
-        [TntMessage(1)] int Ask();
-        [TntMessage(2)] void Say();
-    }
+    [TntMessage(1)] int Ask();
+    [TntMessage(2)] void Say();
 }

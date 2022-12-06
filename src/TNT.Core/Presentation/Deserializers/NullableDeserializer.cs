@@ -1,26 +1,24 @@
 ﻿using System.IO;
 using System.Runtime.InteropServices;
-using TNT.Presentation.Serializers;
 
-namespace TNT.Presentation.Deserializers
+namespace TNT.Presentation.Deserializers;
+
+public class NullableDeserializer<T> : DeserializerBase<T?> where T : struct
 {
-    public class NullableDeserializer<T> : DeserializerBase<T?> where T : struct
+    public NullableDeserializer()
     {
-        public NullableDeserializer()
-        {
-            Size = Marshal.SizeOf(typeof(T))+1;
-        }
+        Size = Marshal.SizeOf(typeof(T))+1;
+    }
 
-        public override T? DeserializeT(Stream stream, int size)
+    public override T? DeserializeT(Stream stream, int size)
+    {
+        var arr = new byte[Size.Value];
+        stream.Read(arr, 0, Size.Value);
+        if (arr[0] == 0)
+            return null;
+        else
         {
-            var arr = new byte[Size.Value];
-            stream.Read(arr, 0, Size.Value);
-            if (arr[0] == 0)
-                return null;
-            else
-            {
-               return Tools.ToStruct<T>(arr, 1, Size.Value-1);
-            }
+            return Tools.ToStruct<T>(arr, 1, Size.Value-1);
         }
     }
 }
